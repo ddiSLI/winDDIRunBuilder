@@ -1,0 +1,303 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
+using winDDIRunBuilder.Models;
+
+namespace winDDIRunBuilder
+{
+    public class RepoSQL : ISQLService
+    {
+        string CnsSQL = "";
+        public RepoSQL()
+        {
+            if (ConfigurationManager.AppSettings["IsInDev"].ToString() == "YES")
+            {
+                CnsSQL = ConfigurationManager.ConnectionStrings["cnnSQLReportingState_DEV"].ToString();
+            }
+            else
+            {
+                CnsSQL = ConfigurationManager.ConnectionStrings["cnnSQLReportingState_PROD"].ToString();
+            }
+        }
+
+        public List<DBPlate> GetPlates(string plateName, string plateVersion = null)
+        {
+            List<DBPlate> plates = new List<DBPlate>();
+
+            using (SqlConnection conn = new SqlConnection(CnsSQL))
+            {
+                SqlCommand cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = "uspRunBld_SelPlates";
+
+                try
+                {
+                    cmd.Parameters.Add("@pPlateName", SqlDbType.VarChar).Value = plateName;
+
+                    //if (!string.IsNullOrEmpty(batchVersion))
+                    //    cmd.Parameters.Add("@pBatchVersion", SqlDbType.Int).Value = Convert.ToInt16(batchVersion);
+
+                    conn.Open();
+                    SqlDataReader rdr = cmd.ExecuteReader();
+                    bool plateTatated = false;
+
+                    if (rdr.HasRows)
+                    {
+                        while (rdr.Read())
+                        {
+                            plateTatated = rdr["PlateRotated"].ToString() == "0" ? false : true;
+
+                            plates.Add(
+                                new DBPlate
+                                {
+                                    PlateId = rdr["PlateId"].ToString(),
+                                    StartPos = rdr["StartPos"].ToString(),
+                                    EndPos = rdr["EndPos"].ToString(),
+                                    Diluent = rdr["Diluent"].ToString(),
+                                    Samples = rdr["Samples"].ToString(),
+                                    PlateRotated = rdr["PlateRotated"].ToString() == "0" ? false : true,
+                                    ModifiedDate = rdr["ModifiedDate"].ToString(),
+                                    PlateVersion = rdr["PlateVersion"].ToString()
+                                }
+                                );
+                        }
+                    }
+
+                    rdr.Close();
+                }
+
+                catch (Exception ex)
+                {
+                    string msgEx = "SQL: GetPlate(plateId,plateVersion) met issue: ";
+                    msgEx += Environment.NewLine;
+                    //msgEx += "shortId: " + shortId.ToString() + " ;";
+                    msgEx += Environment.NewLine;
+                    msgEx += ex.Message;
+                }
+                finally
+                {
+                    conn.Close();
+                }
+
+            }
+
+            return plates;
+        }
+
+        public List<PlateSample> GetPlateSamples(string plateId, string plateVersion = null)
+        {
+            List<PlateSample> samples = new List<PlateSample>();
+
+            using (SqlConnection conn = new SqlConnection(CnsSQL))
+            {
+                SqlCommand cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = "uspRunBld_SelSamples";
+
+                try
+                {
+                    cmd.Parameters.Add("@pPlateId", SqlDbType.VarChar).Value = plateId;
+
+                    if (!string.IsNullOrEmpty(plateVersion))
+                        cmd.Parameters.Add("@pPlateVersion", SqlDbType.Int).Value = Convert.ToInt16(plateVersion);
+
+                    conn.Open();
+                    SqlDataReader rdr = cmd.ExecuteReader();
+
+                    if (rdr.HasRows)
+                    {
+                        while (rdr.Read())
+                        {
+                            samples.Add(
+                                new PlateSample
+                                {
+                                    PlateId = rdr["PlateId"].ToString(),
+                                    Well = rdr["Well"].ToString(),
+                                    Sequence = (int)rdr["Position"],
+                                    SampleId = rdr["Samples"].ToString(),
+                                    PlateVersion = rdr["PlateVersion"].ToString()
+                                }
+                                );
+                        }
+                    }
+
+                    rdr.Close();
+                }
+
+                catch (Exception ex)
+                {
+                    string msgEx = "SQL: GetPlateSamples(plateId,plateVersion) met issue: ";
+                    msgEx += Environment.NewLine;
+                    //msgEx += "shortId: " + shortId.ToString() + " ;";
+                    msgEx += Environment.NewLine;
+                    msgEx += ex.Message;
+                }
+                finally
+                {
+                    conn.Close();
+                }
+
+            }
+
+            return samples;
+
+
+        }
+
+        public DBPlate AddSamples(List<PlateSample> plateSamples)
+        {
+            DBPlate addedPlate = new DBPlate();
+
+            using (SqlConnection conn = new SqlConnection(CnsSQL))
+            {
+                SqlCommand cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = "uspRunBld_InsSample";
+
+                try
+                {
+                    cmd.Parameters.Add("@pPlateId", SqlDbType.VarChar);
+                    cmd.Parameters.Add("@pSampleId", SqlDbType.VarChar);
+                    cmd.Parameters.Add("@pWell", SqlDbType.VarChar);
+                    cmd.Parameters.Add("@pPosition", SqlDbType.Int);
+                    cmd.Parameters.Add("@pPlateVersion", SqlDbType.Int);
+
+                    //cmd.Parameters.Add("@pPlateId", SqlDbType.VarChar, 30);
+                    //cmd.Parameters.Add("@pSampleId", SqlDbType.VarChar, 30);
+                    //cmd.Parameters.Add("@pWell", SqlDbType.VarChar, 4);
+                    //cmd.Parameters.Add("@pPosition", SqlDbType.Int);
+                    //cmd.Parameters.Add("@pPlateVersion", SqlDbType.Int);
+
+
+                    conn.Open();
+
+                    foreach(var smp in plateSamples)
+                    {
+                        cmd.Parameters["@pPlateId"].Value= smp.PlateId;
+                    cmd.Parameters["@pSampleId"].Value=smp.SampleId;
+                    cmd.Parameters["@pWell"].Value=smp.Well;
+                    cmd.Parameters["@pPosition"].Value=smp.Sequence;
+                    cmd.Parameters["@pPlateVersion"].Value=smp.PlateVersion;
+
+                       cmd.ExecuteNonQuery();
+
+                    }
+
+                }
+
+                catch (Exception ex)
+                {
+                    string msgEx = "SQL: AddSamples(List<PlateSample> plateSamples) met issue: ";
+                    msgEx += Environment.NewLine;
+                    //msgEx += "shortId: " + shortId.ToString() + " ;";
+                    msgEx += Environment.NewLine;
+                    msgEx += ex.Message;
+                }
+                finally
+                {
+                    conn.Close();
+                }
+            }
+
+            return addedPlate;
+        }
+       
+        public DBPlate AddPlate(DBPlate dbPlate)
+        {
+            DBPlate addedPlate = new DBPlate();
+
+            using (SqlConnection conn = new SqlConnection(CnsSQL))
+            {
+                SqlCommand cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = "uspRunBld_InsPlate";
+
+                try
+                {
+                    cmd.Parameters.Add("@pPlateName", SqlDbType.VarChar).Value = dbPlate.PlateName;
+                    cmd.Parameters.Add("@pPlateId", SqlDbType.VarChar).Value = dbPlate.PlateId;
+                    cmd.Parameters.Add("@pStartPos", SqlDbType.VarChar).Value = dbPlate.StartPos;
+                    cmd.Parameters.Add("@pEndPos", SqlDbType.VarChar).Value = dbPlate.EndPos;
+                    cmd.Parameters.Add("@pDiluent", SqlDbType.Int).Value = Convert.ToInt16(dbPlate.Diluent);
+                    cmd.Parameters.Add("@pSamples", SqlDbType.Int).Value = Convert.ToInt16(dbPlate.Samples);
+                    cmd.Parameters.Add("@pPlateRotated", SqlDbType.Bit).Value = dbPlate.PlateRotated==false? 0: 1;
+                    cmd.Parameters.Add("@pPlateVersion", SqlDbType.Int).Value = Convert.ToInt16(dbPlate.PlateVersion);
+
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+
+                    //result = "SUCCESS";
+                }
+
+                catch (Exception ex)
+                {
+                    string msgEx = "SQL: AddPlate(newPlate) met issue: ";
+                    msgEx += Environment.NewLine;
+                    //msgEx += "shortId: " + shortId.ToString() + " ;";
+                    msgEx += Environment.NewLine;
+                    msgEx += ex.Message;
+                }
+                finally
+                {
+                    conn.Close();
+                }
+            }
+
+            return addedPlate;
+        }
+
+        public string UpdateBatch(Batch newBatch)
+        {
+            string result = "NA";
+
+            using (SqlConnection conn = new SqlConnection(CnsSQL))
+            {
+                SqlCommand cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = "uspRunBld_UpdBatch";
+
+                try
+                {
+                    cmd.Parameters.Add("@pBatchId", SqlDbType.VarChar).Value = newBatch.BatchId;
+                    cmd.Parameters.Add("@pBatchVersion", SqlDbType.Int).Value = Convert.ToInt16(newBatch.Version);
+                    cmd.Parameters.Add("@pSampleId", SqlDbType.VarChar).Value = newBatch.SampleId;
+                    cmd.Parameters.Add("@pSequence", SqlDbType.VarChar).Value = newBatch.Sequence;
+                    cmd.Parameters.Add("@pWell", SqlDbType.VarChar).Value = newBatch.Well;
+                    cmd.Parameters.Add("@pORC", SqlDbType.VarChar).Value = newBatch.ORC;
+
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+
+                    result = "SUCCESS";
+                }
+
+                catch (Exception ex)
+                {
+                    string msgEx = "SQL: UpdateBatch(newBatch) met issue: ";
+                    msgEx += Environment.NewLine;
+                    //msgEx += "shortId: " + shortId.ToString() + " ;";
+                    msgEx += Environment.NewLine;
+                    msgEx += ex.Message;
+                }
+                finally
+                {
+                    conn.Close();
+                }
+
+            }
+
+
+            return result;
+        }
+
+
+    }
+
+
+}
