@@ -85,7 +85,7 @@ namespace winDDIRunBuilder
         }
 
         [Obsolete]
-        public string CreateBatch(Batch newBatch)
+        public string CreateBatch()
         {
             string result = "NA";
 

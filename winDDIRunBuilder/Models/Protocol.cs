@@ -24,8 +24,8 @@ namespace winDDIRunBuilder.Models
         public bool PlateRotated { set; get; } = false;
         public string StartPos { set; get; }
         public string EndPos { set; get; }
-        public int Samples { set; get; }
-        public int Diluent { set; get; }
+        public string Sample { set; get; }
+        public string Diluent { set; get; }
         public string Opt1 { set; get; }
         public string Opt2 { set; get; }
         public string etc { set; get; }

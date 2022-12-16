@@ -13,7 +13,8 @@ namespace winDDIRunBuilder.Models
         public Pos End { set; get; }
         public string Offset { set; get; }
         public string Direction { set; get; }
-        public PlateAttributes Attributes { set; get; }
+        public Dictionary<string, string> Attributes = new Dictionary<string, string>();
+        //public PlateAttributes Attributes { set; get; } = new PlateAttributes();
 
         public class Pos
         {
@@ -21,9 +22,9 @@ namespace winDDIRunBuilder.Models
             public string Y { set; get; }
         }
         
-        public class PlateAttributes
-        {
-            public string Accept { set; get; }
-        }
+        //public class PlateAttributes
+        //{
+        //    public string Accept { set; get; }
+        //}
     }
 }

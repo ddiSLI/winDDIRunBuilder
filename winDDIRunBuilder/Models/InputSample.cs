@@ -8,7 +8,7 @@ namespace winDDIRunBuilder.Models
 {
     public class InputSample
     {
-        public SampleAttributes Attributes { set; get; }
+        public SampleAttributes Attributes { set; get; } = new SampleAttributes();
     }
 
     public class SampleAttributes

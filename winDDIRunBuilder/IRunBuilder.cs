@@ -17,15 +17,12 @@ namespace winDDIRunBuilder
         List<InputFile> GetPlateSamples(List<InputFile> inputs);
         List<InputFile> GetShortSamples(List<InputFile> inputs);
         List<Protocol> GetProtocols();
-        List<Batch> GetBatch(string plateId, string version = null);
-        string CreateBarch(List<Batch> newBatch);
     }
 
     interface IOracleService
     {
         List<OrcShortIdRef> GetShortIdRef(List<string> inputShortIdGrp);
 
-        string CreateBatch(Batch newBatch); 
         List<OrcWebProfile> GetWebProfile(string webProfileDesc);
 
         //string[] GetLastSyncInfo(string category);
@@ -36,10 +33,9 @@ namespace winDDIRunBuilder
     interface ISQLService
     {
         List<DBPlate> GetPlates(string plateId, string plateVersion=null);
-        DBPlate AddPlate(DBPlate dbPlate);
+        string AddPlate(DBPlate dbPlate);
         List<PlateSample> GetPlateSamples(string plateId, string plateVersion = null);
         DBPlate AddSamples(List<PlateSample> plateSamples);
-        string UpdateBatch(Batch newBatch);
         //string CreateBatch(Batch newBatch);
 
         //List<AccountOwner> AccountOwnerMap();

@@ -88,35 +88,11 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="frmDDIRunBuilder.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="frmDDIRunBuilder.Designer.cs">
-      <DependentUpon>frmDDIRunBuilder.cs</DependentUpon>
-    </Compile>
-    <Compile Include="frmHome.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="frmHome.Designer.cs">
-      <DependentUpon>frmHome.cs</DependentUpon>
-    </Compile>
-    <Compile Include="frmImportFromBCR.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="frmImportFromBCR.Designer.cs">
-      <DependentUpon>frmImportFromBCR.cs</DependentUpon>
-    </Compile>
     <Compile Include="frmImportFromDB.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="frmImportFromDB.Designer.cs">
       <DependentUpon>frmImportFromDB.cs</DependentUpon>
-    </Compile>
-    <Compile Include="frmLoading.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="frmLoading.Designer.cs">
-      <DependentUpon>frmLoading.cs</DependentUpon>
     </Compile>
     <Compile Include="frmMain.cs">
       <SubType>Form</SubType>
@@ -124,33 +100,21 @@
     <Compile Include="frmMain.Designer.cs">
       <DependentUpon>frmMain.cs</DependentUpon>
     </Compile>
-    <Compile Include="frmPlateSetting.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="frmPlateSetting.Designer.cs">
-      <DependentUpon>frmPlateSetting.cs</DependentUpon>
-    </Compile>
-    <Compile Include="frmReadFile.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="frmReadFile.Designer.cs">
-      <DependentUpon>frmReadFile.cs</DependentUpon>
-    </Compile>
     <Compile Include="InputFile.cs" />
     <Compile Include="IRunBuilder.cs" />
-    <Compile Include="Models\Batch.cs" />
-    <Compile Include="Models\BatchWorklist.cs" />
     <Compile Include="Models\CombItem.cs" />
     <Compile Include="Models\DBPlate.cs" />
     <Compile Include="Models\InputPlate.cs" />
     <Compile Include="Models\InputSample.cs" />
-    <Compile Include="Models\Person.cs" />
+    <Compile Include="Models\OutputPlate.cs" />
+    <Compile Include="Models\OutputPlateSample.cs" />
     <Compile Include="Models\Plate.cs" />
     <Compile Include="Models\PlateSample.cs" />
     <Compile Include="Models\Protocol.cs" />
     <Compile Include="Models\ProtocolPlate.cs" />
     <Compile Include="Models\RunBuilderInfo.cs" />
     <Compile Include="Models\SamplePlate.cs" />
+    <Compile Include="Models\ValidPlate.cs" />
     <Compile Include="Models\Worklist.cs" />
     <Compile Include="PrintBarCode.cs" />
     <Compile Include="Program.cs" />
@@ -167,31 +131,11 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="ServiceRunBuilder.cs" />
-    <EmbeddedResource Include="frmDDIRunBuilder.resx">
-      <DependentUpon>frmDDIRunBuilder.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="frmHome.resx">
-      <DependentUpon>frmHome.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="frmImportFromBCR.resx">
-      <DependentUpon>frmImportFromBCR.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="frmImportFromDB.resx">
       <DependentUpon>frmImportFromDB.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frmLoading.resx">
-      <DependentUpon>frmLoading.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="frmMain.resx">
       <DependentUpon>frmMain.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="frmPlateSetting.resx">
-      <DependentUpon>frmPlateSetting.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="frmReadFile.resx">
-      <DependentUpon>frmReadFile.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

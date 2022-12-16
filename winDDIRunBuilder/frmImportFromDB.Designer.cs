@@ -36,7 +36,7 @@ namespace winDDIRunBuilder
             this.txbPlateId = new System.Windows.Forms.TextBox();
             this.Plate = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.StartPos = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.EndPose = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.EndPos = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ModifiedDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Version = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dgvPlates)).BeginInit();
@@ -45,7 +45,7 @@ namespace winDDIRunBuilder
             // label3
             // 
             this.label3.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.label3.Location = new System.Drawing.Point(35, 41);
+            this.label3.Location = new System.Drawing.Point(11, 40);
             this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(116, 27);
@@ -63,7 +63,7 @@ namespace winDDIRunBuilder
             this.dgvPlates.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Plate,
             this.StartPos,
-            this.EndPose,
+            this.EndPos,
             this.ModifiedDate,
             this.Version});
             this.dgvPlates.EnableHeadersVisualStyles = false;
@@ -76,10 +76,10 @@ namespace winDDIRunBuilder
             this.dgvPlates.RowTemplate.Height = 24;
             this.dgvPlates.Size = new System.Drawing.Size(431, 360);
             this.dgvPlates.TabIndex = 37;
+            this.dgvPlates.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvPlates_CellContentClick);
             // 
             // btnGo
             // 
-            this.btnGo.Enabled = false;
             this.btnGo.FlatAppearance.BorderColor = System.Drawing.SystemColors.Highlight;
             this.btnGo.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnGo.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -119,6 +119,7 @@ namespace winDDIRunBuilder
             this.txbPlateId.Name = "txbPlateId";
             this.txbPlateId.Size = new System.Drawing.Size(202, 26);
             this.txbPlateId.TabIndex = 39;
+            this.txbPlateId.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txbPlateId_KeyDown);
             // 
             // Plate
             // 
@@ -137,13 +138,13 @@ namespace winDDIRunBuilder
             this.StartPos.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.StartPos.Width = 60;
             // 
-            // EndPose
+            // EndPos
             // 
-            this.EndPose.HeaderText = "EndPos";
-            this.EndPose.MinimumWidth = 6;
-            this.EndPose.Name = "EndPose";
-            this.EndPose.ReadOnly = true;
-            this.EndPose.Width = 60;
+            this.EndPos.HeaderText = "EndPos";
+            this.EndPos.MinimumWidth = 6;
+            this.EndPos.Name = "EndPos";
+            this.EndPos.ReadOnly = true;
+            this.EndPos.Width = 60;
             // 
             // ModifiedDate
             // 
@@ -188,7 +189,7 @@ namespace winDDIRunBuilder
         private System.Windows.Forms.TextBox txbPlateId;
         private System.Windows.Forms.DataGridViewTextBoxColumn Plate;
         private System.Windows.Forms.DataGridViewTextBoxColumn StartPos;
-        private System.Windows.Forms.DataGridViewTextBoxColumn EndPose;
+        private System.Windows.Forms.DataGridViewTextBoxColumn EndPos;
         private System.Windows.Forms.DataGridViewTextBoxColumn ModifiedDate;
         private System.Windows.Forms.DataGridViewTextBoxColumn Version;
     }

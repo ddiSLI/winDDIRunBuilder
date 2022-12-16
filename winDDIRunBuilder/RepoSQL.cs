@@ -14,19 +14,25 @@ namespace winDDIRunBuilder
     public class RepoSQL : ISQLService
     {
         string CnsSQL = "";
+
+        public string RunCondition { get; set; } = "DEV";
+
         public RepoSQL()
-        {
-            if (ConfigurationManager.AppSettings["IsInDev"].ToString() == "YES")
+        { 
+            RunCondition = ConfigurationManager.AppSettings["RunCondition"];
+    
+            if (RunCondition=="PROD")
             {
-                CnsSQL = ConfigurationManager.ConnectionStrings["cnnSQLReportingState_DEV"].ToString();
+                CnsSQL = ConfigurationManager.ConnectionStrings["cnnSQLReporting_PROD"].ToString();
             }
             else
             {
-                CnsSQL = ConfigurationManager.ConnectionStrings["cnnSQLReportingState_PROD"].ToString();
+                CnsSQL = ConfigurationManager.ConnectionStrings["cnnSQLReporting_DEV"].ToString();
+
             }
         }
 
-        public List<DBPlate> GetPlates(string plateName, string plateVersion = null)
+        public List<DBPlate> GetPlates(string plateId, string plateVersion = null)
         {
             List<DBPlate> plates = new List<DBPlate>();
 
@@ -38,7 +44,7 @@ namespace winDDIRunBuilder
 
                 try
                 {
-                    cmd.Parameters.Add("@pPlateName", SqlDbType.VarChar).Value = plateName;
+                    cmd.Parameters.Add("@pPlateId", SqlDbType.VarChar).Value = plateId;
 
                     //if (!string.IsNullOrEmpty(batchVersion))
                     //    cmd.Parameters.Add("@pBatchVersion", SqlDbType.Int).Value = Convert.ToInt16(batchVersion);
@@ -60,7 +66,7 @@ namespace winDDIRunBuilder
                                     StartPos = rdr["StartPos"].ToString(),
                                     EndPos = rdr["EndPos"].ToString(),
                                     Diluent = rdr["Diluent"].ToString(),
-                                    Samples = rdr["Samples"].ToString(),
+                                    Sample = rdr["Sample"].ToString(),
                                     PlateRotated = rdr["PlateRotated"].ToString() == "0" ? false : true,
                                     ModifiedDate = rdr["ModifiedDate"].ToString(),
                                     PlateVersion = rdr["PlateVersion"].ToString()
@@ -208,9 +214,9 @@ namespace winDDIRunBuilder
             return addedPlate;
         }
        
-        public DBPlate AddPlate(DBPlate dbPlate)
+        public string AddPlate(DBPlate dbPlate)
         {
-            DBPlate addedPlate = new DBPlate();
+            string resultSaveDB="SUCCESS";
 
             using (SqlConnection conn = new SqlConnection(CnsSQL))
             {
@@ -225,14 +231,14 @@ namespace winDDIRunBuilder
                     cmd.Parameters.Add("@pStartPos", SqlDbType.VarChar).Value = dbPlate.StartPos;
                     cmd.Parameters.Add("@pEndPos", SqlDbType.VarChar).Value = dbPlate.EndPos;
                     cmd.Parameters.Add("@pDiluent", SqlDbType.Int).Value = Convert.ToInt16(dbPlate.Diluent);
-                    cmd.Parameters.Add("@pSamples", SqlDbType.Int).Value = Convert.ToInt16(dbPlate.Samples);
+                    cmd.Parameters.Add("@pSample", SqlDbType.Int).Value = Convert.ToInt16(dbPlate.Sample);
                     cmd.Parameters.Add("@pPlateRotated", SqlDbType.Bit).Value = dbPlate.PlateRotated==false? 0: 1;
                     cmd.Parameters.Add("@pPlateVersion", SqlDbType.Int).Value = Convert.ToInt16(dbPlate.PlateVersion);
 
                     conn.Open();
                     cmd.ExecuteNonQuery();
 
-                    //result = "SUCCESS";
+                    resultSaveDB = "SUCCESS";
                 }
 
                 catch (Exception ex)
@@ -242,6 +248,7 @@ namespace winDDIRunBuilder
                     //msgEx += "shortId: " + shortId.ToString() + " ;";
                     msgEx += Environment.NewLine;
                     msgEx += ex.Message;
+                    resultSaveDB = msgEx;
                 }
                 finally
                 {
@@ -249,53 +256,8 @@ namespace winDDIRunBuilder
                 }
             }
 
-            return addedPlate;
+            return resultSaveDB;
         }
-
-        public string UpdateBatch(Batch newBatch)
-        {
-            string result = "NA";
-
-            using (SqlConnection conn = new SqlConnection(CnsSQL))
-            {
-                SqlCommand cmd = conn.CreateCommand();
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = "uspRunBld_UpdBatch";
-
-                try
-                {
-                    cmd.Parameters.Add("@pBatchId", SqlDbType.VarChar).Value = newBatch.BatchId;
-                    cmd.Parameters.Add("@pBatchVersion", SqlDbType.Int).Value = Convert.ToInt16(newBatch.Version);
-                    cmd.Parameters.Add("@pSampleId", SqlDbType.VarChar).Value = newBatch.SampleId;
-                    cmd.Parameters.Add("@pSequence", SqlDbType.VarChar).Value = newBatch.Sequence;
-                    cmd.Parameters.Add("@pWell", SqlDbType.VarChar).Value = newBatch.Well;
-                    cmd.Parameters.Add("@pORC", SqlDbType.VarChar).Value = newBatch.ORC;
-
-                    conn.Open();
-                    cmd.ExecuteNonQuery();
-
-                    result = "SUCCESS";
-                }
-
-                catch (Exception ex)
-                {
-                    string msgEx = "SQL: UpdateBatch(newBatch) met issue: ";
-                    msgEx += Environment.NewLine;
-                    //msgEx += "shortId: " + shortId.ToString() + " ;";
-                    msgEx += Environment.NewLine;
-                    msgEx += ex.Message;
-                }
-                finally
-                {
-                    conn.Close();
-                }
-
-            }
-
-
-            return result;
-        }
-
 
     }
 

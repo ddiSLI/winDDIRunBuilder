@@ -17,163 +17,6 @@ namespace winDDIRunBuilder
 
         }
 
-        public List<Batch> GetBatch(string batchId, string version = null)
-        {
-            ClientBackend backendService = new ClientBackend();
-            List<Batch> getBatch = new List<Batch>();
-            List<ClientBackend.DtoBatch> dtoBatch = new List<ClientBackend.DtoBatch>();
-
-            try
-            {
-                if (batchId.Length > 0)
-                {
-                    dtoBatch = (List<ClientBackend.DtoBatch>)backendService.GetBatchLatest(batchId);
-
-                    if (dtoBatch != null && dtoBatch.Count > 0)
-                    {
-                        foreach (var dto in dtoBatch)
-                        {
-                            getBatch.Add(new Batch
-                            {
-                                BatchId = dto.BatchId,
-                                Sequence = dto.UserSequence,
-                                ShortId = dto.ShortId,
-                                PlateSuffix = dto.PlateSuffix,
-                                SampleId = dto.SampleId,
-                                ModifiedBy = dto.Modify.By,
-                                ModifiedDate = dto.Modify.Date,
-                                ModifiedTool = dto.Modify.Tool,
-                                ORC = dto.Orc,
-                                Well = dto.Well,
-                                Version = dto.Version
-                            });
-                        }
-                    }
-                }
-
-            }
-            catch (Exception ex)
-            {
-                string errMsg = "{RepoSQLOracle.GetBatch()} met the following error: ";
-                errMsg += Environment.NewLine;
-                errMsg += ex.Message;
-            }
-
-            return getBatch;
-
-        }
-
-        public string CreateBatchAndWorkList(List<BatchWorklist> newBatchWorklist)
-        {
-            string result = "NA";
-
-            ClientBackend backendService = new ClientBackend();
-
-            try
-            {
-                if (newBatchWorklist.Count > 0)
-                {
-                    foreach (var bat in newBatchWorklist)
-                    {
-
-                    }
-
-                    result = backendService.CreateBatchWorklist(newBatchWorklist);
-
-                }
-            }
-            catch (Exception ex)
-            {
-                string errMsg = "{RepoSQLOracle.CreateBarch()} met the following error: ";
-                errMsg += Environment.NewLine;
-                errMsg += ex.Message;
-            }
-
-            return result;
-        }
-
-        public string CreateBarch(List<Batch> newBatch)
-        {
-            string result = "NA";
-
-            ClientBackend backendService = new ClientBackend();
-            List<ClientBackend.DtoBatch> dtoBatch = new List<ClientBackend.DtoBatch>();
-
-            try
-            {
-                if (newBatch.Count > 0)
-                {
-                    foreach (var bat in newBatch)
-                    {
-                        dtoBatch.Add(new ClientBackend.DtoBatch
-                        {
-                            BatchId = bat.BatchId,
-                            UserSequence = bat.Sequence,
-                            SampleId = bat.SampleId,
-                            Well = bat.Well,
-                            ShortId = bat.ShortId,
-                            PlateSuffix = bat.PlateSuffix,
-                            Modify = new ClientBackend.DtoModify
-                            {
-                                Date = bat.ModifiedDate,
-                                By = bat.ModifiedBy,
-                                Tool = bat.ModifiedTool
-                            },
-                            Orc = bat.ORC,
-                            Version = bat.Version
-                        });
-                    }
-
-                    result = backendService.CreateBatch(dtoBatch);
-
-                }
-            }
-            catch (Exception ex)
-            {
-                string errMsg = "{RepoSQLOracle.CreateBarch()} met the following error: ";
-                errMsg += Environment.NewLine;
-                errMsg += ex.Message;
-            }
-
-            return result;
-        }
-
-        public string DeleteBarch(List<Batch> newBatch)
-        {
-            string result = "NA";
-
-            ClientBackend backendService = new ClientBackend();
-            List<ClientBackend.DtoBatch> dtoBatch = new List<ClientBackend.DtoBatch>();
-
-            try
-            {
-                if (newBatch.Count > 0)
-                {
-                    foreach (var bat in newBatch)
-                    {
-                        dtoBatch.Add(new ClientBackend.DtoBatch
-                        {
-                            BatchId = bat.BatchId,
-                            UserSequence = bat.Sequence,
-                            Version = bat.Version
-                        });
-                    }
-
-                    result = backendService.DeleteBatch(dtoBatch);
-
-                }
-            }
-            catch (Exception ex)
-            {
-                string errMsg = "{RepoSQLOracle.DeleteBarch()} met the following error: ";
-                errMsg += Environment.NewLine;
-                errMsg += ex.Message;
-            }
-
-            return result;
-        }
-
-
 
         public List<Protocol> GetProtocols()
         {
@@ -204,8 +47,8 @@ namespace winDDIRunBuilder
                     PlateRotated = dtoProt.PlateRotated.ToUpper() == "FALSE" ? false : true,
                     StartPos = dtoProt.StartPos,
                     EndPos = dtoProt.EndPos,
-                    Samples = Convert.ToInt32(dtoProt.Samples),
-                    Diluent = Convert.ToInt32(dtoProt.Diluent),
+                    Sample = dtoProt.Samples,
+                    Diluent = dtoProt.Diluent,
                     Opt1 = dtoProt.Opt1,
                     Opt2 = dtoProt.Opt2,
                     etc = dtoProt.etc
@@ -264,7 +107,6 @@ namespace winDDIRunBuilder
         public List<InputFile> GetShortSamples(List<InputFile> inputs)
         {
             ClientBackend backendService = new ClientBackend();
-            List<Batch> batch = new List<Batch>();
             List<ClientBackend.DtoSample> dtoSamples = new List<ClientBackend.DtoSample>();
             StringBuilder sbShortIds = new StringBuilder();
 

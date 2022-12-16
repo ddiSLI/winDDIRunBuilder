@@ -17,15 +17,20 @@ namespace winDDIRunBuilder
 
         public class DtoWorklist
         {
-            public string PlateId { set; get; }
-            public string SampleId { set; get; }
-            public string Sequence { set; get; }
-            public string Well { set; get; }
-            public string ShortId { set; get; }
-            public string Diluent { set; get; }
-            public string PlateSuffix { set; get; }
-            public DtoModify Modify { set; get; }
+            public string SourcePlateId { set; get; }
+            public string SourceWellId { set; get; }
+            public string DestPlateId { set; get; }
+            public string DestWellId { set; get; }
+            public Dictionary<string,string> Attributes { set; get; } 
         }
+
+        public class Attributes
+        {
+            public string Accept { set; get; }
+            public string SampleId { set; get; }
+        }
+
+
 
         public class DtoSample
         {
@@ -176,18 +181,20 @@ namespace winDDIRunBuilder
 
                 if (inputPlate != null && !string.IsNullOrEmpty(inputPlate.Name))
                 {
-                        var request = new RestRequest(endPointResource, Method.POST);
-                        jsonPlate = JsonConvert.SerializeObject(inputPlate);
+                    var request = new RestRequest(endPointResource);
+                    request.AddJsonBody(inputPlate);
 
-                        request.AddParameter("application/json", jsonPlate, ParameterType.RequestBody);
+                    //jsonPlate = JsonConvert.SerializeObject(inputPlate);
 
-                        var response = _DDIBatchClient.Execute(request);
+                    //request.AddParameter("application/json", jsonPlate, ParameterType.RequestBody);
 
-                        if (!response.IsSuccessful)
-                        {
-                            actionResult = "FAILED";
-                            throw new Exception(response.Content);
-                        }
+                    var response = _DDIBatchClient.Execute(request, Method.POST);
+
+                    if (!response.IsSuccessful)
+                    {
+                        actionResult = "FAILED";
+                        throw new Exception(response.Content);
+                    }
                 }
 
                 return actionResult;
@@ -206,7 +213,7 @@ namespace winDDIRunBuilder
 
             return actionResult;
         }
-        public string AddSamples(List<Plate> plateSamples)
+        public string AddSamples(string plateName, List<InputFile> plateSamples)
         {
             string actionResult = "YES";
             StringBuilder sbResult = new StringBuilder();
@@ -225,12 +232,22 @@ namespace winDDIRunBuilder
                 {
                     foreach (var sam in plateSamples)
                     {
-                        inSample.Attributes.SampleId = sam.SampleId;
+                        //221201-0001-01
+                        //221201000101
+                        if (sam.ShortId !=null && sam.ShortId.Length == 12)
+                        {
+                            inSampleId = sam.ShortId.Substring(0, 6) + "-";
+                            inSampleId = inSampleId + sam.ShortId.Substring(6,4) + "-";
+                            inSampleId = inSampleId + sam.ShortId.Substring(10);
+                        }
+                        
+                        inSample.Attributes.SampleId = inSampleId;
+                        //inSample.Attributes.SampleId = sam.ShortId;
+
                         jsonSample = JsonConvert.SerializeObject(inSample);
                         //jsonSample=Newtonsoft.Json.JsonConvert.SerializeObject(new { SampleId = "sss" });
 
-                        pos ="/"+ sam.WellX + "/"+ sam.WellY;
-                        endPointResource = _endpointResourceDDIBatch + pos;
+                        endPointResource = $"{_endpointResourceDDIBatch}/{plateName}/{sam.WellX}/{sam.WellY}";
 
                         var request = new RestRequest(endPointResource, Method.POST);
                         request.AddParameter("application/json", jsonSample, ParameterType.RequestBody);
@@ -264,7 +281,7 @@ namespace winDDIRunBuilder
             return actionResult;
         }
 
-        public IEnumerable<DtoWorklist> GetWorklist(string sourcePlate, string destPlate)
+        public IEnumerable<DtoWorklist> GetWorklist(string sourcePlate, string destPlate, string options)
         {
 
             List<DtoWorklist> dtoWorklist = new List<DtoWorklist>();
@@ -273,10 +290,9 @@ namespace winDDIRunBuilder
             try
             {
                 //v1/worklist/BCR/transfer/SigA1?options=lookup_alias,skip_cancelled
-                endPointResource = _endpointResourceDDIBatch + "/" + sourcePlate + "/";
-                endPointResource += "/transfer/" + destPlate + "?options=lookup_alias,skip_cancelled";
+                endPointResource = $"{_endpointResourceDDIBatch}/{sourcePlate}/transfer/{destPlate}?options={options}";
                
-                var request = new RestRequest(_endpointResourceDDIBatch, Method.GET);
+                var request = new RestRequest(endPointResource, Method.GET);
 
                 //if (!string.IsNullOrEmpty(sourcePlate) && !string.IsNullOrEmpty(destPlate))
                 //{
@@ -290,7 +306,7 @@ namespace winDDIRunBuilder
                     throw new Exception(response.Content);
                 }
 
-                 return JsonConvert.DeserializeObject<DtoWorklist[]>(response.Content);
+                 return JsonConvert.DeserializeObject<List<DtoWorklist>>(response.Content);
             }
             catch (Exception ex)
             {
@@ -343,50 +359,6 @@ namespace winDDIRunBuilder
             }
 
             return samples;
-        }
-        public string CreateBatchWorklist(List<BatchWorklist> newBatchWorklist)
-        {
-            StringBuilder sbResult = new StringBuilder();
-            string jsonBatch = "";
-
-            try
-            {
-
-                if (newBatchWorklist.Count > 0)
-                {
-                    foreach (var bw in newBatchWorklist)
-                    {
-                        var request = new RestRequest(_endpointResourceDDIBatch, Method.POST);
-
-                        jsonBatch = JsonConvert.SerializeObject(bw);
-
-                        request.AddParameter("application/json", jsonBatch, ParameterType.RequestBody);
-
-                        var response = _DDIBatchClient.Execute(request);
-
-                        if (!response.IsSuccessful)
-                        {
-                            sbResult.Append("APIPost_ERROR: " + bw.BatchId + "; " + bw.PlateId + "; ");
-                            sbResult.AppendLine();
-                            throw new Exception(response.Content);
-                        }
-                    }
-
-                    if (sbResult.Length <= 0) sbResult.Append("SUCCESS");
-                }
-
-            }
-            catch (Exception ex)
-            {
-                sbResult.Append("ERROR:system exception; ");
-                string errMsg = "ClientBackend.CreateBatchWorklist() met an issue:";
-                errMsg += Environment.NewLine;
-                errMsg += Environment.NewLine;
-                errMsg += ex.Message;
-                //errProcess.MsgHandler(msgType: "SYS-ERROR", errMsg);
-            }
-
-            return sbResult.ToString();
         }
         public IEnumerable<DtoBatch> GetBatch(string batchId, string version = null, string userSequence = null, string sampleIds = null)
         {

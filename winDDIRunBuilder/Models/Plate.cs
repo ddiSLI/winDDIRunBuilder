@@ -22,31 +22,4 @@ namespace winDDIRunBuilder.Models
 
     }
 
-    public class Sample
-    {
-        public string ShortId { set; get; }
-        public string SampleId { set; get; }
-        public string Sequence { set; get; }
-    }
-
-    public class RealPlate
-    {
-        public int Id { set; get; }
-        public Sample Smp01 { set; get; }
-        public Sample Smp02 { set; get; }
-        public Sample Smp03 { set; get; }
-        public Sample Smp04 { set; get; }
-        public Sample Smp05 { set; get; }
-        public Sample Smp06 { set; get; }
-        public Sample Smp07 { set; get; }
-        public Sample Smp08 { set; get; }
-        public Sample Smp09 { set; get; }
-        public Sample Smp10 { set; get; }
-        public Sample Smp11 { set; get; }
-        public Sample Smp12 { set; get; }
-        public Sample Smp13 { set; get; }
-        public Sample Smp14 { set; get; }
-        public Sample Smp15 { set; get; }
-        public Sample Smp16 { set; get; }
-    }
 }

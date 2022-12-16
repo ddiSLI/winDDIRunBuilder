@@ -10,8 +10,10 @@ namespace winDDIRunBuilder.Models
     {
         public string Id { set; get; }
         public string ProtocolName { set; get; }
-        public string PlateId { set; get; }
+        public string DestPlateId { set; get; }
+        public string DestPlateName { set; get; }
         public string SourcePlateId { set; get; }
+        public string SourcePlateName { set; get; }
         public string WorklistName { set; get; }
         public string StartPos { set; get; }
         public string FlowDirection { set; get; } = "RightToLeft";
@@ -22,6 +24,6 @@ namespace winDDIRunBuilder.Models
         public string EndX { set; get; }
         public string EndY { set; get; }
         public string Offset { set; get; }
-        public string Accept { set; get; }
+        public Dictionary<string, string> Attributes { get; set; } = new Dictionary<string, string>();
     }
 }
