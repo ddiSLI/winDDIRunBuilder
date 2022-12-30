@@ -16,6 +16,7 @@ namespace winDDIRunBuilder
         string CnsSQL = "";
 
         public string RunCondition { get; set; } = "DEV";
+        public string ErrMsg { set; get; } = "";
 
         public RepoSQL()
         { 
@@ -32,6 +33,54 @@ namespace winDDIRunBuilder
             }
         }
 
+        public string GetSeries(string Dept="DDI")
+        {
+            string curSeries = "";
+
+            using (SqlConnection conn = new SqlConnection(CnsSQL))
+            {
+                SqlCommand cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = "uspRunBld_SelSeries";
+
+                try
+                {
+                    cmd.Parameters.Add("@pDepartment", SqlDbType.VarChar).Value = Dept;
+
+                    conn.Open();
+                    SqlDataReader rdr = cmd.ExecuteReader();
+                    
+                    if (rdr.HasRows)
+                    {
+                        while (rdr.Read())
+                        {
+                            curSeries = rdr["TodayDate"].ToString();
+                            curSeries += rdr["letter1"].ToString();
+                            curSeries += rdr["letter2"].ToString();
+                        }
+                    }
+
+                    rdr.Close();
+                }
+
+                catch (Exception ex)
+                {
+                    string msgEx = "SQL: GetSeries() met issue: ";
+                    msgEx += Environment.NewLine;
+                    msgEx += Environment.NewLine;
+                    msgEx += ex.Message;
+                    ErrMsg = "SQLService.GetSeries() Exception: " + ex.Message;
+                }
+                finally
+                {
+                    conn.Close();
+                }
+
+            }
+
+            return curSeries;
+
+        }
         public List<DBPlate> GetPlates(string plateId, string plateVersion = null)
         {
             List<DBPlate> plates = new List<DBPlate>();
@@ -85,6 +134,7 @@ namespace winDDIRunBuilder
                     //msgEx += "shortId: " + shortId.ToString() + " ;";
                     msgEx += Environment.NewLine;
                     msgEx += ex.Message;
+                    ErrMsg = "SQLService.GetPlates() Exception: " + ex.Message;
                 }
                 finally
                 {
@@ -230,10 +280,14 @@ namespace winDDIRunBuilder
                     cmd.Parameters.Add("@pPlateId", SqlDbType.VarChar).Value = dbPlate.PlateId;
                     cmd.Parameters.Add("@pStartPos", SqlDbType.VarChar).Value = dbPlate.StartPos;
                     cmd.Parameters.Add("@pEndPos", SqlDbType.VarChar).Value = dbPlate.EndPos;
-                    cmd.Parameters.Add("@pDiluent", SqlDbType.Int).Value = Convert.ToInt16(dbPlate.Diluent);
+                    cmd.Parameters.Add("@pDiluent", SqlDbType.Decimal).Value = Convert.ToDecimal(dbPlate.Diluent);
                     cmd.Parameters.Add("@pSample", SqlDbType.Int).Value = Convert.ToInt16(dbPlate.Sample);
+                    cmd.Parameters.Add("@pAccept", SqlDbType.VarChar).Value = dbPlate.Accept;
+                    cmd.Parameters.Add("@pOffset", SqlDbType.Int).Value = Convert.ToInt16(dbPlate.OffSet);
                     cmd.Parameters.Add("@pPlateRotated", SqlDbType.Bit).Value = dbPlate.PlateRotated==false? 0: 1;
-                    cmd.Parameters.Add("@pPlateVersion", SqlDbType.Int).Value = Convert.ToInt16(dbPlate.PlateVersion);
+                    cmd.Parameters.Add("@pSourcePlateId", SqlDbType.VarChar).Value = dbPlate.SourcePlateId;
+                    cmd.Parameters.Add("@pSourcePlateVersion", SqlDbType.VarChar).Value = dbPlate.SourcePlateVersion;
+
 
                     conn.Open();
                     cmd.ExecuteNonQuery();
@@ -249,6 +303,7 @@ namespace winDDIRunBuilder
                     msgEx += Environment.NewLine;
                     msgEx += ex.Message;
                     resultSaveDB = msgEx;
+                    ErrMsg = "SQLService.AddPlate() Exception: " + ex.Message;
                 }
                 finally
                 {
@@ -259,6 +314,7 @@ namespace winDDIRunBuilder
             return resultSaveDB;
         }
 
+        
     }
 
 

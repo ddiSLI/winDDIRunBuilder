@@ -19,10 +19,10 @@ namespace winDDIRunBuilder.Models
         public string EndY { set; get; }
         public string Offset { set; get; }
         public string Direction { set; get; }
+        public string Accept { set; get; }
         public Dictionary<string, string> Attributes { get; set; } = new Dictionary<string, string>();
         public string Sample { set; get; }
         public string Diluent { set; get; }
-        public string Accept { set; get; }
         public string PlateVersion { set; get; }
         public string SourcePlateId { set; get; }
         public string SourcePlateVersion { set; get; }

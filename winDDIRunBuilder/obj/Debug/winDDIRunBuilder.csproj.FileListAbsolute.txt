@@ -10,9 +10,13 @@ C:\Users\sli\source\repos\winDDIRunBuilder\winDDIRunBuilder\obj\Debug\winDDIRunB
 C:\Users\sli\source\repos\winDDIRunBuilder\winDDIRunBuilder\bin\Debug\Newtonsoft.Json.dll
 C:\Users\sli\source\repos\winDDIRunBuilder\winDDIRunBuilder\bin\Debug\Newtonsoft.Json.xml
 C:\Users\sli\source\repos\winDDIRunBuilder\winDDIRunBuilder\obj\Debug\winDDIRunBuilder.csproj.CopyComplete
-C:\Users\sli\source\repos\winDDIRunBuilder\winDDIRunBuilder\obj\Debug\winDDIRunBuilder.csproj.AssemblyReference.cache
 C:\Users\sli\source\repos\winDDIRunBuilder\winDDIRunBuilder\bin\Debug\RestSharp.dll
 C:\Users\sli\source\repos\winDDIRunBuilder\winDDIRunBuilder\bin\Debug\RestSharp.Serializers.Newtonsoft.Json.dll
 C:\Users\sli\source\repos\winDDIRunBuilder\winDDIRunBuilder\bin\Debug\RestSharp.xml
 C:\Users\sli\source\repos\winDDIRunBuilder\winDDIRunBuilder\obj\Debug\winDDIRunBuilder.frmImportFromDB.resources
 C:\Users\sli\source\repos\winDDIRunBuilder\winDDIRunBuilder\bin\Debug\Zen.Barcode.Core.dll
+C:\Users\sli\source\repos\winDDIRunBuilder\winDDIRunBuilder\bin\Debug\winDDIRunBuilder.exe.manifest
+C:\Users\sli\source\repos\winDDIRunBuilder\winDDIRunBuilder\bin\Debug\winDDIRunBuilder.application
+C:\Users\sli\source\repos\winDDIRunBuilder\winDDIRunBuilder\obj\Debug\winDDIRunBuilder.exe.manifest
+C:\Users\sli\source\repos\winDDIRunBuilder\winDDIRunBuilder\obj\Debug\winDDIRunBuilder.application
+C:\Users\sli\source\repos\winDDIRunBuilder\winDDIRunBuilder\obj\Debug\winDDIRunBuilder.csproj.AssemblyReference.cache

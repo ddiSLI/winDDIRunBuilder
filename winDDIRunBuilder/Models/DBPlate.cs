@@ -17,6 +17,7 @@ namespace winDDIRunBuilder.Models
         public string Sample { set; get; }
         public bool PlateRotated { set; get; }
         public string PlateVersion { set; get; }
+        public string Accept { set; get; }
         public string SourcePlateId { set; get; }
         public string SourcePlateVersion { set; get; }
         public string ModifiedDate { set; get; }

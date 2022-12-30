@@ -15,6 +15,7 @@ namespace winDDIRunBuilder
     {
         // public ClientRunBuilder CurRunBuilder { get; set; }
 
+        public string ErrMsg { set; get; } = "";
         public class DtoWorklist
         {
             public string SourcePlateId { set; get; }
@@ -192,6 +193,7 @@ namespace winDDIRunBuilder
 
                     if (!response.IsSuccessful)
                     {
+                        ErrMsg = "APIService.CreatePlate() error: " + response.Content;
                         actionResult = "FAILED";
                         throw new Exception(response.Content);
                     }
@@ -202,6 +204,7 @@ namespace winDDIRunBuilder
             }
             catch (Exception ex)
             {
+                
                 actionResult = "ERROR";
                 //  GenMessaging errProcess = new GenMessaging(DateTime.Now.ToLongTimeString(), "Sapphire sync to SalesForce");
                 string errMsg = "ClientBackend.CreatePlate() met an issue:";
@@ -209,6 +212,7 @@ namespace winDDIRunBuilder
                 errMsg += Environment.NewLine;
                 errMsg += ex.Message;
                 //errProcess.MsgHandler(msgType: "SYS-ERROR", errMsg);
+                ErrMsg = "APIService.CreatePlate() Exception: " + ex.Message;
             }
 
             return actionResult;
@@ -256,6 +260,7 @@ namespace winDDIRunBuilder
 
                         if ( !response.IsSuccessful)
                         {
+                            ErrMsg = "APIService.AddSamples() error: " + response.Content;
                             actionResult = "FAILED";
                             sbResult.Append("APIPost_ERROR: " + inSampleId + "; " + indexSample + "; ");
                             sbResult.AppendLine();
@@ -276,6 +281,7 @@ namespace winDDIRunBuilder
                 errMsg += Environment.NewLine;
                 errMsg += ex.Message;
                 //errProcess.MsgHandler(msgType: "SYS-ERROR", errMsg);
+                ErrMsg = "APIService.AddSamples() Exception: " + ex.Message;
             }
 
             return actionResult;
@@ -303,6 +309,7 @@ namespace winDDIRunBuilder
                 var response = _DDIBatchClient.Execute(request);
                 if (!response.IsSuccessful)
                 {
+                    ErrMsg = "APIService.GetWorklist() error: " + response.Content;
                     throw new Exception(response.Content);
                 }
 
@@ -316,6 +323,7 @@ namespace winDDIRunBuilder
                 errMsg += Environment.NewLine;
                 errMsg += ex.Message;
                 //errProcess.MsgHandler(msgType: "SYS-ERROR", errMsg);
+                ErrMsg = "APIService.GetWorklist() Exception: " + ex.Message;
             }
 
             return dtoWorklist;

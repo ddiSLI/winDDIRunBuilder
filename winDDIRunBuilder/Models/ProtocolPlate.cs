@@ -16,7 +16,7 @@ namespace winDDIRunBuilder.Models
         public string SourcePlateName { set; get; }
         public string WorklistName { set; get; }
         public string StartPos { set; get; }
-        public string FlowDirection { set; get; } = "RightToLeft";
+        public string FlowDirection { set; get; } 
         public bool PlateRotated { set; get; } = false;
         public string EndPos { set; get; }
         public string StartX { set; get; }
@@ -24,6 +24,9 @@ namespace winDDIRunBuilder.Models
         public string EndX { set; get; }
         public string EndY { set; get; }
         public string Offset { set; get; }
+        public string Sample { set; get; }
+        public string Diluent { set; get; }
+        public string Accept { set; get; }
         public Dictionary<string, string> Attributes { get; set; } = new Dictionary<string, string>();
     }
 }

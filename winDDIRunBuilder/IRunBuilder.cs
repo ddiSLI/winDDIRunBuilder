@@ -32,6 +32,7 @@ namespace winDDIRunBuilder
 
     interface ISQLService
     {
+        string GetSeries(string Dept);
         List<DBPlate> GetPlates(string plateId, string plateVersion=null);
         string AddPlate(DBPlate dbPlate);
         List<PlateSample> GetPlateSamples(string plateId, string plateVersion = null);
