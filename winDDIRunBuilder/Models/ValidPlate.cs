@@ -10,22 +10,26 @@ namespace winDDIRunBuilder.Models
     {
         public string PlateName { set; get; }
         public string PlateId { set; get; }
+        public string PlateType { set; get; } = "";
         public bool IsNewCreatedPlate { set; get; }
+        public string SizeStartWell { set; get; }
+        public string SizeEndWell { set; get; }
         public string StartWell { set; get; }
         public string EndWell { set; get; }
         public string StartX { set; get; }
         public string StartY { set; get; }
         public string EndX { set; get; }
         public string EndY { set; get; }
-        public string Offset { set; get; }
+        public string ExcludeWells { set; get; }
         public string Direction { set; get; }
         public string Accept { set; get; }
-        public Dictionary<string, string> Attributes { get; set; } = new Dictionary<string, string>();
+        public string Exclude { get; set; }
         public string Sample { set; get; }
         public string Diluent { set; get; }
         public string PlateVersion { set; get; }
         public string SourcePlateId { set; get; }
         public string SourcePlateVersion { set; get; }
         public string WorkList { set; get; }
+        public Dictionary<string, string> Attributes { get; set; } = new Dictionary<string, string>();
     }
 }

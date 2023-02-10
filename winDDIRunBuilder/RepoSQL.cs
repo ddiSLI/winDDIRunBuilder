@@ -19,10 +19,10 @@ namespace winDDIRunBuilder
         public string ErrMsg { set; get; } = "";
 
         public RepoSQL()
-        { 
+        {
             RunCondition = ConfigurationManager.AppSettings["RunCondition"];
-    
-            if (RunCondition=="PROD")
+
+            if (RunCondition == "PROD")
             {
                 CnsSQL = ConfigurationManager.ConnectionStrings["cnnSQLReporting_PROD"].ToString();
             }
@@ -33,7 +33,132 @@ namespace winDDIRunBuilder
             }
         }
 
-        public string GetSeries(string Dept="DDI")
+        public Janus GetJanus(string hostName)
+        {
+            Janus curJanus = new Janus();
+            using (SqlConnection conn = new SqlConnection(CnsSQL))
+            {
+                SqlCommand cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = "uspRunBld_SelJanus";
+
+                try
+                {
+                    cmd.Parameters.Add("@pHostName", SqlDbType.VarChar).Value = hostName;
+
+                    conn.Open();
+                    SqlDataReader rdr = cmd.ExecuteReader();
+
+                    if (rdr.HasRows)
+                    {
+                        while (rdr.Read())
+                        {
+                            curJanus.JanusName = rdr["JanusName"].ToString();
+                            curJanus.BCROutput = rdr["BCROutput"].ToString();
+                            curJanus.RunBuilderOutput = rdr["RunBuilderOutput"].ToString();
+                            curJanus.RunBuilderOutputArchive = rdr["RunBuilderOutputArchive"].ToString();
+                            curJanus.JanusOutPut = rdr["JanusOutput"].ToString();
+                            curJanus.Description = rdr["Description"].ToString();
+                        }
+                    }
+
+                    rdr.Close();
+                }
+
+                catch (Exception ex)
+                {
+                    string msgEx = "SQL: GetJanus() met issue: ";
+                    msgEx += Environment.NewLine;
+                    msgEx += Environment.NewLine;
+                    msgEx += ex.Message;
+                    ErrMsg = "SQLService.GetJanus() Exception: " + ex.Message;
+                }
+                finally
+                {
+                    conn.Close();
+                }
+
+            }
+
+
+
+            return curJanus;
+        }
+
+        public List<Protocol> GetProtocols(string dept="")
+        {
+            List<Protocol> protocols = new List<Protocol>();
+            Protocol prot = new Protocol();
+
+
+            using (SqlConnection conn = new SqlConnection(CnsSQL))
+            {
+                SqlCommand cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = "uspRunBld_SelProtocols";
+
+                try
+                {
+                    cmd.Parameters.Add("@pDept", SqlDbType.VarChar).Value = dept;
+
+                    conn.Open();
+                    SqlDataReader rdr = cmd.ExecuteReader();
+
+                    
+                    if (rdr.HasRows)
+                    {
+                        int protId = 0;
+                        while (rdr.Read())
+                        {
+                            prot = new Protocol();
+                            prot.Id = "P" + protId.ToString().Trim();
+                            prot.Department = rdr["Department"].ToString();
+                            prot.PlateId = rdr["PlateId"].ToString();
+                            prot.SourcePlate = rdr["SourcePlate"].ToString();
+                            prot.ProtocolName = rdr["Protocol"].ToString();
+                            prot.WorklistName = rdr["WorkListName"].ToString();
+                            prot.HasAliasId = (bool)rdr["HasAliasId"] == true ? true : false;
+                            prot.Pooling = (bool)rdr["Pooling"] == true ? true : false;
+                            prot.DBTest = rdr["DBTest"].ToString();
+                            prot.PlateRotated = (bool)rdr["PlateRotated"] == false ? false : true;
+                            prot.StartPos = rdr["FirstPos"].ToString();     //PlateSize
+                            prot.EndPos = rdr["LastPos"].ToString();        //PlateSize
+                            prot.ExcludeWells = rdr["ExcludeWells"].ToString();
+                            prot.Sample = rdr["sample"].ToString();
+                            prot.Diluent = rdr["Diluent"].ToString();
+                            prot.Opt1 = rdr["Opt1"].ToString();
+                            prot.Opt2 = rdr["Opt2"].ToString();
+                            prot.Opt3 = rdr["Opt3"].ToString();
+                            prot.Opt4 = rdr["Opt4"].ToString();
+                            prot.Opt5 = rdr["Opt5"].ToString();
+
+                            protocols.Add(prot);
+                        }
+                        
+                        protId += 1;
+                    }
+
+                    rdr.Close();
+                }
+
+                catch (Exception ex)
+                {
+                    string msgEx = "SQL: GetProtocols() met issue: ";
+                    msgEx += Environment.NewLine;
+                    msgEx += Environment.NewLine;
+                    msgEx += ex.Message;
+                    ErrMsg = "SQLService.GetProtocols() Exception: " + ex.Message;
+                }
+                finally
+                {
+                    conn.Close();
+                }
+            }
+
+            return protocols;
+        }
+
+        public string GetSeries(string Dept = "DDI")
         {
             string curSeries = "";
 
@@ -49,7 +174,7 @@ namespace winDDIRunBuilder
 
                     conn.Open();
                     SqlDataReader rdr = cmd.ExecuteReader();
-                    
+
                     if (rdr.HasRows)
                     {
                         while (rdr.Read())
@@ -94,6 +219,7 @@ namespace winDDIRunBuilder
                 try
                 {
                     cmd.Parameters.Add("@pPlateId", SqlDbType.VarChar).Value = plateId;
+                    cmd.Parameters.Add("@pPlateVersion", SqlDbType.VarChar).Value = "";  // plateVersion;
 
                     //if (!string.IsNullOrEmpty(batchVersion))
                     //    cmd.Parameters.Add("@pBatchVersion", SqlDbType.Int).Value = Convert.ToInt16(batchVersion);
@@ -104,21 +230,36 @@ namespace winDDIRunBuilder
 
                     if (rdr.HasRows)
                     {
+                        //DataTable dtPlt = new DataTable();
+                        //dtPlt.Load(rdr);
+
                         while (rdr.Read())
                         {
-                            plateTatated = rdr["PlateRotated"].ToString() == "0" ? false : true;
+                            plateTatated = (bool)rdr["PlateRotated"] == false ? false : true;
 
                             plates.Add(
                                 new DBPlate
                                 {
+                                    PlateName= rdr["PlateName"].ToString(),
                                     PlateId = rdr["PlateId"].ToString(),
+                                    SizeStartWell= rdr["PlateSizeStart"].ToString(),
+                                    SizeEndWell= rdr["PalteSizeEnd"].ToString(),
                                     StartPos = rdr["StartPos"].ToString(),
                                     EndPos = rdr["EndPos"].ToString(),
+                                    ExcludeWells= string.IsNullOrEmpty(rdr["ExcludeWells"].ToString())? "" : rdr["ExcludeWells"].ToString(),
                                     Diluent = rdr["Diluent"].ToString(),
                                     Sample = rdr["Sample"].ToString(),
-                                    PlateRotated = rdr["PlateRotated"].ToString() == "0" ? false : true,
+                                    PlateRotated = (bool)rdr["PlateRotated"] == false ? false : true,
+                                    SourcePlateId= string.IsNullOrEmpty(rdr["SourcePlateId"].ToString()) ? "" : rdr["SourcePlateId"].ToString(),
+                                    SourcePlateVersion= string.IsNullOrEmpty(rdr["SourcePlateVersion"].ToString()) ? "": rdr["SourcePlateVersion"].ToString(),
+                                    Accept = rdr["Accept"].ToString() == null ? "" : rdr["Accept"].ToString(),
+                                    Opt1 = rdr["Opt1"].ToString() == null ? "" : rdr["Opt1"].ToString(),
+                                    Opt2 = rdr["Opt2"].ToString() == null ? "" : rdr["Opt2"].ToString(),
+                                    Opt3 = rdr["Opt3"].ToString() == null ? "" : rdr["Opt3"].ToString(),
+                                    Opt4 = rdr["Opt4"].ToString() == null ? "" : rdr["Opt5"].ToString(),
+                                    Opt5 = rdr["Opt5"].ToString() == null ? "" : rdr["Opt5"].ToString(),
                                     ModifiedDate = rdr["ModifiedDate"].ToString(),
-                                    PlateVersion = rdr["PlateVersion"].ToString()
+                                    PlateVersion = rdr["PlateTimeVersion"].ToString()
                                 }
                                 );
                         }
@@ -149,6 +290,7 @@ namespace winDDIRunBuilder
         public List<PlateSample> GetPlateSamples(string plateId, string plateVersion = null)
         {
             List<PlateSample> samples = new List<PlateSample>();
+            PlateSample sample = new PlateSample();
 
             using (SqlConnection conn = new SqlConnection(CnsSQL))
             {
@@ -161,25 +303,26 @@ namespace winDDIRunBuilder
                     cmd.Parameters.Add("@pPlateId", SqlDbType.VarChar).Value = plateId;
 
                     if (!string.IsNullOrEmpty(plateVersion))
-                        cmd.Parameters.Add("@pPlateVersion", SqlDbType.Int).Value = Convert.ToInt16(plateVersion);
+                        cmd.Parameters.Add("@pPlateVersion", SqlDbType.VarChar).Value = plateVersion;
 
                     conn.Open();
                     SqlDataReader rdr = cmd.ExecuteReader();
+                   
+                    //DataTable ss = new DataTable();
+                    //ss.Load(rdr);
+
 
                     if (rdr.HasRows)
                     {
                         while (rdr.Read())
                         {
-                            samples.Add(
-                                new PlateSample
-                                {
-                                    PlateId = rdr["PlateId"].ToString(),
-                                    Well = rdr["Well"].ToString(),
-                                    Sequence = (int)rdr["Position"],
-                                    SampleId = rdr["Samples"].ToString(),
-                                    PlateVersion = rdr["PlateVersion"].ToString()
-                                }
-                                );
+                            sample = new PlateSample();
+                            sample.PlateId = rdr["PlateId"].ToString();
+                            sample.Well = rdr["Well"].ToString();
+                            //sample.Sequence = (int)rdr["Position"];
+                            sample.SampleId = rdr["SampleId"].ToString();
+                            sample.PlateVersion = rdr["PlateTimeVersion"].ToString();
+                            samples.Add(sample);
                         }
                     }
 
@@ -202,13 +345,11 @@ namespace winDDIRunBuilder
             }
 
             return samples;
-
-
         }
 
-        public DBPlate AddSamples(List<PlateSample> plateSamples)
+        public string AddSamples(List<OutputPlateSample> plateSamples)
         {
-            DBPlate addedPlate = new DBPlate();
+            string actionResults = "SUCCESS";
 
             using (SqlConnection conn = new SqlConnection(CnsSQL))
             {
@@ -222,27 +363,18 @@ namespace winDDIRunBuilder
                     cmd.Parameters.Add("@pSampleId", SqlDbType.VarChar);
                     cmd.Parameters.Add("@pWell", SqlDbType.VarChar);
                     cmd.Parameters.Add("@pPosition", SqlDbType.Int);
-                    cmd.Parameters.Add("@pPlateVersion", SqlDbType.Int);
-
-                    //cmd.Parameters.Add("@pPlateId", SqlDbType.VarChar, 30);
-                    //cmd.Parameters.Add("@pSampleId", SqlDbType.VarChar, 30);
-                    //cmd.Parameters.Add("@pWell", SqlDbType.VarChar, 4);
-                    //cmd.Parameters.Add("@pPosition", SqlDbType.Int);
-                    //cmd.Parameters.Add("@pPlateVersion", SqlDbType.Int);
-
+                    cmd.Parameters.Add("@pPlateTimeVersion", SqlDbType.VarChar);
 
                     conn.Open();
 
-                    foreach(var smp in plateSamples)
+                    foreach (var smp in plateSamples)
                     {
-                        cmd.Parameters["@pPlateId"].Value= smp.PlateId;
-                    cmd.Parameters["@pSampleId"].Value=smp.SampleId;
-                    cmd.Parameters["@pWell"].Value=smp.Well;
-                    cmd.Parameters["@pPosition"].Value=smp.Sequence;
-                    cmd.Parameters["@pPlateVersion"].Value=smp.PlateVersion;
-
-                       cmd.ExecuteNonQuery();
-
+                        cmd.Parameters["@pPlateId"].Value = smp.DestNewPlateId==null? smp.DestPlateId : smp.DestNewPlateId;
+                        cmd.Parameters["@pSampleId"].Value = smp.SampleId;
+                        cmd.Parameters["@pWell"].Value = smp.DestWellId;
+                        cmd.Parameters["@pPosition"].Value = smp.Sequence;
+                        cmd.Parameters["@pPlateTimeVersion"].Value = smp.DestPlateVersion;
+                        cmd.ExecuteNonQuery();
                     }
 
                 }
@@ -254,6 +386,7 @@ namespace winDDIRunBuilder
                     //msgEx += "shortId: " + shortId.ToString() + " ;";
                     msgEx += Environment.NewLine;
                     msgEx += ex.Message;
+                    actionResults = "ERROR:" + ex.Message;
                 }
                 finally
                 {
@@ -261,12 +394,12 @@ namespace winDDIRunBuilder
                 }
             }
 
-            return addedPlate;
+            return actionResults;
         }
-       
+
         public string AddPlate(DBPlate dbPlate)
         {
-            string resultSaveDB="SUCCESS";
+            string resultSaveDB = "SUCCESS";
 
             using (SqlConnection conn = new SqlConnection(CnsSQL))
             {
@@ -276,23 +409,24 @@ namespace winDDIRunBuilder
 
                 try
                 {
-                    cmd.Parameters.Add("@pPlateName", SqlDbType.VarChar).Value = dbPlate.PlateName;
+                    cmd.Parameters.Add("@pPlateName", SqlDbType.VarChar).Value = dbPlate.PlateName==null? "" : dbPlate.PlateName;
                     cmd.Parameters.Add("@pPlateId", SqlDbType.VarChar).Value = dbPlate.PlateId;
+                    cmd.Parameters.Add("@pSizeFirstPos", SqlDbType.VarChar).Value = dbPlate.SizeStartWell;
+                    cmd.Parameters.Add("@pSizeLastPos", SqlDbType.VarChar).Value = dbPlate.SizeEndWell;
                     cmd.Parameters.Add("@pStartPos", SqlDbType.VarChar).Value = dbPlate.StartPos;
                     cmd.Parameters.Add("@pEndPos", SqlDbType.VarChar).Value = dbPlate.EndPos;
+                    cmd.Parameters.Add("@pExcludeWells", SqlDbType.VarChar).Value = dbPlate.ExcludeWells;
                     cmd.Parameters.Add("@pDiluent", SqlDbType.Decimal).Value = Convert.ToDecimal(dbPlate.Diluent);
                     cmd.Parameters.Add("@pSample", SqlDbType.Int).Value = Convert.ToInt16(dbPlate.Sample);
                     cmd.Parameters.Add("@pAccept", SqlDbType.VarChar).Value = dbPlate.Accept;
-                    cmd.Parameters.Add("@pOffset", SqlDbType.Int).Value = Convert.ToInt16(dbPlate.OffSet);
-                    cmd.Parameters.Add("@pPlateRotated", SqlDbType.Bit).Value = dbPlate.PlateRotated==false? 0: 1;
+                    cmd.Parameters.Add("@pPlateRotated", SqlDbType.Bit).Value = dbPlate.PlateRotated == false ? 0 : 1;
                     cmd.Parameters.Add("@pSourcePlateId", SqlDbType.VarChar).Value = dbPlate.SourcePlateId;
                     cmd.Parameters.Add("@pSourcePlateVersion", SqlDbType.VarChar).Value = dbPlate.SourcePlateVersion;
+                    cmd.Parameters.Add("@pPlateTimeVersion", SqlDbType.VarChar).Value = dbPlate.PlateVersion;
 
 
                     conn.Open();
                     cmd.ExecuteNonQuery();
-
-                    resultSaveDB = "SUCCESS";
                 }
 
                 catch (Exception ex)
@@ -304,6 +438,8 @@ namespace winDDIRunBuilder
                     msgEx += ex.Message;
                     resultSaveDB = msgEx;
                     ErrMsg = "SQLService.AddPlate() Exception: " + ex.Message;
+
+                    resultSaveDB = "ERROR:" + ex.Message;
                 }
                 finally
                 {
@@ -314,7 +450,6 @@ namespace winDDIRunBuilder
             return resultSaveDB;
         }
 
-        
     }
 
 

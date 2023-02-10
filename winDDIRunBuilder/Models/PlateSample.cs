@@ -13,9 +13,6 @@ namespace winDDIRunBuilder.Models
         public int Sequence { set; get; }
         public string SampleId { set; get; }
         public string Well { set; get; }
-        public int PosX { set; get; }
-        public int PosY { set; get; }
-        public int Offset { set; get; }
         public string PlateVersion { set; get; }
     }
 }

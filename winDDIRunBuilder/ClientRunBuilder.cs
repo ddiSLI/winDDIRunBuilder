@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Configuration;
-
+using winDDIRunBuilder.Models;
 
 namespace winDDIRunBuilder
 {
@@ -14,10 +14,13 @@ namespace winDDIRunBuilder
         public string ProcessCategory { get; set; }
         public string CnsSQL { get; set; }
         public string CnsOracle { get; set; }
-        public string ReadFilePath { get; set; }
-        public string ExportFilePath { get; set; }
+        public string JanusName { get; set; }
+        public string BCROutput { get; set; }
+        public string RunBuilderOutput { get; set; }
+        public string RunBuilderOutputArchive { get; set; }
         public string PlateSettingFile { get; set; }
         public string PlatePrinterName { get; set; }
+
         public ClientRunBuilder(string processCategory =null)
         {
             RunCondition = ConfigurationManager.AppSettings["RunCondition"];
@@ -25,50 +28,37 @@ namespace winDDIRunBuilder
 
             if (RunCondition=="PROD")
             {
-                ReadFilePath = ConfigurationManager.AppSettings["ReadFilePath_PROD"];
-                ExportFilePath = ConfigurationManager.AppSettings["ExportFilePath_PROD"];
+                //BCROutput = ConfigurationManager.AppSettings["BCROutput_PROD"];
+                //RunBuilderOutput = ConfigurationManager.AppSettings["RunBuilderOutput_PROD"];
                 PlateSettingFile= ConfigurationManager.AppSettings["PlateSettingFile_Prod"];
                 PlatePrinterName = ConfigurationManager.AppSettings["PlatePrinterName_Prod"];
             }
             else
             {
-                ReadFilePath= ConfigurationManager.AppSettings["ReadFilePath_DEV"];
-                ExportFilePath = ConfigurationManager.AppSettings["ExportFilePath_DEV"];
+                //BCROutput= ConfigurationManager.AppSettings["BCROutput_DEV"];
+                //RunBuilderOutput = ConfigurationManager.AppSettings["RunBuilderOutput_DEV"];
                 PlateSettingFile = ConfigurationManager.AppSettings["PlateSettingFile_Dev"];
                 PlatePrinterName = ConfigurationManager.AppSettings["PlatePrinterName_Dev"];
             }
 
-            //RepoOracle = new SQLService(RunCondition);
-
-                //if (string.IsNullOrEmpty(paramDateEnd))
-                //{
-                //    string syncDateStart = DateTime.Now.ToShortDateString();
-
-                //    //SQLService sqlService = new SQLService(RunCondition);
-                //    string[] syncStatus = { "Id", "LastSyncDT", "LastSyncStauts", "LastSyncDesc" };
-
-                //    DateTime dateValue;
-
-                //    if (ProcessCategory == "ALL")
-                //    {
-                //        //syncStatus = sqlService.GetLastSyncInfo("DOCTORS");
-                //        //if (string.IsNullOrEmpty(TransDateEnd) && DateTime.TryParse(syncStatus[1], out dateValue))
-                //        //    TransDateEnd = Convert.ToDateTime(syncStatus[1]).ToShortDateString();
-
-                //        //syncStatus = sqlService.GetLastSyncInfo("SALES");
-                //        //if (string.IsNullOrEmpty(TransDateStart) && DateTime.TryParse(syncStatus[1], out dateValue))
-                //        //    TransDateStart = Convert.ToDateTime(syncStatus[1]).ToShortDateString();
-                //    }
-                //    else if (ProcessCategory == "PCRWork")
-                //    {
-                //        //syncStatus = sqlService.GetLastSyncInfo("DOCTORS");
-                //        //if (string.IsNullOrEmpty(TransDateEnd) && DateTime.TryParse(syncStatus[1], out dateValue))
-                //        //    TransDateEnd = Convert.ToDateTime(syncStatus[1]).ToShortDateString();
-                //        //else
-                //        //    TransDateEnd = DateTime.Now.AddMinutes((24 * 60) * -1).ToShortDateString();
-                //    }
-
-                //}
+            Janus curJanus = new Janus();
+            RepoSQL sqlService = new RepoSQL();
+            curJanus = sqlService.GetJanus(System.Net.Dns.GetHostName());
+            if (curJanus == null)
+            {
+                JanusName = "";
+                BCROutput = "";
+                RunBuilderOutput = "";
+                RunBuilderOutputArchive = "";
+             }
+            else
+            {
+                JanusName =curJanus.JanusName;
+                BCROutput = curJanus.BCROutput;
+                RunBuilderOutput = curJanus.RunBuilderOutput;
+                RunBuilderOutputArchive = curJanus.RunBuilderOutputArchive;
+            }
+                        
         }
     }
 }

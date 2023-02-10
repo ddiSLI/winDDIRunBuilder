@@ -29,14 +29,14 @@ namespace winDDIRunBuilder
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle17 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle18 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle20 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle19 = new System.Windows.Forms.DataGridViewCellStyle();
-            this.lblPrompt = new System.Windows.Forms.Label();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
             this.label1 = new System.Windows.Forms.Label();
             this.cbProtocolCd = new System.Windows.Forms.ComboBox();
             this.gbPlate = new System.Windows.Forms.GroupBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.dgvSamplePlate = new System.Windows.Forms.DataGridView();
             this.label3 = new System.Windows.Forms.Label();
             this.cbPlates = new System.Windows.Forms.ComboBox();
@@ -49,6 +49,9 @@ namespace winDDIRunBuilder
             this.btnExit = new System.Windows.Forms.Button();
             this.btnPrintPlateBarcode = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.lblJanusName = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.txbPrompt = new System.Windows.Forms.TextBox();
             this.btnGo = new System.Windows.Forms.Button();
             this.dgvPlateSet = new System.Windows.Forms.DataGridView();
             this.Included = new System.Windows.Forms.DataGridViewCheckBoxColumn();
@@ -61,6 +64,9 @@ namespace winDDIRunBuilder
             this.ScannedPlate = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.SourceIsReady = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.wlReady = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.ProcessedDB = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.ProcessedWL = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.MultiOutput = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.fileWatcherBCR = new System.IO.FileSystemWatcher();
             this.gbPlate.SuspendLayout();
@@ -71,25 +77,14 @@ namespace winDDIRunBuilder
             ((System.ComponentModel.ISupportInitialize)(this.fileWatcherBCR)).BeginInit();
             this.SuspendLayout();
             // 
-            // lblPrompt
-            // 
-            this.lblPrompt.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.lblPrompt.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblPrompt.Location = new System.Drawing.Point(340, 17);
-            this.lblPrompt.Name = "lblPrompt";
-            this.lblPrompt.Size = new System.Drawing.Size(739, 54);
-            this.lblPrompt.TabIndex = 13;
-            this.lblPrompt.Text = "Source File is ready to load. Or to get a existing batch to Modify.";
-            this.lblPrompt.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
             // label1
             // 
             this.label1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.label1.Location = new System.Drawing.Point(178, 19);
+            this.label1.Location = new System.Drawing.Point(291, 15);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(156, 20);
+            this.label1.Size = new System.Drawing.Size(156, 24);
             this.label1.TabIndex = 3;
-            this.label1.Text = "Janus Protocol Code:";
+            this.label1.Text = "Janus Protocol:";
             // 
             // cbProtocolCd
             // 
@@ -97,7 +92,7 @@ namespace winDDIRunBuilder
             this.cbProtocolCd.DropDownWidth = 300;
             this.cbProtocolCd.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cbProtocolCd.FormattingEnabled = true;
-            this.cbProtocolCd.Location = new System.Drawing.Point(178, 40);
+            this.cbProtocolCd.Location = new System.Drawing.Point(290, 40);
             this.cbProtocolCd.Name = "cbProtocolCd";
             this.cbProtocolCd.Size = new System.Drawing.Size(156, 33);
             this.cbProtocolCd.TabIndex = 2;
@@ -105,6 +100,7 @@ namespace winDDIRunBuilder
             // 
             // gbPlate
             // 
+            this.gbPlate.Controls.Add(this.label4);
             this.gbPlate.Controls.Add(this.dgvSamplePlate);
             this.gbPlate.Controls.Add(this.label3);
             this.gbPlate.Controls.Add(this.cbPlates);
@@ -122,6 +118,17 @@ namespace winDDIRunBuilder
             this.gbPlate.TabStop = false;
             this.gbPlate.Text = "Plates";
             // 
+            // label4
+            // 
+            this.label4.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.label4.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.label4.Location = new System.Drawing.Point(930, 19);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(148, 23);
+            this.label4.TabIndex = 39;
+            this.label4.Text = "Enter PlateId:";
+            this.label4.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+            // 
             // dgvSamplePlate
             // 
             this.dgvSamplePlate.AllowUserToAddRows = false;
@@ -131,14 +138,14 @@ namespace winDDIRunBuilder
             this.dgvSamplePlate.BackgroundColor = System.Drawing.SystemColors.Control;
             this.dgvSamplePlate.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.dgvSamplePlate.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle17.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle17.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle17.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle17.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle17.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle17.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle17.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgvSamplePlate.DefaultCellStyle = dataGridViewCellStyle17;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgvSamplePlate.DefaultCellStyle = dataGridViewCellStyle5;
             this.dgvSamplePlate.Location = new System.Drawing.Point(177, 74);
             this.dgvSamplePlate.Name = "dgvSamplePlate";
             this.dgvSamplePlate.RowHeadersVisible = false;
@@ -200,53 +207,24 @@ namespace winDDIRunBuilder
             this.button1.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.button1.UseVisualStyleBackColor = true;
             // 
-            // btnClear
-            // 
-            this.btnClear.FlatAppearance.BorderColor = System.Drawing.SystemColors.Highlight;
-            this.btnClear.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnClear.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnClear.Image = global::winDDIRunBuilder.Properties.Resources.clearFilter32;
-            this.btnClear.Location = new System.Drawing.Point(5, 190);
-            this.btnClear.Name = "btnClear";
-            this.btnClear.Size = new System.Drawing.Size(156, 46);
-            this.btnClear.TabIndex = 18;
-            this.btnClear.Text = "Clear";
-            this.btnClear.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnClear.UseVisualStyleBackColor = true;
-            this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
-            // 
-            // btnCreateWorklist
-            // 
-            this.btnCreateWorklist.Enabled = false;
-            this.btnCreateWorklist.FlatAppearance.BorderColor = System.Drawing.SystemColors.Highlight;
-            this.btnCreateWorklist.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCreateWorklist.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnCreateWorklist.Image = global::winDDIRunBuilder.Properties.Resources.New32;
-            this.btnCreateWorklist.Location = new System.Drawing.Point(7, 121);
-            this.btnCreateWorklist.Name = "btnCreateWorklist";
-            this.btnCreateWorklist.Size = new System.Drawing.Size(154, 49);
-            this.btnCreateWorklist.TabIndex = 17;
-            this.btnCreateWorklist.Text = "Create Worklist(s)";
-            this.btnCreateWorklist.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnCreateWorklist.UseVisualStyleBackColor = true;
-            this.btnCreateWorklist.Click += new System.EventHandler(this.btnNew_Click);
-            // 
             // lblMsg
             // 
             this.lblMsg.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.lblMsg.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblMsg.Location = new System.Drawing.Point(177, 19);
             this.lblMsg.Name = "lblMsg";
-            this.lblMsg.Size = new System.Drawing.Size(902, 55);
+            this.lblMsg.Size = new System.Drawing.Size(747, 55);
             this.lblMsg.TabIndex = 12;
             this.lblMsg.Text = "[Status Msg]";
             this.lblMsg.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // txbBarcode
             // 
-            this.txbBarcode.Location = new System.Drawing.Point(62, 209);
+            this.txbBarcode.BackColor = System.Drawing.SystemColors.Info;
+            this.txbBarcode.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txbBarcode.Location = new System.Drawing.Point(930, 45);
             this.txbBarcode.Name = "txbBarcode";
-            this.txbBarcode.Size = new System.Drawing.Size(85, 27);
+            this.txbBarcode.Size = new System.Drawing.Size(149, 28);
             this.txbBarcode.TabIndex = 38;
             this.txbBarcode.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txbBarcode_KeyDown);
             // 
@@ -282,10 +260,12 @@ namespace winDDIRunBuilder
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.lblJanusName);
+            this.groupBox1.Controls.Add(this.label2);
+            this.groupBox1.Controls.Add(this.txbPrompt);
             this.groupBox1.Controls.Add(this.btnGo);
             this.groupBox1.Controls.Add(this.dgvPlateSet);
             this.groupBox1.Controls.Add(this.btnExit);
-            this.groupBox1.Controls.Add(this.lblPrompt);
             this.groupBox1.Controls.Add(this.cbProtocolCd);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.pictureBox1);
@@ -297,6 +277,37 @@ namespace winDDIRunBuilder
             this.groupBox1.TabIndex = 3;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Input Source";
+            // 
+            // lblJanusName
+            // 
+            this.lblJanusName.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.lblJanusName.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblJanusName.Location = new System.Drawing.Point(177, 40);
+            this.lblJanusName.Name = "lblJanusName";
+            this.lblJanusName.Size = new System.Drawing.Size(105, 33);
+            this.lblJanusName.TabIndex = 31;
+            this.lblJanusName.Text = "Janus";
+            // 
+            // label2
+            // 
+            this.label2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.label2.Location = new System.Drawing.Point(177, 15);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(105, 24);
+            this.label2.TabIndex = 30;
+            this.label2.Text = "Janus Name";
+            // 
+            // txbPrompt
+            // 
+            this.txbPrompt.ForeColor = System.Drawing.Color.Black;
+            this.txbPrompt.Location = new System.Drawing.Point(451, 16);
+            this.txbPrompt.Multiline = true;
+            this.txbPrompt.Name = "txbPrompt";
+            this.txbPrompt.ReadOnly = true;
+            this.txbPrompt.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txbPrompt.Size = new System.Drawing.Size(627, 59);
+            this.txbPrompt.TabIndex = 29;
+            this.txbPrompt.Text = "Source File is ready to load. Or to get a existing batch to Modify.";
             // 
             // btnGo
             // 
@@ -319,14 +330,14 @@ namespace winDDIRunBuilder
             this.dgvPlateSet.AllowUserToDeleteRows = false;
             this.dgvPlateSet.BackgroundColor = System.Drawing.SystemColors.Control;
             this.dgvPlateSet.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            dataGridViewCellStyle18.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle18.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle18.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle18.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle18.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle18.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle18.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgvPlateSet.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle18;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle6.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgvPlateSet.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle6;
             this.dgvPlateSet.ColumnHeadersHeight = 40;
             this.dgvPlateSet.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Included,
@@ -338,15 +349,18 @@ namespace winDDIRunBuilder
             this.DestPlate,
             this.ScannedPlate,
             this.SourceIsReady,
-            this.wlReady});
+            this.wlReady,
+            this.ProcessedDB,
+            this.ProcessedWL,
+            this.MultiOutput});
             this.dgvPlateSet.EnableHeadersVisualStyles = false;
             this.dgvPlateSet.GridColor = System.Drawing.SystemColors.Control;
             this.dgvPlateSet.Location = new System.Drawing.Point(177, 73);
             this.dgvPlateSet.Name = "dgvPlateSet";
             this.dgvPlateSet.RowHeadersVisible = false;
             this.dgvPlateSet.RowHeadersWidth = 51;
-            dataGridViewCellStyle20.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.dgvPlateSet.RowsDefaultCellStyle = dataGridViewCellStyle20;
+            dataGridViewCellStyle8.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.dgvPlateSet.RowsDefaultCellStyle = dataGridViewCellStyle8;
             this.dgvPlateSet.RowTemplate.Height = 42;
             this.dgvPlateSet.Size = new System.Drawing.Size(901, 177);
             this.dgvPlateSet.TabIndex = 27;
@@ -401,9 +415,9 @@ namespace winDDIRunBuilder
             // 
             // DestPlate
             // 
-            dataGridViewCellStyle19.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle19.ForeColor = System.Drawing.Color.Black;
-            this.DestPlate.DefaultCellStyle = dataGridViewCellStyle19;
+            dataGridViewCellStyle7.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle7.ForeColor = System.Drawing.Color.Black;
+            this.DestPlate.DefaultCellStyle = dataGridViewCellStyle7;
             this.DestPlate.HeaderText = "Destination Plate";
             this.DestPlate.MinimumWidth = 6;
             this.DestPlate.Name = "DestPlate";
@@ -434,6 +448,30 @@ namespace winDDIRunBuilder
             this.wlReady.Visible = false;
             this.wlReady.Width = 125;
             // 
+            // ProcessedDB
+            // 
+            this.ProcessedDB.HeaderText = "ProcessedDB";
+            this.ProcessedDB.MinimumWidth = 6;
+            this.ProcessedDB.Name = "ProcessedDB";
+            this.ProcessedDB.Visible = false;
+            this.ProcessedDB.Width = 125;
+            // 
+            // ProcessedWL
+            // 
+            this.ProcessedWL.HeaderText = "ProcessedWL";
+            this.ProcessedWL.MinimumWidth = 6;
+            this.ProcessedWL.Name = "ProcessedWL";
+            this.ProcessedWL.Visible = false;
+            this.ProcessedWL.Width = 125;
+            // 
+            // MultiOutput
+            // 
+            this.MultiOutput.HeaderText = "MultiOutput";
+            this.MultiOutput.MinimumWidth = 6;
+            this.MultiOutput.Name = "MultiOutput";
+            this.MultiOutput.Visible = false;
+            this.MultiOutput.Width = 125;
+            // 
             // pictureBox1
             // 
             this.pictureBox1.Image = global::winDDIRunBuilder.Properties.Resources.ddilogo512;
@@ -454,7 +492,7 @@ namespace winDDIRunBuilder
             // frmMain
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.ClientSize = new System.Drawing.Size(1093, 345);
+            this.ClientSize = new System.Drawing.Size(1093, 344);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.gbPlate);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -466,6 +504,7 @@ namespace winDDIRunBuilder
             this.gbPlate.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvSamplePlate)).EndInit();
             this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvPlateSet)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.fileWatcherBCR)).EndInit();
@@ -484,7 +523,6 @@ namespace winDDIRunBuilder
         private System.Windows.Forms.Button btnCreateWorklist;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Button btnExit;
-        private System.Windows.Forms.Label lblPrompt;
         private System.IO.FileSystemWatcher fileWatcherBCR;
         private System.Windows.Forms.ComboBox cbPlates;
         private System.Windows.Forms.Label label3;
@@ -494,6 +532,9 @@ namespace winDDIRunBuilder
         private System.Windows.Forms.DataGridView dgvSamplePlate;
         private System.Windows.Forms.TextBox txbBarcode;
         private System.Windows.Forms.Button btnGo;
+        private System.Windows.Forms.TextBox txbPrompt;
+        private System.Windows.Forms.Label lblJanusName;
+        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.DataGridViewCheckBoxColumn Included;
         private System.Windows.Forms.DataGridViewTextBoxColumn PlateDesc;
         private System.Windows.Forms.DataGridViewTextBoxColumn CurWorkList;
@@ -504,5 +545,9 @@ namespace winDDIRunBuilder
         private System.Windows.Forms.DataGridViewTextBoxColumn ScannedPlate;
         private System.Windows.Forms.DataGridViewCheckBoxColumn SourceIsReady;
         private System.Windows.Forms.DataGridViewCheckBoxColumn wlReady;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn ProcessedDB;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn ProcessedWL;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn MultiOutput;
+        private System.Windows.Forms.Label label4;
     }
 }

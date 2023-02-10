@@ -13,7 +13,9 @@ namespace winDDIRunBuilder
 {
     public partial class frmImportFromDB : Form
     {
+        public bool IsSourcePlate { get; set; } = false;
         public ValidPlate SelectedDBPlate { get; set; }
+        public List<PlateSample> SelectedPlateSamples { get; set; }
         List<DBPlate> DBPlates { get; set; }
         public string CurPlateId { get; set; } = "";
         public string CurPlateVersion { get; set; } = "";
@@ -26,6 +28,7 @@ namespace winDDIRunBuilder
         {
             DBPlates = new List<DBPlate>();
             SelectedDBPlate = new ValidPlate();
+            SelectedPlateSamples = new List<PlateSample>();
 
             dgvPlates.Rows.Clear();
             btnGo.Enabled = false;
@@ -47,6 +50,11 @@ namespace winDDIRunBuilder
 
                 string errMsg = "frmImportFromDB_Load met some issues:";
                 errMsg = Environment.NewLine + ex.Message;
+            }
+            finally
+            {
+                txbPlateId.Text = "";
+                this.ActiveControl = txbPlateId;
             }
         }
 
@@ -153,7 +161,7 @@ namespace winDDIRunBuilder
                 }
                 finally
                 {
-                    txbPlateId.Focus();
+                     txbPlateId.Focus();
                 }
 
             }
@@ -162,19 +170,43 @@ namespace winDDIRunBuilder
         private void btnGo_Click(object sender, EventArgs e)
         {
             SelectedDBPlate = new ValidPlate();
+            RepoSQL sqlService = new RepoSQL();
+            ModelTransfer tranService = new ModelTransfer();
 
-            var selPlate = DBPlates.Where(db => db.PlateId == CurPlateId && db.PlateVersion == CurPlateVersion).FirstOrDefault();
-            if (selPlate != null && selPlate.PlateId.Length > 0)
+            if (IsSourcePlate)
             {
-                SelectedDBPlate.PlateId = selPlate.PlateId;
-                SelectedDBPlate.StartWell = selPlate.StartPos;
-                SelectedDBPlate.Offset = selPlate.OffSet;
-                SelectedDBPlate.EndWell = selPlate.EndPos;
-                SelectedDBPlate.Sample = selPlate.Sample;
-                SelectedDBPlate.Diluent = selPlate.Diluent;
-                SelectedDBPlate.Direction = selPlate.PlateRotated == true ? "1" : "0";
-                SelectedDBPlate.PlateVersion = selPlate.PlateVersion;
+                List<DBPlate> sourcePlates = new List<DBPlate>();
+                DBPlate origialPlate = new DBPlate();
+                DBPlate lastPlate = new DBPlate();
+                
+                sourcePlates = (List<DBPlate>)sqlService.GetPlates(CurPlateId).OrderBy(se => se.PlateVersion);
+                if (sourcePlates != null && sourcePlates.Count > 0)
+                {
+                    origialPlate = sourcePlates.FirstOrDefault();
+                    lastPlate = sourcePlates.LastOrDefault();
+                    
+                    //Get Plate Samples
+                    SelectedPlateSamples = sqlService.GetPlateSamples(CurPlateId);
 
+                    SelectedDBPlate = tranService.DBPlate2ValidPlate(origialPlate, "SOURCE");
+
+                }
+            }
+            else
+            {
+                var selPlate = DBPlates.Where(db => db.PlateId == CurPlateId && db.PlateVersion == CurPlateVersion).FirstOrDefault();
+                if (selPlate != null && selPlate.PlateId.Length > 0)
+                {
+                    //Get Plate Samples
+                    SelectedPlateSamples = sqlService.GetPlateSamples(CurPlateId);
+
+                    SelectedDBPlate = tranService.DBPlate2ValidPlate(selPlate, "DEST");
+
+                }
+            }
+
+            if(SelectedDBPlate !=null && string.IsNullOrEmpty(SelectedDBPlate.PlateId) == false)
+            {
                 this.DialogResult = DialogResult.Yes;
                 this.Close();
             }

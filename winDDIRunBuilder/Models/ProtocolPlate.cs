@@ -9,6 +9,7 @@ namespace winDDIRunBuilder.Models
     public class ProtocolPlate
     {
         public string Id { set; get; }
+        public string Department { set; get; }
         public string ProtocolName { set; get; }
         public string DestPlateId { set; get; }
         public string DestPlateName { set; get; }
@@ -23,7 +24,7 @@ namespace winDDIRunBuilder.Models
         public string StartY { set; get; }
         public string EndX { set; get; }
         public string EndY { set; get; }
-        public string Offset { set; get; }
+        public string ExcludeWells { get; set; }
         public string Sample { set; get; }
         public string Diluent { set; get; }
         public string Accept { set; get; }

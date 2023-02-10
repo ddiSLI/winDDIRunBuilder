@@ -24,7 +24,7 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <InstallUrl>\\dd386\sys\freearea\DDIRunBuilder\Setup\</InstallUrl>
-    <ApplicationRevision>7</ApplicationRevision>
+    <ApplicationRevision>14</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -96,12 +96,6 @@
   <ItemGroup>
     <Compile Include="ClientBackend.cs" />
     <Compile Include="ClientRunBuilder.cs" />
-    <Compile Include="Form1.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
-    </Compile>
     <Compile Include="frmImportFromDB.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -116,20 +110,17 @@
     </Compile>
     <Compile Include="InputFile.cs" />
     <Compile Include="IRunBuilder.cs" />
-    <Compile Include="Models\CombItem.cs" />
     <Compile Include="Models\DBPlate.cs" />
     <Compile Include="Models\InputPlate.cs" />
     <Compile Include="Models\InputSample.cs" />
+    <Compile Include="Models\Janus.cs" />
     <Compile Include="Models\OutputPlate.cs" />
     <Compile Include="Models\OutputPlateSample.cs" />
-    <Compile Include="Models\Plate.cs" />
     <Compile Include="Models\PlateSample.cs" />
     <Compile Include="Models\Protocol.cs" />
     <Compile Include="Models\ProtocolPlate.cs" />
-    <Compile Include="Models\RunBuilderInfo.cs" />
-    <Compile Include="Models\SamplePlate.cs" />
     <Compile Include="Models\ValidPlate.cs" />
-    <Compile Include="Models\Worklist.cs" />
+    <Compile Include="ModelTransfer.cs" />
     <Compile Include="PrintBarCode.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -138,13 +129,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="RepoOracle.cs" />
     <Compile Include="RepoSQL.cs" />
-    <Compile Include="RepoSQLOracle.cs" />
-    <Compile Include="RJButton.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="ServiceRunBuilder.cs" />
     <EmbeddedResource Include="frmImportFromDB.resx">
       <DependentUpon>frmImportFromDB.cs</DependentUpon>
     </EmbeddedResource>
@@ -202,13 +187,7 @@
     <None Include="Icons\UsersEnter48.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Icons\FoldersDownloadsFolder48.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Icons\New48.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\DataClearFilters48.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Icons\PrintBar48.png" />
@@ -224,18 +203,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Icons\FilesAdd48.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\clearFilters48.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\filter64.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\filter32.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\UsersExit48B.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Icons\Clear128.png" />

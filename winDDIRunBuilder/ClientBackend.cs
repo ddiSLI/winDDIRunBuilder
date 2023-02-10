@@ -4,6 +4,7 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RestSharp;
@@ -20,8 +21,12 @@ namespace winDDIRunBuilder
         {
             public string SourcePlateId { set; get; }
             public string SourceWellId { set; get; }
+            public string SourceIndex { set; get; }
+            public string DestIndex { set; get; }
             public string DestPlateId { set; get; }
             public string DestWellId { set; get; }
+
+            //Accept,siga, SampleId
             public Dictionary<string,string> Attributes { set; get; } 
         }
 
@@ -72,6 +77,7 @@ namespace winDDIRunBuilder
         }
         public class DtoProtocol
         {
+            public string Department { set; get; }
             public string PlateId { set; get; }
             public string SourcePlate { set; get; }
             public string ProtocolName { set; get; }
@@ -86,11 +92,14 @@ namespace winDDIRunBuilder
             public string PlateRotated { set; get; }
             public string StartPos { set; get; }
             public string EndPos { set; get; }
+            public string ExcludeWells { set; get; }
             public string Samples { set; get; }
             public string Diluent { set; get; }
             public string Opt1 { set; get; }
             public string Opt2 { set; get; }
-            public string etc { set; get; }
+            public string Opt3 { set; get; }
+            public string Opt4 { set; get; }
+            public string Opt5 { set; get; }
         }
         private readonly RestClient _DDIBatchClient;
         private readonly string _endpointResourceDDIBatch;
@@ -130,25 +139,27 @@ namespace winDDIRunBuilder
         {
             string[] values = csvLine.Split(',');
             DtoProtocol inProtocol = new DtoProtocol();
-
-            inProtocol.PlateId = values[0].Trim();
-            inProtocol.SourcePlate = values[1].Trim();
-            inProtocol.ProtocolName = values[2].Trim();
-            inProtocol.WorklistName = values[3].Trim();
-            inProtocol.HasAliasId = values[4].Trim();
-            inProtocol.CheckCancelled = values[5].Trim();
+            inProtocol.Department= values[0].Trim();
+            inProtocol.PlateId = values[1].Trim();
+            inProtocol.SourcePlate = values[2].Trim();
+            inProtocol.ProtocolName = values[3].Trim();
+            inProtocol.WorklistName = values[4].Trim();
+            inProtocol.HasAliasId = values[5].Trim();
+            //inProtocol.CheckCancelled = values[6].Trim();
             inProtocol.Pooling = values[6].Trim();
-            inProtocol.CherryPick = values[7].Trim();
-            inProtocol.DBTest = values[8].Trim();
-            inProtocol.PlateRotated = values[9].Trim();
-            inProtocol.StartPos = values[10].Trim();
-            inProtocol.EndPos = values[11].Trim();
+            //inProtocol.CherryPick = values[8].Trim();
+            inProtocol.DBTest = values[7].Trim();
+            inProtocol.PlateRotated = values[8].Trim();
+            inProtocol.StartPos = values[9].Trim();
+            inProtocol.EndPos = values[10].Trim();
+            inProtocol.ExcludeWells = values[11].Trim();
             inProtocol.Samples = values[12].Trim();
             inProtocol.Diluent = values[13].Trim();
             inProtocol.Opt1 = values[14].Trim();
             inProtocol.Opt2 = values[15].Trim();
-            inProtocol.etc = values[16].Trim();
-
+            inProtocol.Opt3 = values[16].Trim();
+            inProtocol.Opt4 = values[17].Trim();
+            inProtocol.Opt5 = values[18].Trim();
             return inProtocol;
         }
         public IEnumerable<DtoProtocol> GetProtocolPlates(string plateSettingFile = "")
@@ -173,7 +184,6 @@ namespace winDDIRunBuilder
         public string CreatePlate(InputPlate inputPlate)
         {
             string actionResult = "YES";
-            string jsonPlate = "";
             string endPointResource = "";
 
             try
@@ -220,52 +230,50 @@ namespace winDDIRunBuilder
         public string AddSamples(string plateName, List<InputFile> plateSamples)
         {
             string actionResult = "YES";
-            StringBuilder sbResult = new StringBuilder();
-            string jsonSample = "";
-
-            string endPointResource ="";
-            string pos = "";
-            string indexSample = "";
-            string inSampleId = "";
-
-            InputSample inSample = new InputSample();
 
             try
             {
-                if (plateSamples != null && plateSamples.Count > 0)
+                if (plateSamples == null || plateSamples.Count <= 0)
                 {
-                    foreach (var sam in plateSamples)
+                    return actionResult;
+                }
+
+                foreach (var sam in plateSamples)
+                {
+                    InputSample inSample = new InputSample();
+                    string inSampleId = null;
+                    string indexSample = "";
+
+
+                    if (string.IsNullOrWhiteSpace(sam.ShortId) != true)
                     {
-                        //221201-0001-01
-                        //221201000101
-                        if (sam.ShortId !=null && sam.ShortId.Length == 12)
+                        var match = Regex.Match(sam.ShortId, "([0-9]{6}-[0-9]{4}-[0-9]{1,2}).*", RegexOptions.None);
+                        if (match.Success)
                         {
-                            inSampleId = sam.ShortId.Substring(0, 6) + "-";
-                            inSampleId = inSampleId + sam.ShortId.Substring(6,4) + "-";
-                            inSampleId = inSampleId + sam.ShortId.Substring(10);
+                            inSampleId = match.Value;
                         }
-                        
-                        inSample.Attributes.SampleId = inSampleId;
-                        //inSample.Attributes.SampleId = sam.ShortId;
+                    }
 
-                        jsonSample = JsonConvert.SerializeObject(inSample);
-                        //jsonSample=Newtonsoft.Json.JsonConvert.SerializeObject(new { SampleId = "sss" });
+                    inSample.Attributes.SampleId = inSampleId ?? sam.ShortId;
 
-                        endPointResource = $"{_endpointResourceDDIBatch}/{plateName}/{sam.WellX}/{sam.WellY}";
+                    string jsonSample = JsonConvert.SerializeObject(inSample);
+                    //jsonSample=Newtonsoft.Json.JsonConvert.SerializeObject(new { SampleId = "sss" });
 
-                        var request = new RestRequest(endPointResource, Method.POST);
-                        request.AddParameter("application/json", jsonSample, ParameterType.RequestBody);
+                    string endPointResource = $"{_endpointResourceDDIBatch}/{plateName}/{sam.WellX}/{sam.WellY}";
 
-                        var response = _DDIBatchClient.Execute(request);
+                    var request = new RestRequest(endPointResource, Method.POST);
+                    request.AddParameter("application/json", jsonSample, ParameterType.RequestBody);
 
-                        if ( !response.IsSuccessful)
-                        {
-                            ErrMsg = "APIService.AddSamples() error: " + response.Content;
-                            actionResult = "FAILED";
-                            sbResult.Append("APIPost_ERROR: " + inSampleId + "; " + indexSample + "; ");
-                            sbResult.AppendLine();
-                            throw new Exception(response.Content);
-                        }
+                    var response = _DDIBatchClient.Execute(request);
+
+                    if (!response.IsSuccessful)
+                    {
+                        StringBuilder sbResult = new StringBuilder();
+                        ErrMsg = "APIService.AddSamples() error: " + response.Content;
+                        actionResult = "FAILED";
+                        sbResult.Append("APIPost_ERROR: " + inSampleId + "; " + indexSample + "; ");
+                        sbResult.AppendLine();
+                        throw new Exception(response.Content);
                     }
                 }
 
