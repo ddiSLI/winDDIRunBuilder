@@ -24,6 +24,7 @@ namespace winDDIRunBuilder.Models
         public string Direction { set; get; }
         public string Accept { set; get; }
         public string Exclude { get; set; }
+        public int[] Offset { get; set; } = new int[0];
         public string Sample { set; get; }
         public string Diluent { set; get; }
         public string PlateVersion { set; get; }

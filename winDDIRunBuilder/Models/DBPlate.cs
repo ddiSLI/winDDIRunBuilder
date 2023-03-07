@@ -10,6 +10,7 @@ namespace winDDIRunBuilder.Models
     {
         public string PlateName { set; get; }
         public string PlateId { set; get; }
+        public string PlateDesc { set; get; } = "";
         public string StartPos { set; get; }
         public string EndPos { set; get; }
         public string SizeStartWell { set; get; }

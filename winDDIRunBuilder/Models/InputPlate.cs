@@ -12,6 +12,7 @@ namespace winDDIRunBuilder.Models
         public Pos Start { set; get; }
         public Pos End { set; get; }
         public List<Pos> Exclude { get; set; }
+        public int[] Offset { get; set; } = new int[0];
         public string Direction { set; get; }
         public Dictionary<string, string> Attributes = new Dictionary<string, string>();
 

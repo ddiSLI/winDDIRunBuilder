@@ -11,6 +11,7 @@ namespace winDDIRunBuilder.Models
         public string Id { set; get; }
         public int Sequence { set; get; }
         public string SourcePlateId { set; get; }
+        public string SourcePlateVersion { set; get; }
         public string SourceWellId { set; get; }
         public string SourceId { set; get; }
         public string DestId { set; get; }

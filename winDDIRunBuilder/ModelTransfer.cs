@@ -27,7 +27,7 @@ namespace winDDIRunBuilder
                 vPlate.Diluent = dbPlate.Diluent;
                 vPlate.Direction = dbPlate.PlateRotated == true ? "1" : "0";
                 vPlate.PlateVersion = dbPlate.PlateVersion;
-                vPlate.Accept = dbPlate.Accept;
+                vPlate.Accept = dbPlate.Accept.ToString().Replace("|", ",");
                 vPlate.SourcePlateId = dbPlate.SourcePlateId;
                 vPlate.SourcePlateVersion = dbPlate.SourcePlateVersion;
                 vPlate.Attributes.Add("Sample", dbPlate.Sample.ToString());
@@ -52,7 +52,7 @@ namespace winDDIRunBuilder
                 vPlate.Diluent = dbPlate.Diluent;
                 vPlate.Direction = dbPlate.PlateRotated == true ? "1" : "0";
                 vPlate.PlateVersion = dbPlate.PlateVersion;
-                vPlate.Accept = dbPlate.Accept;
+                vPlate.Accept = dbPlate.Accept.ToString().Replace("|", ",");
                 vPlate.SourcePlateId = dbPlate.SourcePlateId;
                 vPlate.SourcePlateVersion = dbPlate.SourcePlateVersion;
                 vPlate.Attributes.Add("Sample", dbPlate.Sample.ToString());
@@ -68,7 +68,31 @@ namespace winDDIRunBuilder
 
             return vPlate;
         }
-     
+
+        public List<OutputPlateSample> DBSample2Outputs(List<PlateSample> dbSamples)
+        {
+            List<OutputPlateSample> outSamples = new List<OutputPlateSample>();
+            OutputPlateSample outSample = new OutputPlateSample();
+
+            if (dbSamples != null && dbSamples.Count>0)
+            {
+                foreach(var dbSmp in dbSamples)
+                {
+                    outSample = new OutputPlateSample();
+                    outSample.DestPlateId = dbSmp.PlateId;
+                    outSample.DestPlateVersion = dbSmp.PlateVersion;
+                    outSample.DestWellId = dbSmp.Well;
+                    outSample.SourcePlateId = dbSmp.SourcePlateId;
+                    outSample.SourceWellId = dbSmp.SourceWell;
+                    outSample.SourcePlateVersion = dbSmp.SourcePlateVersion;
+                    outSample.SampleId = dbSmp.SampleId;
+
+                    outSamples.Add(outSample);
+                }
+            }
+            
+            return outSamples;
+        }
 
     }
 }

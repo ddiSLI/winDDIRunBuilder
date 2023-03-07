@@ -14,6 +14,7 @@ namespace winDDIRunBuilder
     public partial class frmImportFromDB : Form
     {
         public bool IsSourcePlate { get; set; } = false;
+        public bool IsSourceBCR { get; set; } = false;
         public ValidPlate SelectedDBPlate { get; set; }
         public List<PlateSample> SelectedPlateSamples { get; set; }
         List<DBPlate> DBPlates { get; set; }
@@ -161,7 +162,7 @@ namespace winDDIRunBuilder
                 }
                 finally
                 {
-                     txbPlateId.Focus();
+                    txbPlateId.Focus();
                 }
 
             }
@@ -173,42 +174,76 @@ namespace winDDIRunBuilder
             RepoSQL sqlService = new RepoSQL();
             ModelTransfer tranService = new ModelTransfer();
 
-            if (IsSourcePlate)
+            try
             {
-                List<DBPlate> sourcePlates = new List<DBPlate>();
-                DBPlate origialPlate = new DBPlate();
-                DBPlate lastPlate = new DBPlate();
+                CurPlateId= txbPlateId.Text.Trim().ToUpper();
+
+                if (IsSourcePlate)
+                {
+                    List<DBPlate> sourcePlates = new List<DBPlate>();
+                    DBPlate origialPlate = new DBPlate();
+                    DBPlate lastPlate = new DBPlate();
+
+                    sourcePlates = (List<DBPlate>)sqlService.GetPlates(CurPlateId).OrderBy(se => se.PlateVersion).ToList();
+                    if (sourcePlates != null && sourcePlates.Count > 0)
+                    {
+                        origialPlate = sourcePlates.FirstOrDefault();
+                        lastPlate = sourcePlates.LastOrDefault();
+
+                        //Get Plate Samples
+                        SelectedPlateSamples = sqlService.GetPlateSamples(CurPlateId);
+
+                        SelectedDBPlate = tranService.DBPlate2ValidPlate(origialPlate, "SOURCE");
+                    }
+                    else
+                    {
+                        DialogResult dialogResult = MessageBox.Show(
+                            "The Source Plate must be existing. You entered an UN-Existing plate.",
+                            "Source Plate",
+                            MessageBoxButtons.OK);
+                    }
+                }
+                else
+                {
+                    var selPlate = DBPlates.Where(db => db.PlateId == CurPlateId && db.PlateVersion == CurPlateVersion).FirstOrDefault();
+                    if (selPlate != null && selPlate.PlateId.Length > 0)
+                    {
+                        //Get Plate Samples
+                        SelectedPlateSamples = sqlService.GetPlateSamples(CurPlateId);
+                        SelectedDBPlate = tranService.DBPlate2ValidPlate(selPlate, "DEST");
+                    }
+                    else
+                    {
+                        DialogResult dialogResult = MessageBox.Show(
+                            "The Destination Plate must be existing. You entered an UN-Existing plate.",
+                            "Destination Plate",
+                            MessageBoxButtons.OK);
+                    }
+                }
+
+                if (SelectedDBPlate != null && string.IsNullOrEmpty(SelectedDBPlate.PlateId) == false)
+                {
+                    this.DialogResult = DialogResult.Yes;
+                    this.Close();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                string errMsg = "{btnGo_Click} met the following error: ";
+                errMsg += Environment.NewLine;
+                errMsg += ex.Message;
                 
-                sourcePlates = (List<DBPlate>)sqlService.GetPlates(CurPlateId).OrderBy(se => se.PlateVersion);
-                if (sourcePlates != null && sourcePlates.Count > 0)
-                {
-                    origialPlate = sourcePlates.FirstOrDefault();
-                    lastPlate = sourcePlates.LastOrDefault();
-                    
-                    //Get Plate Samples
-                    SelectedPlateSamples = sqlService.GetPlateSamples(CurPlateId);
-
-                    SelectedDBPlate = tranService.DBPlate2ValidPlate(origialPlate, "SOURCE");
-
-                }
+                txbPlateId.Text = "";
+                txbPlateId.Focus();
             }
-            else
+        }
+
+        private void txbPlateId_TextChanged(object sender, EventArgs e)
+        {
+            if (txbPlateId.Text.Trim().Length > 0)
             {
-                var selPlate = DBPlates.Where(db => db.PlateId == CurPlateId && db.PlateVersion == CurPlateVersion).FirstOrDefault();
-                if (selPlate != null && selPlate.PlateId.Length > 0)
-                {
-                    //Get Plate Samples
-                    SelectedPlateSamples = sqlService.GetPlateSamples(CurPlateId);
-
-                    SelectedDBPlate = tranService.DBPlate2ValidPlate(selPlate, "DEST");
-
-                }
-            }
-
-            if(SelectedDBPlate !=null && string.IsNullOrEmpty(SelectedDBPlate.PlateId) == false)
-            {
-                this.DialogResult = DialogResult.Yes;
-                this.Close();
+                btnGo.Enabled = true;
             }
         }
 
@@ -217,6 +252,7 @@ namespace winDDIRunBuilder
             this.DialogResult = DialogResult.Cancel;
             this.Close();
         }
+
 
     }
 }

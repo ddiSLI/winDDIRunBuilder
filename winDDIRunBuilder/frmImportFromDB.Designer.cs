@@ -31,14 +31,14 @@ namespace winDDIRunBuilder
         {
             this.label3 = new System.Windows.Forms.Label();
             this.dgvPlates = new System.Windows.Forms.DataGridView();
-            this.btnGo = new System.Windows.Forms.Button();
-            this.btnExit = new System.Windows.Forms.Button();
-            this.txbPlateId = new System.Windows.Forms.TextBox();
             this.Plate = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.StartPos = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.EndPos = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ModifiedDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Version = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.btnGo = new System.Windows.Forms.Button();
+            this.btnExit = new System.Windows.Forms.Button();
+            this.txbPlateId = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dgvPlates)).BeginInit();
             this.SuspendLayout();
             // 
@@ -77,6 +77,45 @@ namespace winDDIRunBuilder
             this.dgvPlates.Size = new System.Drawing.Size(575, 443);
             this.dgvPlates.TabIndex = 37;
             this.dgvPlates.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvPlates_CellContentClick);
+            // 
+            // Plate
+            // 
+            this.Plate.HeaderText = "Plate";
+            this.Plate.MinimumWidth = 6;
+            this.Plate.Name = "Plate";
+            this.Plate.ReadOnly = true;
+            this.Plate.Width = 128;
+            // 
+            // StartPos
+            // 
+            this.StartPos.HeaderText = "StartPos";
+            this.StartPos.MinimumWidth = 6;
+            this.StartPos.Name = "StartPos";
+            this.StartPos.ReadOnly = true;
+            this.StartPos.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.StartPos.Width = 60;
+            // 
+            // EndPos
+            // 
+            this.EndPos.HeaderText = "EndPos";
+            this.EndPos.MinimumWidth = 6;
+            this.EndPos.Name = "EndPos";
+            this.EndPos.ReadOnly = true;
+            this.EndPos.Width = 60;
+            // 
+            // ModifiedDate
+            // 
+            this.ModifiedDate.HeaderText = "ModifiedDate";
+            this.ModifiedDate.MinimumWidth = 6;
+            this.ModifiedDate.Name = "ModifiedDate";
+            this.ModifiedDate.Width = 125;
+            // 
+            // Version
+            // 
+            this.Version.HeaderText = "Version";
+            this.Version.MinimumWidth = 6;
+            this.Version.Name = "Version";
+            this.Version.Width = 125;
             // 
             // btnGo
             // 
@@ -119,45 +158,8 @@ namespace winDDIRunBuilder
             this.txbPlateId.Name = "txbPlateId";
             this.txbPlateId.Size = new System.Drawing.Size(268, 30);
             this.txbPlateId.TabIndex = 39;
+            this.txbPlateId.TextChanged += new System.EventHandler(this.txbPlateId_TextChanged);
             this.txbPlateId.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txbPlateId_KeyDown);
-            // 
-            // Plate
-            // 
-            this.Plate.HeaderText = "Plate";
-            this.Plate.MinimumWidth = 6;
-            this.Plate.Name = "Plate";
-            this.Plate.ReadOnly = true;
-            this.Plate.Width = 128;
-            // 
-            // StartPos
-            // 
-            this.StartPos.HeaderText = "StartPos";
-            this.StartPos.MinimumWidth = 6;
-            this.StartPos.Name = "StartPos";
-            this.StartPos.ReadOnly = true;
-            this.StartPos.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.StartPos.Width = 60;
-            // 
-            // EndPos
-            // 
-            this.EndPos.HeaderText = "EndPos";
-            this.EndPos.MinimumWidth = 6;
-            this.EndPos.Name = "EndPos";
-            this.EndPos.ReadOnly = true;
-            this.EndPos.Width = 60;
-            // 
-            // ModifiedDate
-            // 
-            this.ModifiedDate.HeaderText = "ModifiedDate";
-            this.ModifiedDate.MinimumWidth = 6;
-            this.ModifiedDate.Name = "ModifiedDate";
-            this.ModifiedDate.Width = 125;
-            // 
-            // Version
-            // 
-            this.Version.HeaderText = "Version";
-            this.Version.MinimumWidth = 6;
-            this.Version.Name = "Version";
             // 
             // frmImportFromDB
             // 

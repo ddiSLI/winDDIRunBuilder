@@ -252,6 +252,14 @@ namespace winDDIRunBuilder
                         {
                             inSampleId = match.Value;
                         }
+                        else
+                        {
+                            match = Regex.Match(sam.ShortId, "([0-9]{6})([0-9]{4})([0-9]{1,2})", RegexOptions.None);
+                            if (match.Success)
+                            {
+                                inSampleId = $"{match.Groups[1].Value}-{match.Groups[2].Value}-{match.Groups[3].Value}";
+                            }
+                        }
                     }
 
                     inSample.Attributes.SampleId = inSampleId ?? sam.ShortId;

@@ -242,7 +242,8 @@ namespace winDDIRunBuilder
                                 {
                                     PlateName= rdr["PlateName"].ToString(),
                                     PlateId = rdr["PlateId"].ToString(),
-                                    SizeStartWell= rdr["PlateSizeStart"].ToString(),
+                                    PlateDesc = rdr["PlateDesc"] == null? "": rdr["PlateDesc"].ToString(),
+                                    SizeStartWell = rdr["PlateSizeStart"].ToString(),
                                     SizeEndWell= rdr["PalteSizeEnd"].ToString(),
                                     StartPos = rdr["StartPos"].ToString(),
                                     EndPos = rdr["EndPos"].ToString(),
@@ -364,7 +365,9 @@ namespace winDDIRunBuilder
                     cmd.Parameters.Add("@pWell", SqlDbType.VarChar);
                     cmd.Parameters.Add("@pPosition", SqlDbType.Int);
                     cmd.Parameters.Add("@pPlateTimeVersion", SqlDbType.VarChar);
-
+                    cmd.Parameters.Add("@pSourePlateId", SqlDbType.VarChar);
+                    cmd.Parameters.Add("@pSourePlateVersion", SqlDbType.VarChar);
+                    cmd.Parameters.Add("@pSoureWell", SqlDbType.VarChar);
                     conn.Open();
 
                     foreach (var smp in plateSamples)
@@ -374,6 +377,11 @@ namespace winDDIRunBuilder
                         cmd.Parameters["@pWell"].Value = smp.DestWellId;
                         cmd.Parameters["@pPosition"].Value = smp.Sequence;
                         cmd.Parameters["@pPlateTimeVersion"].Value = smp.DestPlateVersion;
+
+                        cmd.Parameters["@pSourePlateId"].Value= smp.SourcePlateId==null? "":smp.SourcePlateId;
+                        cmd.Parameters["@pSourePlateVersion"].Value = smp.SourcePlateVersion==null? "" : smp.SourcePlateVersion;
+                        cmd.Parameters["@pSoureWell"].Value = smp.SourceWellId ==null ? "" : smp.SourceWellId;
+
                         cmd.ExecuteNonQuery();
                     }
 
@@ -411,6 +419,7 @@ namespace winDDIRunBuilder
                 {
                     cmd.Parameters.Add("@pPlateName", SqlDbType.VarChar).Value = dbPlate.PlateName==null? "" : dbPlate.PlateName;
                     cmd.Parameters.Add("@pPlateId", SqlDbType.VarChar).Value = dbPlate.PlateId;
+                    cmd.Parameters.Add("@pPlateDesc", SqlDbType.VarChar).Value = dbPlate.PlateDesc;
                     cmd.Parameters.Add("@pSizeFirstPos", SqlDbType.VarChar).Value = dbPlate.SizeStartWell;
                     cmd.Parameters.Add("@pSizeLastPos", SqlDbType.VarChar).Value = dbPlate.SizeEndWell;
                     cmd.Parameters.Add("@pStartPos", SqlDbType.VarChar).Value = dbPlate.StartPos;

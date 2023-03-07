@@ -50,7 +50,7 @@ namespace winDDIRunBuilder
             //System.Drawing.Image img = System.Drawing.Image.FromFile("D:\\Foto.jpg");
             int maxheight = 40;
             Code128BarcodeDraw barcode128 = BarcodeDrawFactory.Code128WithChecksum;
-
+   
             Image img = barcode128.Draw(pBarcode, maxheight);
             //Image img = barcode128.Draw("TESTBARCODE", maxheight);
 
@@ -58,6 +58,14 @@ namespace winDDIRunBuilder
             Point loc = new Point(60, 20);
             e.Graphics.DrawImage(img, loc);
 
+            //Show PlateId
+            Graphics g = e.Graphics;
+            Brush br = new SolidBrush(Color.Black);
+            if (pShowReadable)
+            {
+                g.DrawString(pBarcode, pPrintFont, br,60, 65);
+            }
+            //
         }
 
         private void ToPrinter(Object sender, PrintPageEventArgs e)

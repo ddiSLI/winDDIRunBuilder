@@ -14,5 +14,8 @@ namespace winDDIRunBuilder.Models
         public string SampleId { set; get; }
         public string Well { set; get; }
         public string PlateVersion { set; get; }
+        public string SourcePlateId { set; get; }
+        public string SourceWell { set; get; }
+        public string SourcePlateVersion { set; get; }
     }
 }
