@@ -94,5 +94,24 @@ namespace winDDIRunBuilder
             return outSamples;
         }
 
+        public string GetWell(string xyString, bool isBCR)
+        {
+            if (xyString.IndexOf(",") <= 0)
+            {
+                return xyString;
+            }
+
+            if (isBCR)
+            {
+                return int.Parse(xyString.Substring(0, xyString.IndexOf(','))).ToString();
+
+            }
+            else
+            {
+                return (char)('A' + int.Parse(xyString.Substring(xyString.IndexOf(',') + 1)))
+                    + (int.Parse(xyString.Substring(0, xyString.IndexOf(','))) + 1).ToString();
+            }
+        }
+
     }
 }

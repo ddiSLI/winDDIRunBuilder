@@ -63,6 +63,16 @@ namespace winDDIRunBuilder.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Add32 {
+            get {
+                object obj = ResourceManager.GetObject("Add32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap addDatabase32 {
             get {
                 object obj = ResourceManager.GetObject("addDatabase32", resourceCulture);
@@ -76,6 +86,16 @@ namespace winDDIRunBuilder.Properties {
         internal static System.Drawing.Bitmap addFolder32 {
             get {
                 object obj = ResourceManager.GetObject("addFolder32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Back32 {
+            get {
+                object obj = ResourceManager.GetObject("Back32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -203,6 +223,16 @@ namespace winDDIRunBuilder.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap export32 {
+            get {
+                object obj = ResourceManager.GetObject("export32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap FilesAdd48 {
             get {
                 object obj = ResourceManager.GetObject("FilesAdd48", resourceCulture);
@@ -296,6 +326,16 @@ namespace winDDIRunBuilder.Properties {
         internal static System.Drawing.Bitmap PrintBar48 {
             get {
                 object obj = ResourceManager.GetObject("PrintBar48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap qc {
+            get {
+                object obj = ResourceManager.GetObject("qc", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -416,16 +456,6 @@ namespace winDDIRunBuilder.Properties {
         internal static System.Drawing.Bitmap UsersEnter48 {
             get {
                 object obj = ResourceManager.GetObject("UsersEnter48", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap UsersExit48 {
-            get {
-                object obj = ResourceManager.GetObject("UsersExit48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

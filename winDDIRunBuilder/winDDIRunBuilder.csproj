@@ -24,7 +24,7 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <InstallUrl>\\dd386\sys\freearea\DDIRunBuilder\Setup\</InstallUrl>
-    <ApplicationRevision>19</ApplicationRevision>
+    <ApplicationRevision>24</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -100,6 +100,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BCRFile.cs" />
     <Compile Include="ClientBackend.cs" />
     <Compile Include="ClientRunBuilder.cs" />
     <Compile Include="frmImportFromDB.cs">
@@ -114,8 +115,22 @@
     <Compile Include="frmMain.Designer.cs">
       <DependentUpon>frmMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="frmQC.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmQC.Designer.cs">
+      <DependentUpon>frmQC.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmSourceSample.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmSourceSample.Designer.cs">
+      <DependentUpon>frmSourceSample.cs</DependentUpon>
+    </Compile>
     <Compile Include="InputFile.cs" />
     <Compile Include="IRunBuilder.cs" />
+    <Compile Include="MapPlateSamples.cs" />
+    <Compile Include="Models\BCRSample.cs" />
     <Compile Include="Models\DBPlate.cs" />
     <Compile Include="Models\InputPlate.cs" />
     <Compile Include="Models\InputSample.cs" />
@@ -125,6 +140,7 @@
     <Compile Include="Models\PlateSample.cs" />
     <Compile Include="Models\Protocol.cs" />
     <Compile Include="Models\ProtocolPlate.cs" />
+    <Compile Include="Models\QCSample.cs" />
     <Compile Include="Models\ValidPlate.cs" />
     <Compile Include="ModelTransfer.cs" />
     <Compile Include="PrinBarCodeZXing.cs" />
@@ -142,6 +158,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="frmMain.resx">
       <DependentUpon>frmMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmQC.resx">
+      <DependentUpon>frmQC.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmSourceSample.resx">
+      <DependentUpon>frmSourceSample.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -288,6 +310,18 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Icons\BarcodeScanner32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\qc.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\export32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\Back32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\Add32.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

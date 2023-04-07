@@ -205,7 +205,7 @@ namespace winDDIRunBuilder
                 }
                 else
                 {
-                    var selPlate = DBPlates.Where(db => db.PlateId == CurPlateId && db.PlateVersion == CurPlateVersion).FirstOrDefault();
+                    var selPlate = DBPlates.Where(db => db.PlateId.ToUpper() == CurPlateId && db.PlateVersion == CurPlateVersion).FirstOrDefault();
                     if (selPlate != null && selPlate.PlateId.Length > 0)
                     {
                         //Get Plate Samples
@@ -218,6 +218,7 @@ namespace winDDIRunBuilder
                             "The Destination Plate must be existing. You entered an UN-Existing plate.",
                             "Destination Plate",
                             MessageBoxButtons.OK);
+
                     }
                 }
 

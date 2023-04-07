@@ -14,9 +14,15 @@ namespace winDDIRunBuilder
         List<Protocol> GetProtocols(string dept);
 
         List<DBPlate> GetPlates(string plateId, string plateVersion=null);
-        string AddPlate(DBPlate dbPlate);
+        string AddPlate(DBPlate dbPlate,string user);
         List<PlateSample> GetPlateSamples(string plateId, string plateVersion = null);
-        string AddSamples(List<OutputPlateSample> plateSamples);
+        string AddSamples(List<OutputPlateSample> plateSamples, string user);
+
+        List<QCSample> GetQCSamples(string plateName);
+
+        string AddPlateQCSamples(List<PlateSample> plateSamples,string user);
+
+        string UpdatePlateQC(string plateId, string plateVersion, bool hasQC, string user);
 
     }
 

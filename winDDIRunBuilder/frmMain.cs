@@ -33,7 +33,7 @@ namespace winDDIRunBuilder
         private string pAlpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
         private string pSelectedPlatePage = "";
-
+        private string pCurMapPlateId = "";
         private DBPlate ScannedDBPalte { get; set; }
         private List<PlateSample> ScannedDBPlateSamples { get; set; }
 
@@ -369,7 +369,7 @@ namespace winDDIRunBuilder
 
         private void btnGo_Click(object sender, EventArgs e)
         {
-            .string barcode = "";
+            string barcode = "";
             string worklistName = "";
             bool hasInclude = false;
             bool hasBCR = false;
@@ -425,10 +425,10 @@ namespace winDDIRunBuilder
                     GetValidPlates();
                 }
 
-                //ProcessBCRPlates();
-                //ProcessPlates();
-                //SaveCreateWorklists();
-                //GetValidPlates();
+//                ProcessBCRPlates();
+//                ProcessPlates();
+//                SaveCreateWorklists();
+//                GetValidPlates();
 
             }
             catch (Exception ex)
@@ -443,7 +443,7 @@ namespace winDDIRunBuilder
                 txbBarcode.Focus();
             }
         }
-
+    
 
         private void SetProtocolPlates()
         {
@@ -755,7 +755,7 @@ namespace winDDIRunBuilder
                                                 s.DestNewPlateId = dbPlate.PlateId;
                                             });
 
-                                            resultSampleSaveDB = sqlService.AddSamples(outSamples);
+                                            resultSampleSaveDB = sqlService.AddSamples(outSamples, Environment.UserName);
 
                                             //Make Worklist
                                             resultMakeWorklist = MakeWorklist(worklist, outSamples, dbPlate, pId.GroupName);
@@ -801,7 +801,7 @@ namespace winDDIRunBuilder
                                     resultPlateSaveDB = sqlService.AddPlate(dbPlate);
 
                                     //Save to Sample
-                                    resultSampleSaveDB = sqlService.AddSamples(outSamples);
+                                    resultSampleSaveDB = sqlService.AddSamples(outSamples, Environment.UserName);
 
 
                                     //Make Worklist
@@ -1152,6 +1152,7 @@ namespace winDDIRunBuilder
 
                         if (plateSamples.Count > 0)
                         {
+                            pCurMapPlateId = pSelectedPlatePage;
                             lblMsg.ForeColor = Color.Navy;
                             lblMsg.Text = "The plate, " + pSelectedPlatePage + " , has following sample(s).";
 
@@ -1207,7 +1208,16 @@ namespace winDDIRunBuilder
                     var x = e.CellBounds.Left + (e.CellBounds.Width - w) / 30; // e.CellBounds.Left + (e.CellBounds.Width - w) / 2;
                     var y = e.CellBounds.Top + (e.CellBounds.Height - h) / 5; // e.CellBounds.Top + (e.CellBounds.Height - h) / 2;
 
-                    e.Graphics.DrawImage(Properties.Resources.tubeBlue64, new Rectangle(x, y, w, h));
+                    if (e.Value.ToString().IndexOf("QC") >= 0)
+                    {
+                        e.Graphics.DrawImage(Properties.Resources.tubePurple64, new Rectangle(x, y, w, h));
+                    }
+                    else
+                    {
+                        e.Graphics.DrawImage(Properties.Resources.tubeBlue64, new Rectangle(x, y, w, h));
+                    }
+
+                    //e.Graphics.DrawImage(Properties.Resources.tubeBlue64, new Rectangle(x, y, w, h));
                     e.Handled = true;
                 }
                 else if (pIsRotated && e.ColumnIndex < dgvSamplePlate.ColumnCount - 1)
@@ -1348,7 +1358,14 @@ namespace winDDIRunBuilder
 
                     if (wellX <= sizeEndX && wellY < sizeEndY)
                     {
-                        dtPlateSamples.Rows[wellY][wellX] = smp.SampleId;
+                        if (string.IsNullOrEmpty(smp.SampleType))
+                        {
+                            dtPlateSamples.Rows[wellY][wellX] = smp.SampleId;
+                        }
+                        else if(smp.SampleType.IndexOf("QC")>=0)
+                        {
+                            dtPlateSamples.Rows[wellY][wellX] = "QC_" + smp.SampleId;
+                        }
                     }
                     else
                     {
@@ -1741,6 +1758,7 @@ namespace winDDIRunBuilder
                             txbManualPlateDesc.Text = "From " + txbBarcode.Text.Trim().ToUpper();
                             btnCreateManualPlate.Enabled = true;
 
+                            pCurMapPlateId = txbBarcode.Text.Trim().ToUpper();
 
                         }
                         else
@@ -1799,7 +1817,9 @@ namespace winDDIRunBuilder
                             {
                                 DestPlateId = smp.PlateId,
                                 DestWellId = smp.Well,
-                                SampleId = smp.SampleId
+                                SampleId = smp.SampleId,
+                                SampleType=smp.SampleType
+                               
                             });
                         }
 
@@ -3017,7 +3037,8 @@ namespace winDDIRunBuilder
                         resultAddPlate = sqlService.AddPlate(ScannedDBPalte);
                         if (resultAddPlate == "SUCCESS")
                         {
-                            resultAddSamples = sqlService.AddSamples(outSamples);
+                            pCurMapPlateId = ScannedDBPalte.PlateId;
+                            resultAddSamples = sqlService.AddSamples(outSamples,Environment.UserName);
                         }
                         else
                         {
@@ -3146,5 +3167,36 @@ namespace winDDIRunBuilder
            
 
         }
+
+        private void btnQC_Click(object sender, EventArgs e)
+        {
+            
+            try
+            {
+                frmQC addQC = new frmQC();
+                if (string.IsNullOrEmpty(pCurMapPlateId))
+                {
+                    lblMsg.Text = "There is no an available plate.";
+                }
+                else
+                {
+                    addQC.PlateId = pCurMapPlateId;
+                    addQC.ShowDialog();
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                string errMsg = "btnQC_Click() met the following error: ";
+                errMsg += Environment.NewLine;
+                errMsg += ex.Message;
+                lblMsg.ForeColor = Color.DarkRed;
+                lblMsg.Text = errMsg;
+            }
+
+        }
+
+
     }
 }

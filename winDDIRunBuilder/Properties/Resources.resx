@@ -157,9 +157,6 @@
   <data name="UserExitA" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\UserExitA.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="UsersExit48" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\UsersExit48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="addDatabase32" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\addDatabase32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -228,5 +225,17 @@
   </data>
   <data name="BarcodeScanner32" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\BarcodeScanner32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="export32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\export32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="qc" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\qc.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Add32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Add32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Back32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Back32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

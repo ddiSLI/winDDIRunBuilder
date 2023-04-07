@@ -16,6 +16,8 @@ C:\Users\sli\source\repos\winDDIRunBuilder\winDDIRunBuilder\bin\Debug\zxing.pres
 C:\Users\sli\source\repos\winDDIRunBuilder\winDDIRunBuilder\obj\Debug\winDDIRunBuilder.csproj.AssemblyReference.cache
 C:\Users\sli\source\repos\winDDIRunBuilder\winDDIRunBuilder\obj\Debug\winDDIRunBuilder.frmImportFromDB.resources
 C:\Users\sli\source\repos\winDDIRunBuilder\winDDIRunBuilder\obj\Debug\winDDIRunBuilder.frmMain.resources
+C:\Users\sli\source\repos\winDDIRunBuilder\winDDIRunBuilder\obj\Debug\winDDIRunBuilder.frmQC.resources
+C:\Users\sli\source\repos\winDDIRunBuilder\winDDIRunBuilder\obj\Debug\winDDIRunBuilder.frmSourceSample.resources
 C:\Users\sli\source\repos\winDDIRunBuilder\winDDIRunBuilder\obj\Debug\winDDIRunBuilder.Properties.Resources.resources
 C:\Users\sli\source\repos\winDDIRunBuilder\winDDIRunBuilder\obj\Debug\winDDIRunBuilder.csproj.GenerateResource.cache
 C:\Users\sli\source\repos\winDDIRunBuilder\winDDIRunBuilder\obj\Debug\winDDIRunBuilder.csproj.CoreCompileInputs.cache

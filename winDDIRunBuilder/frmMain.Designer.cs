@@ -36,6 +36,7 @@ namespace winDDIRunBuilder
             this.label1 = new System.Windows.Forms.Label();
             this.cbProtocolCd = new System.Windows.Forms.ComboBox();
             this.gbPlate = new System.Windows.Forms.GroupBox();
+            this.btnQC = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.btnPrintManuPlate = new System.Windows.Forms.Button();
             this.btnCreateManualPlate = new System.Windows.Forms.Button();
@@ -52,8 +53,6 @@ namespace winDDIRunBuilder
             this.button1 = new System.Windows.Forms.Button();
             this.lblMsg = new System.Windows.Forms.Label();
             this.txbBarcode = new System.Windows.Forms.TextBox();
-            this.btnExit = new System.Windows.Forms.Button();
-            this.btnPrintPlateBarcode = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.lblJanusName = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -74,7 +73,9 @@ namespace winDDIRunBuilder
             this.ProcessedWL = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.MultiOutput = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.ProcessType = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.btnExit = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.btnPrintPlateBarcode = new System.Windows.Forms.Button();
             this.fileWatcherBCR = new System.IO.FileSystemWatcher();
             this.gbPlate.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -108,6 +109,7 @@ namespace winDDIRunBuilder
             // 
             // gbPlate
             // 
+            this.gbPlate.Controls.Add(this.btnQC);
             this.gbPlate.Controls.Add(this.groupBox2);
             this.gbPlate.Controls.Add(this.btnCloseMapping);
             this.gbPlate.Controls.Add(this.label4);
@@ -119,12 +121,28 @@ namespace winDDIRunBuilder
             this.gbPlate.Controls.Add(this.lblMsg);
             this.gbPlate.Controls.Add(this.txbBarcode);
             this.gbPlate.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.gbPlate.Location = new System.Drawing.Point(7, 269);
+            this.gbPlate.Location = new System.Drawing.Point(7, 273);
             this.gbPlate.Name = "gbPlate";
-            this.gbPlate.Size = new System.Drawing.Size(1085, 528);
+            this.gbPlate.Size = new System.Drawing.Size(1085, 527);
             this.gbPlate.TabIndex = 2;
             this.gbPlate.TabStop = false;
             this.gbPlate.Text = "Plates";
+            // 
+            // btnQC
+            // 
+            this.btnQC.FlatAppearance.BorderColor = System.Drawing.SystemColors.Highlight;
+            this.btnQC.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnQC.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnQC.Image = global::winDDIRunBuilder.Properties.Resources.qc;
+            this.btnQC.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnQC.Location = new System.Drawing.Point(5, 350);
+            this.btnQC.Name = "btnQC";
+            this.btnQC.Size = new System.Drawing.Size(154, 48);
+            this.btnQC.TabIndex = 45;
+            this.btnQC.Text = "QC";
+            this.btnQC.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnQC.UseVisualStyleBackColor = true;
+            this.btnQC.Click += new System.EventHandler(this.btnQC_Click);
             // 
             // groupBox2
             // 
@@ -134,9 +152,9 @@ namespace winDDIRunBuilder
             this.groupBox2.Controls.Add(this.label5);
             this.groupBox2.Controls.Add(this.txbManualPlateDesc);
             this.groupBox2.Controls.Add(this.txbManualPlateId);
-            this.groupBox2.Location = new System.Drawing.Point(5, 111);
+            this.groupBox2.Location = new System.Drawing.Point(0, 78);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(166, 318);
+            this.groupBox2.Size = new System.Drawing.Size(166, 253);
             this.groupBox2.TabIndex = 40;
             this.groupBox2.TabStop = false;
             // 
@@ -147,9 +165,10 @@ namespace winDDIRunBuilder
             this.btnPrintManuPlate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnPrintManuPlate.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnPrintManuPlate.Image = global::winDDIRunBuilder.Properties.Resources.Print24;
-            this.btnPrintManuPlate.Location = new System.Drawing.Point(5, 258);
+            this.btnPrintManuPlate.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnPrintManuPlate.Location = new System.Drawing.Point(6, 199);
             this.btnPrintManuPlate.Name = "btnPrintManuPlate";
-            this.btnPrintManuPlate.Size = new System.Drawing.Size(154, 49);
+            this.btnPrintManuPlate.Size = new System.Drawing.Size(154, 48);
             this.btnPrintManuPlate.TabIndex = 43;
             this.btnPrintManuPlate.Text = "Print ManuPlate Bar Code";
             this.btnPrintManuPlate.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
@@ -163,7 +182,8 @@ namespace winDDIRunBuilder
             this.btnCreateManualPlate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCreateManualPlate.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnCreateManualPlate.Image = global::winDDIRunBuilder.Properties.Resources.New32;
-            this.btnCreateManualPlate.Location = new System.Drawing.Point(5, 196);
+            this.btnCreateManualPlate.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnCreateManualPlate.Location = new System.Drawing.Point(7, 143);
             this.btnCreateManualPlate.Name = "btnCreateManualPlate";
             this.btnCreateManualPlate.Size = new System.Drawing.Size(154, 50);
             this.btnCreateManualPlate.TabIndex = 41;
@@ -176,7 +196,7 @@ namespace winDDIRunBuilder
             // 
             this.label6.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.label6.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.label6.Location = new System.Drawing.Point(1, 87);
+            this.label6.Location = new System.Drawing.Point(1, 61);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(158, 23);
             this.label6.TabIndex = 42;
@@ -187,7 +207,7 @@ namespace winDDIRunBuilder
             // 
             this.label5.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.label5.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.label5.Location = new System.Drawing.Point(2, 23);
+            this.label5.Location = new System.Drawing.Point(2, 3);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(164, 23);
             this.label5.TabIndex = 41;
@@ -198,18 +218,18 @@ namespace winDDIRunBuilder
             // 
             this.txbManualPlateDesc.BackColor = System.Drawing.SystemColors.Info;
             this.txbManualPlateDesc.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txbManualPlateDesc.Location = new System.Drawing.Point(2, 113);
+            this.txbManualPlateDesc.Location = new System.Drawing.Point(2, 87);
             this.txbManualPlateDesc.MaxLength = 200;
             this.txbManualPlateDesc.Multiline = true;
             this.txbManualPlateDesc.Name = "txbManualPlateDesc";
-            this.txbManualPlateDesc.Size = new System.Drawing.Size(158, 74);
+            this.txbManualPlateDesc.Size = new System.Drawing.Size(158, 49);
             this.txbManualPlateDesc.TabIndex = 40;
             // 
             // txbManualPlateId
             // 
             this.txbManualPlateId.BackColor = System.Drawing.SystemColors.Info;
             this.txbManualPlateId.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txbManualPlateId.Location = new System.Drawing.Point(2, 48);
+            this.txbManualPlateId.Location = new System.Drawing.Point(2, 28);
             this.txbManualPlateId.MaxLength = 20;
             this.txbManualPlateId.Name = "txbManualPlateId";
             this.txbManualPlateId.Size = new System.Drawing.Size(158, 28);
@@ -221,6 +241,7 @@ namespace winDDIRunBuilder
             this.btnCloseMapping.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCloseMapping.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnCloseMapping.Image = global::winDDIRunBuilder.Properties.Resources.clearFilter32;
+            this.btnCloseMapping.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnCloseMapping.Location = new System.Drawing.Point(5, 471);
             this.btnCloseMapping.Name = "btnCloseMapping";
             this.btnCloseMapping.Size = new System.Drawing.Size(154, 50);
@@ -252,18 +273,18 @@ namespace winDDIRunBuilder
             this.dgvSamplePlate.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
             dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dgvSamplePlate.DefaultCellStyle = dataGridViewCellStyle1;
-            this.dgvSamplePlate.Location = new System.Drawing.Point(177, 74);
+            this.dgvSamplePlate.Location = new System.Drawing.Point(177, 80);
             this.dgvSamplePlate.Name = "dgvSamplePlate";
             this.dgvSamplePlate.RowHeadersVisible = false;
             this.dgvSamplePlate.RowHeadersWidth = 51;
             this.dgvSamplePlate.RowTemplate.Height = 24;
-            this.dgvSamplePlate.Size = new System.Drawing.Size(902, 447);
+            this.dgvSamplePlate.Size = new System.Drawing.Size(902, 441);
             this.dgvSamplePlate.TabIndex = 0;
             this.dgvSamplePlate.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvSamplePlate_CellContentClick);
             this.dgvSamplePlate.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.dgvSamplePlate_CellPainting);
@@ -340,36 +361,6 @@ namespace winDDIRunBuilder
             this.txbBarcode.TabIndex = 38;
             this.txbBarcode.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txbBarcode_KeyDown);
             // 
-            // btnExit
-            // 
-            this.btnExit.FlatAppearance.BorderColor = System.Drawing.SystemColors.Highlight;
-            this.btnExit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnExit.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnExit.Image = global::winDDIRunBuilder.Properties.Resources.UserExit32;
-            this.btnExit.Location = new System.Drawing.Point(7, 214);
-            this.btnExit.Name = "btnExit";
-            this.btnExit.Size = new System.Drawing.Size(154, 49);
-            this.btnExit.TabIndex = 20;
-            this.btnExit.Text = "Exit";
-            this.btnExit.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnExit.UseVisualStyleBackColor = true;
-            this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
-            // 
-            // btnPrintPlateBarcode
-            // 
-            this.btnPrintPlateBarcode.FlatAppearance.BorderColor = System.Drawing.SystemColors.Highlight;
-            this.btnPrintPlateBarcode.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnPrintPlateBarcode.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnPrintPlateBarcode.Image = global::winDDIRunBuilder.Properties.Resources.Print24;
-            this.btnPrintPlateBarcode.Location = new System.Drawing.Point(7, 152);
-            this.btnPrintPlateBarcode.Name = "btnPrintPlateBarcode";
-            this.btnPrintPlateBarcode.Size = new System.Drawing.Size(154, 49);
-            this.btnPrintPlateBarcode.TabIndex = 19;
-            this.btnPrintPlateBarcode.Text = "Print Plate Bar Code";
-            this.btnPrintPlateBarcode.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnPrintPlateBarcode.UseVisualStyleBackColor = true;
-            this.btnPrintPlateBarcode.Click += new System.EventHandler(this.btnPrint_Click);
-            // 
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.lblJanusName);
@@ -385,7 +376,7 @@ namespace winDDIRunBuilder
             this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox1.Location = new System.Drawing.Point(7, -2);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(1085, 274);
+            this.groupBox1.Size = new System.Drawing.Size(1085, 266);
             this.groupBox1.TabIndex = 3;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Input Source";
@@ -427,9 +418,10 @@ namespace winDDIRunBuilder
             this.btnGo.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnGo.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnGo.Image = global::winDDIRunBuilder.Properties.Resources.import32;
+            this.btnGo.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnGo.Location = new System.Drawing.Point(7, 90);
             this.btnGo.Name = "btnGo";
-            this.btnGo.Size = new System.Drawing.Size(154, 49);
+            this.btnGo.Size = new System.Drawing.Size(154, 47);
             this.btnGo.TabIndex = 28;
             this.btnGo.Text = "Go";
             this.btnGo.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
@@ -593,6 +585,22 @@ namespace winDDIRunBuilder
             this.ProcessType.Visible = false;
             this.ProcessType.Width = 125;
             // 
+            // btnExit
+            // 
+            this.btnExit.FlatAppearance.BorderColor = System.Drawing.SystemColors.Highlight;
+            this.btnExit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnExit.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnExit.Image = global::winDDIRunBuilder.Properties.Resources.UserExit32;
+            this.btnExit.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnExit.Location = new System.Drawing.Point(7, 206);
+            this.btnExit.Name = "btnExit";
+            this.btnExit.Size = new System.Drawing.Size(154, 51);
+            this.btnExit.TabIndex = 20;
+            this.btnExit.Text = "Exit";
+            this.btnExit.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnExit.UseVisualStyleBackColor = true;
+            this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
+            // 
             // pictureBox1
             // 
             this.pictureBox1.Image = global::winDDIRunBuilder.Properties.Resources.ddilogo512;
@@ -602,6 +610,22 @@ namespace winDDIRunBuilder
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox1.TabIndex = 21;
             this.pictureBox1.TabStop = false;
+            // 
+            // btnPrintPlateBarcode
+            // 
+            this.btnPrintPlateBarcode.FlatAppearance.BorderColor = System.Drawing.SystemColors.Highlight;
+            this.btnPrintPlateBarcode.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnPrintPlateBarcode.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnPrintPlateBarcode.Image = global::winDDIRunBuilder.Properties.Resources.Print24;
+            this.btnPrintPlateBarcode.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnPrintPlateBarcode.Location = new System.Drawing.Point(7, 144);
+            this.btnPrintPlateBarcode.Name = "btnPrintPlateBarcode";
+            this.btnPrintPlateBarcode.Size = new System.Drawing.Size(154, 56);
+            this.btnPrintPlateBarcode.TabIndex = 19;
+            this.btnPrintPlateBarcode.Text = "Print Plate Bar Code";
+            this.btnPrintPlateBarcode.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnPrintPlateBarcode.UseVisualStyleBackColor = true;
+            this.btnPrintPlateBarcode.Click += new System.EventHandler(this.btnPrint_Click);
             // 
             // fileWatcherBCR
             // 
@@ -613,7 +637,7 @@ namespace winDDIRunBuilder
             // frmMain
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.ClientSize = new System.Drawing.Size(1093, 345);
+            this.ClientSize = new System.Drawing.Size(1100, 357);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.gbPlate);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -680,5 +704,6 @@ namespace winDDIRunBuilder
         private System.Windows.Forms.TextBox txbManualPlateDesc;
         private System.Windows.Forms.TextBox txbManualPlateId;
         private System.Windows.Forms.Button btnPrintManuPlate;
+        private System.Windows.Forms.Button btnQC;
     }
 }

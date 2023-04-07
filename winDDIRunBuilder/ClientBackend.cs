@@ -227,7 +227,7 @@ namespace winDDIRunBuilder
 
             return actionResult;
         }
-        public string AddSamples(string plateName, List<InputFile> plateSamples)
+        public string AddSamples(string plateName, List<InputFile> plateSamples, bool isQC=false)
         {
             string actionResult = "YES";
 
@@ -240,7 +240,7 @@ namespace winDDIRunBuilder
 
                 foreach (var sam in plateSamples)
                 {
-                    InputSample inSample = new InputSample();
+                    var inSample = new Dictionary<string,string>();
                     string inSampleId = null;
                     string indexSample = "";
 
@@ -262,9 +262,26 @@ namespace winDDIRunBuilder
                         }
                     }
 
-                    inSample.Attributes.SampleId = inSampleId ?? sam.ShortId;
+                    if(inSampleId == null)
+                    {
+                        inSample.Add("SampleId", "");
+                        inSample.Add(sam.ShortId, "a");
+                    }
+                    else
+                    {
+                        inSample.Add("SampleId", inSampleId ?? sam.ShortId);
+                    }
 
-                    string jsonSample = JsonConvert.SerializeObject(inSample);
+                    if (isQC && sam.SampleType=="QC")
+                    {
+                        inSample.Add("QCId", sam.ShortId);
+                    }
+
+
+                    string jsonSample = JsonConvert.SerializeObject(new
+                    {
+                        Attributes = inSample
+                    });
                     //jsonSample=Newtonsoft.Json.JsonConvert.SerializeObject(new { SampleId = "sss" });
 
                     string endPointResource = $"{_endpointResourceDDIBatch}/{plateName}/{sam.WellX}/{sam.WellY}";

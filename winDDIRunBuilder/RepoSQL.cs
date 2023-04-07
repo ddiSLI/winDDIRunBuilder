@@ -11,7 +11,7 @@ using winDDIRunBuilder.Models;
 
 namespace winDDIRunBuilder
 {
-    public class RepoSQL : ISQLService
+    public class RepoSQL : ISQLService     
     {
         string CnsSQL = "";
 
@@ -323,6 +323,7 @@ namespace winDDIRunBuilder
                             //sample.Sequence = (int)rdr["Position"];
                             sample.SampleId = rdr["SampleId"].ToString();
                             sample.PlateVersion = rdr["PlateTimeVersion"].ToString();
+                            sample.SampleType= rdr["SampleType"].ToString();
                             samples.Add(sample);
                         }
                     }
@@ -348,7 +349,7 @@ namespace winDDIRunBuilder
             return samples;
         }
 
-        public string AddSamples(List<OutputPlateSample> plateSamples)
+        public string AddSamples(List<OutputPlateSample> plateSamples, string user="")
         {
             string actionResults = "SUCCESS";
 
@@ -362,18 +363,22 @@ namespace winDDIRunBuilder
                 {
                     cmd.Parameters.Add("@pPlateId", SqlDbType.VarChar);
                     cmd.Parameters.Add("@pSampleId", SqlDbType.VarChar);
+                    cmd.Parameters.Add("@pSampleType", SqlDbType.VarChar);
+
                     cmd.Parameters.Add("@pWell", SqlDbType.VarChar);
                     cmd.Parameters.Add("@pPosition", SqlDbType.Int);
                     cmd.Parameters.Add("@pPlateTimeVersion", SqlDbType.VarChar);
                     cmd.Parameters.Add("@pSourePlateId", SqlDbType.VarChar);
                     cmd.Parameters.Add("@pSourePlateVersion", SqlDbType.VarChar);
                     cmd.Parameters.Add("@pSoureWell", SqlDbType.VarChar);
+                    cmd.Parameters.Add("@pUser", SqlDbType.VarChar);
                     conn.Open();
 
                     foreach (var smp in plateSamples)
                     {
                         cmd.Parameters["@pPlateId"].Value = smp.DestNewPlateId==null? smp.DestPlateId : smp.DestNewPlateId;
                         cmd.Parameters["@pSampleId"].Value = smp.SampleId;
+                        cmd.Parameters["@pSampleType"].Value = string.IsNullOrEmpty(smp.SampleType)?  "" : smp.SampleType;
                         cmd.Parameters["@pWell"].Value = smp.DestWellId;
                         cmd.Parameters["@pPosition"].Value = smp.Sequence;
                         cmd.Parameters["@pPlateTimeVersion"].Value = smp.DestPlateVersion;
@@ -381,6 +386,7 @@ namespace winDDIRunBuilder
                         cmd.Parameters["@pSourePlateId"].Value= smp.SourcePlateId==null? "":smp.SourcePlateId;
                         cmd.Parameters["@pSourePlateVersion"].Value = smp.SourcePlateVersion==null? "" : smp.SourcePlateVersion;
                         cmd.Parameters["@pSoureWell"].Value = smp.SourceWellId ==null ? "" : smp.SourceWellId;
+                        cmd.Parameters["@pUser"].Value = smp.SourceWellId = user;
 
                         cmd.ExecuteNonQuery();
                     }
@@ -405,7 +411,7 @@ namespace winDDIRunBuilder
             return actionResults;
         }
 
-        public string AddPlate(DBPlate dbPlate)
+        public string AddPlate(DBPlate dbPlate, string user="")
         {
             string resultSaveDB = "SUCCESS";
 
@@ -459,6 +465,152 @@ namespace winDDIRunBuilder
             return resultSaveDB;
         }
 
+        public List<QCSample> GetQCSamples(string plateName)
+        {
+            List<QCSample> qcSamples = new List<QCSample>();
+            QCSample qcSmp = new QCSample();
+
+            using (SqlConnection conn = new SqlConnection(CnsSQL))
+            {
+                SqlCommand cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = "uspRunBld_SelQCSamples";
+
+                try
+                {
+                    cmd.Parameters.Add("@pPlate", SqlDbType.VarChar).Value = plateName;
+
+                    conn.Open();
+                    SqlDataReader rdr = cmd.ExecuteReader();
+
+                    if (rdr.HasRows)
+                    {
+                        while (rdr.Read())
+                        {
+                            qcSmp = new QCSample();
+                            qcSmp.Plate= rdr["Plate"].ToString();
+                            qcSmp.Sample = rdr["Sample"].ToString();
+                            qcSmp.Prefix= rdr["Prefix"].ToString();
+                            qcSmp.HarvestId = rdr["HarvestId"].ToString();
+                            qcSmp.Well = rdr["Well"].ToString();
+                            qcSmp.PlateDesc = rdr["Description"].ToString();
+
+                            qcSamples.Add(qcSmp);
+                        }
+                    }
+
+                    rdr.Close();
+                }
+
+                catch (Exception ex)
+                {
+                    string msgEx = "SQL: GetQCSamples() met issue: ";
+                    msgEx += Environment.NewLine;
+                    msgEx += Environment.NewLine;
+                    msgEx += ex.Message;
+                    ErrMsg = "SQLService.GetQCSamples() Exception: " + ex.Message;
+                }
+                finally
+                {
+                    conn.Close();
+                }
+            }
+
+
+            return qcSamples;
+        }
+
+        public string AddPlateQCSamples(List<PlateSample> plateQCSamples, string user)
+        {
+            string actionResults = "SUCCESS";
+
+            using (SqlConnection conn = new SqlConnection(CnsSQL))
+            {
+                SqlCommand cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = "uspRunBld_InsPlateQCSample";
+
+                try
+                {
+                    cmd.Parameters.Add("@pPlateId", SqlDbType.VarChar);
+                    cmd.Parameters.Add("@pSampleId", SqlDbType.VarChar);
+                    cmd.Parameters.Add("@pWell", SqlDbType.VarChar);
+                    cmd.Parameters.Add("@pPlateVersion", SqlDbType.VarChar);
+                    cmd.Parameters.Add("@pUser", SqlDbType.VarChar);
+
+                    conn.Open();
+                    foreach (var smp in plateQCSamples)
+                    {
+                        cmd.Parameters["@pPlateId"].Value = smp.PlateId;
+                        cmd.Parameters["@pSampleId"].Value = smp.SampleId;
+                        cmd.Parameters["@pPlateVersion"].Value = smp.PlateVersion;
+                        cmd.Parameters["@pWell"].Value = smp.Well;
+                        cmd.Parameters["@pUser"].Value = user;
+
+                        cmd.ExecuteNonQuery();
+                    }
+
+                }
+
+                catch (Exception ex)
+                {
+                    string msgEx = "SQL: AddPlateQCSamples() met issue: ";
+                    msgEx += Environment.NewLine;
+                    //msgEx += "shortId: " + shortId.ToString() + " ;";
+                    msgEx += Environment.NewLine;
+                    msgEx += ex.Message;
+                    actionResults = "ERROR:" + ex.Message;
+                }
+                finally
+                {
+                    conn.Close();
+                }
+            }
+
+            return actionResults;
+        }
+
+        public string UpdatePlateQC(string plateId, string plateVersion, bool hasQC, string user)
+        {
+            string resultSaveDB = "SUCCESS";
+
+            using (SqlConnection conn = new SqlConnection(CnsSQL))
+            {
+                SqlCommand cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = "uspRunBld_UpdPlate";
+
+                try
+                {
+                    cmd.Parameters.Add("@pPlateId", SqlDbType.VarChar).Value = plateId;
+                    cmd.Parameters.Add("@pPlateVersion", SqlDbType.VarChar).Value = plateVersion;
+                    cmd.Parameters.Add("@pHasQC", SqlDbType.Bit).Value = hasQC;
+                    cmd.Parameters.Add("@pUser", SqlDbType.VarChar).Value = user;
+
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+
+                catch (Exception ex)
+                {
+                    string msgEx = "SQL:UpdatePlateQC() met issue: ";
+                    msgEx += Environment.NewLine;
+                    //msgEx += "shortId: " + shortId.ToString() + " ;";
+                    msgEx += Environment.NewLine;
+                    msgEx += ex.Message;
+                    resultSaveDB = msgEx;
+                    ErrMsg = "SQLService.AddPlate() Exception: " + ex.Message;
+
+                    resultSaveDB = "ERROR:" + ex.Message;
+                }
+                finally
+                {
+                    conn.Close();
+                }
+            }
+
+            return resultSaveDB;
+        }
     }
 
 

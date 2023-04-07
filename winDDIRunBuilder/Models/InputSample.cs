@@ -8,12 +8,11 @@ namespace winDDIRunBuilder.Models
 {
     public class InputSample
     {
-        public SampleAttributes Attributes { set; get; } = new SampleAttributes();
+        public Dictionary<string, string> Attributes { set; get; } = new Dictionary<string, string>();
     }
 
     public class SampleAttributes
     {
         public string SampleId { set; get; }
     }
-
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace winDDIRunBuilder.Models
 {
-    public class InputPlate
+    public class InputPlate : ICloneable
     {
         public string Name { set; get; }
         public Pos Start { set; get; }
@@ -20,6 +20,28 @@ namespace winDDIRunBuilder.Models
         {
             public string X { set; get; }
             public string Y { set; get; }
+        }
+
+        public object Clone()
+        {
+            return new InputPlate()
+            {
+                Name = this.Name,
+                Start = this.Start == null ? null : new Pos()
+                {
+                    X = this.Start.X,
+                    Y = this.Start.Y
+                },
+                End = this.End == null ? null : new Pos()
+                {
+                    X = this.End.X,
+                    Y = this.End.Y
+                },
+                Direction = this.Direction,
+                Exclude = this.Exclude,
+                Offset = this.Offset,
+                Attributes = new Dictionary<string, string>(this.Attributes)
+            };
         }
     }
 }

@@ -16,7 +16,7 @@ namespace winDDIRunBuilder
         public string SourcePlate { get; set; }
         public string PlateId { get; set; }     //destPlate
         public string Well { get; set; }
-        public string BatchId { get; set; }
+        public string SampleType { get; set; } = "";
         public string WellX { get; set; }
         public string WellY { get; set; }
 
@@ -51,7 +51,6 @@ namespace winDDIRunBuilder
 
             return true;
         }
-
+               
     }
-
 }
