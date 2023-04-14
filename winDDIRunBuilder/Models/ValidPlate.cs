@@ -11,6 +11,8 @@ namespace winDDIRunBuilder.Models
         public string PlateName { set; get; }
         public string PlateId { set; get; }
         public string PlateType { set; get; } = "";
+        public string HasQC { set; get; } = "0";
+        public bool Rotated { set; get; } = false;
         public bool IsNewCreatedPlate { set; get; }
         public string SizeStartWell { set; get; }
         public string SizeEndWell { set; get; }

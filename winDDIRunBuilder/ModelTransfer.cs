@@ -18,6 +18,7 @@ namespace winDDIRunBuilder
                 vPlate.PlateName = dbPlate.PlateName;
                 vPlate.PlateId = dbPlate.PlateId;
                 vPlate.PlateType = "DEST";
+                vPlate.Rotated = dbPlate.PlateRotated;
                 vPlate.StartWell = dbPlate.StartPos;
                 vPlate.EndWell = dbPlate.EndPos;
                 vPlate.SizeStartWell = dbPlate.SizeStartWell;
@@ -43,6 +44,7 @@ namespace winDDIRunBuilder
             {
                 vPlate.PlateName = dbPlate.PlateName;
                 vPlate.PlateId = dbPlate.PlateId;
+                vPlate.Rotated = dbPlate.PlateRotated;
                 vPlate.StartWell = dbPlate.StartPos;
                 vPlate.EndWell = dbPlate.EndPos;
                 vPlate.SizeStartWell = dbPlate.SizeStartWell;
@@ -94,6 +96,58 @@ namespace winDDIRunBuilder
             return outSamples;
         }
 
+        public string GetNextWell(string plateSize, string lastSampleWell, bool isRotated=false)
+        {
+            string nextWell = "";
+            string pltSizeX = "";
+            string pltSizeY = "";
+
+            string wellX = "";
+            string wellY = "";
+
+            if (isRotated)
+            {
+                pltSizeX = plateSize.Substring(0,1);
+                pltSizeY = plateSize.Substring(1);
+
+                if ((Char.Parse(lastSampleWell.Substring(0, 1)) <= Char.Parse(pltSizeX)) &&
+                    (Convert.ToInt32(lastSampleWell.Substring(1)) < Convert.ToInt32(pltSizeY)))
+                {
+                    wellX = lastSampleWell.Substring(0, 1);
+                    wellY = (Convert.ToInt32(lastSampleWell.Substring(1)) + 1).ToString();
+                }
+                else if (Convert.ToInt32(lastSampleWell.Substring(1)) == Convert.ToInt32(pltSizeY))
+                {
+                    wellX = ((char)((int)Char.Parse(lastSampleWell.Substring(0, 1)) + 1)).ToString();
+                    wellY = "1";
+                }
+
+                nextWell = wellX + wellY;
+            }
+            else if (isRotated==false)
+            {
+                pltSizeX = plateSize.Substring(1);
+                pltSizeY = plateSize.Substring(0, 1);
+
+                if (Char.Parse(lastSampleWell.Substring(0, 1)) < Char.Parse(pltSizeY))
+                {
+                    wellX = lastSampleWell.Substring(1);
+                    wellY = ((char)((int)Char.Parse(lastSampleWell.Substring(0, 1)) + 1)).ToString();
+                }
+                else
+                {
+                    if (Convert.ToInt32(lastSampleWell.Substring(1)) < Convert.ToInt32(pltSizeX))
+                    {
+                        wellX = (Convert.ToInt32(lastSampleWell.Substring(1)) + 1).ToString();
+                        wellY = "A";
+                    }
+                }
+
+                nextWell = wellY + wellX;
+            }
+
+            return nextWell;
+        }
         public string GetWell(string xyString, bool isBCR)
         {
             if (xyString.IndexOf(",") <= 0)

@@ -9,6 +9,7 @@ namespace winDDIRunBuilder.Models
     public class InputPlate : ICloneable
     {
         public string Name { set; get; }
+        public bool Rotated { set; get; } = false;
         public Pos Start { set; get; }
         public Pos End { set; get; }
         public List<Pos> Exclude { get; set; }

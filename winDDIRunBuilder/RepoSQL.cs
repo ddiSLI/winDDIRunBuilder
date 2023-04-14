@@ -242,6 +242,7 @@ namespace winDDIRunBuilder
                                 {
                                     PlateName= rdr["PlateName"].ToString(),
                                     PlateId = rdr["PlateId"].ToString(),
+                                    HasQC= rdr["HasQC"].ToString(),
                                     PlateDesc = rdr["PlateDesc"] == null? "": rdr["PlateDesc"].ToString(),
                                     SizeStartWell = rdr["PlateSizeStart"].ToString(),
                                     SizeEndWell= rdr["PalteSizeEnd"].ToString(),

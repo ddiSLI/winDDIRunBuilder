@@ -286,6 +286,8 @@ namespace winDDIRunBuilder
 
                     string endPointResource = $"{_endpointResourceDDIBatch}/{plateName}/{sam.WellX}/{sam.WellY}";
 
+                    //string endPointResource = $"{_endpointResourceDDIBatch}/{plateName}/{int.Parse(sam.Position.Split(',')[0])}/{int.Parse(sam.Position.Split(',')[1])}";
+
                     var request = new RestRequest(endPointResource, Method.POST);
                     request.AddParameter("application/json", jsonSample, ParameterType.RequestBody);
 
