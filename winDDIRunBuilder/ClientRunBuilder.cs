@@ -14,10 +14,12 @@ namespace winDDIRunBuilder
         public string ProcessCategory { get; set; }
         public string CnsSQL { get; set; }
         public string CnsOracle { get; set; }
+        public string Department { get; set; }
         public string JanusName { get; set; }
         public string BCROutput { get; set; }
         public string RunBuilderOutput { get; set; }
         public string RunBuilderOutputArchive { get; set; }
+        public string RunBuilderExport { get; set; }
         public string PlateSettingFile { get; set; }
         public string PlatePrinterName { get; set; }
 
@@ -46,6 +48,7 @@ namespace winDDIRunBuilder
             curJanus = sqlService.GetJanus(System.Net.Dns.GetHostName());
             if (curJanus == null)
             {
+                Department = "";
                 JanusName = "";
                 BCROutput = "";
                 RunBuilderOutput = "";
@@ -53,10 +56,12 @@ namespace winDDIRunBuilder
              }
             else
             {
+                Department = curJanus.Department;
                 JanusName =curJanus.JanusName;
                 BCROutput = curJanus.BCROutput;
                 RunBuilderOutput = curJanus.RunBuilderOutput;
                 RunBuilderOutputArchive = curJanus.RunBuilderOutputArchive;
+                RunBuilderExport = curJanus.RunBuilderOutput;
             }
                         
         }

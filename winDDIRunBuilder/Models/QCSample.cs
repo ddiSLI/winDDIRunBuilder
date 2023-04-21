@@ -9,6 +9,7 @@ namespace winDDIRunBuilder.Models
     public class QCSample
     {
         public string Id { set; get; } = "";
+        public string Department { set; get; }
         public string PlateId { set; get; }
         public string Plate { set; get; }
         public string Sample { set; get; }

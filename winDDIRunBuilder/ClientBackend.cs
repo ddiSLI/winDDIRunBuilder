@@ -262,14 +262,11 @@ namespace winDDIRunBuilder
                         }
                     }
 
-                    if(inSampleId == null)
+                    inSample.Add("SampleId", inSampleId ?? sam.ShortId);
+
+                    if (inSampleId == null)
                     {
-                        inSample.Add("SampleId", "");
                         inSample.Add(sam.ShortId, "a");
-                    }
-                    else
-                    {
-                        inSample.Add("SampleId", inSampleId ?? sam.ShortId);
                     }
 
                     if (isQC && sam.SampleType=="QC")

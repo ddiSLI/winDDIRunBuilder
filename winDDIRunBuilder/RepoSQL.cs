@@ -53,10 +53,12 @@ namespace winDDIRunBuilder
                     {
                         while (rdr.Read())
                         {
+                            curJanus.Department= rdr["Department"].ToString();
                             curJanus.JanusName = rdr["JanusName"].ToString();
                             curJanus.BCROutput = rdr["BCROutput"].ToString();
                             curJanus.RunBuilderOutput = rdr["RunBuilderOutput"].ToString();
                             curJanus.RunBuilderOutputArchive = rdr["RunBuilderOutputArchive"].ToString();
+                            curJanus.RunBuilderExport = rdr["RunBuilderExport"].ToString();
                             curJanus.JanusOutPut = rdr["JanusOutput"].ToString();
                             curJanus.Description = rdr["Description"].ToString();
                         }
@@ -387,7 +389,7 @@ namespace winDDIRunBuilder
                         cmd.Parameters["@pSourePlateId"].Value= smp.SourcePlateId==null? "":smp.SourcePlateId;
                         cmd.Parameters["@pSourePlateVersion"].Value = smp.SourcePlateVersion==null? "" : smp.SourcePlateVersion;
                         cmd.Parameters["@pSoureWell"].Value = smp.SourceWellId ==null ? "" : smp.SourceWellId;
-                        cmd.Parameters["@pUser"].Value = smp.SourceWellId = user;
+                        cmd.Parameters["@pUser"].Value = user;
 
                         cmd.ExecuteNonQuery();
                     }

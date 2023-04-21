@@ -21,6 +21,8 @@ namespace winDDIRunBuilder
         public DBPlate CurDBPlate { get; set; } = new DBPlate();
         public InputPlate QCInputPlate { get; set; } = new InputPlate();
 
+        public string CurExportPath { get; set; }
+
         private string pPlateSizeX = "";
         private string pPlateSizeY = "";
         public bool IsRotated { get; set; } = false;
@@ -55,6 +57,7 @@ namespace winDDIRunBuilder
                     dbPlates = sqlService.GetPlates(PlateId).OrderByDescending(p => p.PlateVersion).ToList();
                     CurDBPlate = dbPlates.FirstOrDefault();
                     txbPlateId.Text = PlateId;
+                    txbExportPath.Text = CurExportPath;
                 }
 
                 if (CurDBPlate.PlateRotated)
@@ -70,6 +73,9 @@ namespace winDDIRunBuilder
 
 
                 SetWellXY();
+
+
+
 
                 //Get DBTests
                 assay = ConfigurationManager.AppSettings["Assay"];
@@ -278,7 +284,8 @@ namespace winDDIRunBuilder
                     {
                         if (IsRotated)
                         {
-
+                            iRw = pAlpha.IndexOf(wellY);
+                            dgvSamplePlate.Rows[iRw].Cells[wellX].Value = sample;
                         }
                         else
                         {
@@ -286,16 +293,8 @@ namespace winDDIRunBuilder
                             dgvSamplePlate.Rows[iRw].Cells[wellX].Value = sample;
                         }
                     }
-
                 }
-
-
             }
-
-
-
-
-
         }
 
         private void MapPlates(DataTable dtPlateSamples, bool pIsRotated = false)
@@ -609,6 +608,9 @@ namespace winDDIRunBuilder
             string resultSaveSample = "";
             string resultUpdPlate = "";
             string exportFile = "";
+            DateTime curDateTime = DateTime.Now;
+            string curDate = "";
+            string curTime = "";
             List<PlateSample> rawQCSamples = new List<PlateSample>();
             List<OutputPlateSample> qcSamples = new List<OutputPlateSample>();
             List<PlateSample> pltQCSamples = new List<PlateSample>();
@@ -617,37 +619,60 @@ namespace winDDIRunBuilder
 
             try
             {
+                curDate = curDateTime.Month.ToString("0#") + curDateTime.Day.ToString("0#") + curDateTime.Year.ToString("##");
+                curTime= curDateTime.Hour.ToString("0#") + curDateTime.Minute.ToString("0#") + curDateTime.Second.ToString("##");
+
                 if (!string.IsNullOrEmpty(cbExportFormat.SelectedItem.ToString()) && !string.IsNullOrEmpty(txbExportPath.Text))
                 {
-                    exportFile = txbExportPath.Text.Trim() + "/";
+                    if (txbExportPath.Text.Trim().LastIndexOf("\\")== txbExportPath.Text.Trim().Length - 1)
+                    {
+                        exportFile = txbExportPath.Text.Trim();
+                    }
+                    else
+                    {
+                        exportFile = txbExportPath.Text.Trim() + "\\";
+                    }
+                    
 
-                    if (cbExportFormat.SelectedIndex == 0)
-                    {
-                        //Luminex GA-MAP
-                        exportFile += "Luminex_GA_MAP.CSV";
-                    }
-                    else if (cbExportFormat.SelectedIndex == 1)
-                    {
-                        //Luminex GPP
-                    }
-                    else if (cbExportFormat.SelectedIndex == 2)
-                    {
-                        //Aus
-                    }
-                    else if (cbExportFormat.SelectedIndex == 3)
-                    {
-                        //ABI750
-                    }
-                    else if (cbExportFormat.SelectedIndex == 4)
-                    {
-                        //Kashi.CSV
-                    }
-                    else if (cbExportFormat.SelectedIndex == 5)
-                    {
-                        //Manual
-                    }
+                    //if (cbExportFormat.SelectedIndex == 0)
+                    //{
 
-                    exportFile = txbExportPath.Text.Trim() + "/" + CurDBPlate.PlateId + ".CSV";
+                    //}
+                    //else if (cbExportFormat.SelectedIndex == 1)
+                    //{
+                    //    //Luminex GPP
+                    //}
+                    //else if (cbExportFormat.SelectedIndex == 2)
+                    //{
+                    //    //Aus
+                    //}
+                    //else if (cbExportFormat.SelectedIndex == 3)
+                    //{
+                    //    //ABI750
+                    //}
+                    //else if (cbExportFormat.SelectedIndex == 4)
+                    //{
+                    //    //Kashi.CSV
+                    //}
+                    //else if (cbExportFormat.SelectedIndex == 5)
+                    //{
+                    //    //Manual
+                    //}
+                    //else
+                    //{
+                    //    exportFile = txbExportPath.Text.Trim() + "/" + CurDBPlate.PlateId + ".CSV";
+                    //}
+
+                    if (!string.IsNullOrEmpty(cbExportFormat.SelectedItem.ToString()))
+                    {
+                        //Gem5
+                        exportFile += cbExportFormat.SelectedItem.ToString().Trim();
+                        exportFile += "_" + CurDBPlate.PlateId;
+                        exportFile += "_" + curDate;
+                        exportFile += "_" + curTime;
+                        exportFile += ".CSV";
+                    }
+                    
 
                     //Collect plateSamples
                     rawQCSamples = MakePlateQCSamples();
@@ -1040,7 +1065,7 @@ namespace winDDIRunBuilder
                 {
                     plateSamples = GetSourcePlateSamples(rawQCSamples);
 
-                    hasSamples = backService.AddSamples(CurDBPlate.PlateId.ToUpper(), plateSamples, isQC: true);
+                    hasSamples = backService.AddSamples(CurDBPlate.PlateId, plateSamples, isQC: true);
                     if (!string.IsNullOrEmpty(backService.ErrMsg))
                     {
                         lblMsg.ForeColor = Color.DarkRed;
@@ -1143,7 +1168,7 @@ namespace winDDIRunBuilder
 
                 newDestPlate.Start = sPos;
                 newDestPlate.End = ePos;
-                newDestPlate.Name = CurDBPlate.PlateId.ToUpper();
+                newDestPlate.Name = CurDBPlate.PlateId;
                 newDestPlate.Exclude = CurDBPlate.ExcludeWells.Split('|').Distinct().Select(WellToPosition).ToList();
 
                 newDestPlate.Direction = "0";
@@ -1173,7 +1198,7 @@ namespace winDDIRunBuilder
 
         private void txbExportPath_TextChanged(object sender, EventArgs e)
         {
-            if (!string.IsNullOrEmpty(cbExportFormat.SelectedItem.ToString()) && !string.IsNullOrEmpty(txbExportPath.Text))
+            if (cbExportFormat.SelectedIndex>=0 && !string.IsNullOrEmpty(cbExportFormat.SelectedItem.ToString()) && !string.IsNullOrEmpty(txbExportPath.Text))
             {
                 btnSent.Enabled = true;
             }

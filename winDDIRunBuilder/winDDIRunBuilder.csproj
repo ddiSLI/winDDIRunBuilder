@@ -24,7 +24,7 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <InstallUrl>\\dd386\sys\freearea\DDIRunBuilder\Setup\</InstallUrl>
-    <ApplicationRevision>25</ApplicationRevision>
+    <ApplicationRevision>27</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -121,12 +121,6 @@
     <Compile Include="frmQC.Designer.cs">
       <DependentUpon>frmQC.cs</DependentUpon>
     </Compile>
-    <Compile Include="frmSourceSample.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="frmSourceSample.Designer.cs">
-      <DependentUpon>frmSourceSample.cs</DependentUpon>
-    </Compile>
     <Compile Include="InputFile.cs" />
     <Compile Include="IRunBuilder.cs" />
     <Compile Include="MapPlateSamples.cs" />
@@ -161,9 +155,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="frmQC.resx">
       <DependentUpon>frmQC.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="frmSourceSample.resx">
-      <DependentUpon>frmSourceSample.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
