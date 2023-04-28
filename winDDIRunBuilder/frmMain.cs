@@ -46,6 +46,22 @@ namespace winDDIRunBuilder
             InitializeComponent();
         }
 
+        public string VersionLabel
+        {
+            get
+            {
+                if (System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed)
+                {
+                    Version ver = System.Deployment.Application.ApplicationDeployment.CurrentDeployment.CurrentVersion;
+                    return string.Format("Product Name: {4}, Version: {0}.{1}.{2}.{3}", ver.Major, ver.Minor, ver.Build, ver.Revision, Assembly.GetEntryAssembly().GetName().Name);
+                }
+                else
+                {
+                    var ver = Assembly.GetExecutingAssembly().GetName().Version;
+                    return string.Format("Product Name: {4}, Version: {0}.{1}.{2}.{3}", ver.Major, ver.Minor, ver.Build, ver.Revision, Assembly.GetEntryAssembly().GetName().Name);
+                }
+            }
+        }
         private void frmMain_Load(object sender, EventArgs e)
         {
 
@@ -54,6 +70,13 @@ namespace winDDIRunBuilder
 
             try
             {
+                string runBuilderVersion = "1.0.0.32";
+                //var ver = Assembly.GetExecutingAssembly().GetName().Version;
+                //string runBuilderVersion = System.Windows.Forms.Application.pu;
+                //string runBuilderVersion = System.Windows.Forms.Application.ProductVersion;
+
+                this.Text += String.Format("  Version {0}", runBuilderVersion);
+
                 CurPlateSamples = new List<PlateSample>();
                 CurValidPlates = new List<ValidPlate>();
                 OutPlateSamples = new List<OutputPlateSample>();
@@ -114,6 +137,8 @@ namespace winDDIRunBuilder
             }
 
         }
+
+        
 
         private List<Protocol> GetProtocols()
         {
@@ -176,6 +201,29 @@ namespace winDDIRunBuilder
 
                 if (pIsFrmLoaded && cbProtocolCd.SelectedValue != null && cbProtocolCd.SelectedValue.ToString().Length > 0)
                 {
+                    //Clean properties
+                    txbPrompt.Text = "";
+                    CurPlateSamples = new List<PlateSample>();
+                    CurValidPlates = new List<ValidPlate>();
+                    OutPlateSamples = new List<OutputPlateSample>();
+                    InputFileValues = new List<InputFile>();
+                    ScannedDBPalte = new DBPlate();
+                    ScannedDBPlateSamples = new List<PlateSample>();
+
+                    cbPlates.Items.Clear();
+                    txbManualPlateId.Text = "";
+                    txbManualPlateDesc.Text = "";
+                    lblMsg.Text = "";
+                    lblMsg.ForeColor = Color.DarkBlue;
+                    btnCreateManualPlate.Enabled = false;
+                    btnPrintManuPlate.Enabled = false;
+
+                    dgvSamplePlate.Rows.Clear();
+                    dgvSamplePlate.Columns.Clear();
+                    dgvSamplePlate.Refresh();
+
+                    this.Size = new Size(1111, 390);
+
                     //Get current sesion serial No.
                     RepoSQL sqlService = new RepoSQL();
                     CurUniqueId = sqlService.GetSeries();
@@ -425,10 +473,15 @@ namespace winDDIRunBuilder
                     GetValidPlates();
                 }
 
-                //ProcessBCRPlates();
-                //ProcessPlates();
-                //SaveCreateWorklists();
-                //GetValidPlates();
+                //Just for developer using
+                if (Environment.UserName.ToUpper() == "SLI")
+                {
+                    ProcessBCRPlates();
+                    ProcessPlates();
+                    SaveCreateWorklists();
+                    GetValidPlates();
+                }
+
 
             }
             catch (Exception ex)
@@ -1368,7 +1421,7 @@ namespace winDDIRunBuilder
                 }
 
                 MapPlates(dtPlateSamples);
-                                
+
             }
             catch (Exception ex)
             {
@@ -1448,102 +1501,124 @@ namespace winDDIRunBuilder
         private void MapPlates(DataTable dtPlateSamples)
         {
             string curWell = "";
+            string smpItem = "";
 
-            dgvSamplePlate.Rows.Clear();
-            dgvSamplePlate.Columns.Clear();
-
-            if (dtPlateSamples != null && dtPlateSamples.Rows.Count > 0)
+            try
             {
-                foreach (DataColumn col in dtPlateSamples.Columns)
-                {
-                    if (col.ColumnName == "0")
-                    {
-                        DataGridViewTextBoxColumn dgvCol = new DataGridViewTextBoxColumn();
-                        dgvCol.Name = col.ColumnName;
-                        dgvCol.Width = 28;
-                        dgvSamplePlate.Columns.Add(dgvCol);
-                    }
-                    else
-                    {
-                        DataGridViewButtonColumn dgvBtn = new DataGridViewButtonColumn();
-                        dgvBtn.Name = col.ColumnName;
-                        dgvBtn.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
-                        dgvBtn.Width = 70;
-                        dgvSamplePlate.Columns.Add(dgvBtn);
-                    }
-                }
+                dgvSamplePlate.Rows.Clear();
+                dgvSamplePlate.Columns.Clear();
 
-                dgvSamplePlate.RowTemplate.Height = 50;
-                foreach (DataRow tRw in dtPlateSamples.Rows)
+                dgvSamplePlate.RowsDefaultCellStyle.Font = new Font("Microsoft Sans Serif", 7);
+
+                if (dtPlateSamples != null && dtPlateSamples.Rows.Count > 0)
                 {
-                    dgvSamplePlate.Rows.Add();
-                    for (int tCol = 0; tCol < dtPlateSamples.Columns.Count; tCol++)
+                    foreach (DataColumn col in dtPlateSamples.Columns)
                     {
-                        if (pIsRotated)
+                        if (col.ColumnName == "0")
                         {
-                            //Rotated
-                            if (tCol == dgvSamplePlate.ColumnCount - 1)
-                            {
-                                dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Value = tRw[tCol];
-                            }
-                            else
-                            {
-                                dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Value = tRw[tCol];
-
-                                //Put info to Tag
-                                if (tRw[tCol] == null)
-                                {
-                                    dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Tag = "Empty Sample";
-                                }
-                                else
-                                {
-                                    curWell = dgvSamplePlate.Columns[tCol].Name;
-                                    curWell += dgvSamplePlate.RowCount.ToString();
-                                    dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Tag = "Well is " + curWell;
-                                }
-                            }
+                            DataGridViewTextBoxColumn dgvCol = new DataGridViewTextBoxColumn();
+                            dgvCol.Name = col.ColumnName;
+                            dgvCol.Width = 28;
+                            dgvSamplePlate.Columns.Add(dgvCol);
                         }
                         else
                         {
-                            // Not Rotated
-                            if (tCol == 0)
-                            {
-                                dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Value = tRw[tCol];
-                            }
-                            else
-                            {
-                                dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Value = tRw[tCol];
+                            DataGridViewButtonColumn dgvBtn = new DataGridViewButtonColumn();
+                            dgvBtn.Name = col.ColumnName;
+                            dgvBtn.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+                            dgvBtn.Width = 70;
+                            dgvSamplePlate.Columns.Add(dgvBtn);
+                        }
+                    }
 
-                                //Put info to Tag
-                                if (tRw[tCol] == null)
+                    dgvSamplePlate.RowTemplate.Height = 50;
+                    foreach (DataRow tRw in dtPlateSamples.Rows)
+                    {
+                        dgvSamplePlate.Rows.Add();
+                        for (int tCol = 0; tCol < dtPlateSamples.Columns.Count; tCol++)
+                        {
+                            smpItem = tRw[tCol].ToString().Trim();
+                            if (smpItem.Length > 6)
+                            {
+                                smpItem = smpItem.Substring(0, 6) + "\n" + smpItem.Substring(6);
+                                //smpItem = smpItem.Substring(0, 10) + Environment.NewLine + smpItem.Substring(10);
+                            }
+
+                            if (pIsRotated)
+                            {
+                                //Rotated
+                                if (tCol == dgvSamplePlate.ColumnCount - 1)
                                 {
-                                    dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Tag = "Empty Sample";
+                                    dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Value = smpItem;
+                                    //dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Value = tRw[tCol];
                                 }
                                 else
                                 {
-                                    curWell = dgvSamplePlate[0, dgvSamplePlate.RowCount - 1].Value.ToString();
-                                    curWell += dgvSamplePlate.Columns[tCol].Name;
-                                    dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Tag = "Well is " + curWell;
+                                    dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Value = smpItem;
+                                    //dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Value = tRw[tCol];
+
+                                    //Put info to Tag
+                                    if (tRw[tCol] == null)
+                                    {
+                                        dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Tag = "Empty Sample";
+                                    }
+                                    else
+                                    {
+                                        curWell = dgvSamplePlate.Columns[tCol].Name;
+                                        curWell += dgvSamplePlate.RowCount.ToString();
+                                        dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Tag = "Well is " + curWell;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                // Not Rotated
+                                if (tCol == 0)
+                                {
+                                    dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Value = smpItem;
+                                    //dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Value = tRw[tCol];
+                                }
+                                else
+                                {
+                                    dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Value = smpItem;
+                                    //dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Value = tRw[tCol];
+
+                                    //Put info to Tag
+                                    if (tRw[tCol] == null)
+                                    {
+                                        dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Tag = "Empty Sample";
+                                    }
+                                    else
+                                    {
+                                        curWell = dgvSamplePlate[0, dgvSamplePlate.RowCount - 1].Value.ToString();
+                                        curWell += dgvSamplePlate.Columns[tCol].Name;
+                                        dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Tag = "Well is " + curWell;
+                                    }
+
+                                    //var sampleName = InputFileValues.Where(smp => smp.PlateId.ToUpper() == pSelectedPlatePage.ToUpper() &&
+                                    //                                         smp.ShortId == tRw[tCol].ToString()).Select(smp => smp.FullSampleId).FirstOrDefault();
+                                    //if (sampleName == null || string.IsNullOrEmpty(sampleName.ToString()))
+                                    //{
+                                    //    dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Tag = "empty sample";
+                                    //}
+                                    //else
+                                    //{
+                                    //    dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Tag = sampleName.ToString();
+                                    //}
                                 }
 
-                                //var sampleName = InputFileValues.Where(smp => smp.PlateId.ToUpper() == pSelectedPlatePage.ToUpper() &&
-                                //                                         smp.ShortId == tRw[tCol].ToString()).Select(smp => smp.FullSampleId).FirstOrDefault();
-                                //if (sampleName == null || string.IsNullOrEmpty(sampleName.ToString()))
-                                //{
-                                //    dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Tag = "empty sample";
-                                //}
-                                //else
-                                //{
-                                //    dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Tag = sampleName.ToString();
-                                //}
                             }
 
                         }
-
                     }
                 }
             }
+            catch (Exception ex)
+            {
+                string errMsg = "MapPlates() met errors: ";
+                errMsg += ex.Message;
 
+            }
         }
 
         private void btnPrint_Click(object sender, EventArgs e)
@@ -1699,7 +1774,7 @@ namespace winDDIRunBuilder
             catch (Exception ex)
             {
                 string errMsg = "GetMapAnyPlateSamples() met some issues:";
-                errMsg = Environment.NewLine + ex.Message;
+                errMsg += Environment.NewLine + ex.Message;
                 mapResult = errMsg;
             }
 
@@ -1709,10 +1784,20 @@ namespace winDDIRunBuilder
 
         private void fileWatcherBCR_Created(object sender, FileSystemEventArgs e)
         {
-            ProcessBCRPlates();
-            ProcessPlates();
-            SaveCreateWorklists();
-            GetValidPlates();
+            try
+            {
+                ProcessBCRPlates();
+                ProcessPlates();
+                SaveCreateWorklists();
+                GetValidPlates();
+
+            }
+            catch (Exception ex)
+            {
+                string errMsg = "fileWatcherBCR_Created() met some issues:";
+                errMsg += Environment.NewLine + ex.Message;
+                txbPrompt.Text = errMsg;
+            }
 
             txbBarcode.Text = "";
             txbBarcode.Focus();
@@ -2270,7 +2355,7 @@ namespace winDDIRunBuilder
                 //Add SourceHistory Plate samples and new plate samples
                 if (hasSourcePlate == "YES")
                 {
-                    plateSamples = GetPlateInSamples("SOURCE" , sourcePlateId, sourcePlate.Rotated);
+                    plateSamples = GetPlateInSamples("SOURCE", sourcePlateId, sourcePlate.Rotated);
                     //plateSamples = GetSourcePlateSamples(sourcePlateId);
 
                     hasSamples = backService.AddSamples(sourcePlateId, plateSamples);
@@ -2366,7 +2451,7 @@ namespace winDDIRunBuilder
                 {
                     foreach (var smp in samples)
                     {
-                        if ((SourceDest=="DEST" && smp.SampleType != "QCEND") || (SourceDest == "SOURCE" && smp.SampleType.IndexOf("QC")<0))
+                        if ((SourceDest == "DEST" && smp.SampleType != "QCEND") || (SourceDest == "SOURCE" && smp.SampleType.IndexOf("QC") < 0))
                         {
                             inSmp = new InputFile();
                             inSmp.ShortId = smp.SampleId;    // scanner read sample label
