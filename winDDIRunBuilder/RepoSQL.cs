@@ -441,8 +441,8 @@ namespace winDDIRunBuilder
                     cmd.Parameters.Add("@pSourcePlateId", SqlDbType.VarChar).Value = dbPlate.SourcePlateId;
                     cmd.Parameters.Add("@pSourcePlateVersion", SqlDbType.VarChar).Value = dbPlate.SourcePlateVersion;
                     cmd.Parameters.Add("@pPlateTimeVersion", SqlDbType.VarChar).Value = dbPlate.PlateVersion;
-
-
+                    cmd.Parameters.Add("@pUser", SqlDbType.VarChar).Value = user;
+ 
                     conn.Open();
                     cmd.ExecuteNonQuery();
                 }

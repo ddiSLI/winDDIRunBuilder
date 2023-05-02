@@ -70,7 +70,7 @@ namespace winDDIRunBuilder
 
             try
             {
-                string runBuilderVersion = "1.0.0.32";
+                string runBuilderVersion = "1.0.0.33";
                 //var ver = Assembly.GetExecutingAssembly().GetName().Version;
                 //string runBuilderVersion = System.Windows.Forms.Application.pu;
                 //string runBuilderVersion = System.Windows.Forms.Application.ProductVersion;
@@ -421,7 +421,7 @@ namespace winDDIRunBuilder
             string worklistName = "";
             bool hasInclude = false;
             bool hasBCR = false;
-
+            bool isNewDestPlate = false;
             try
             {
 
@@ -434,6 +434,8 @@ namespace winDDIRunBuilder
                     if (Convert.ToBoolean(rwPlate.Cells["Included"].Value))
                     {
                         hasInclude = true;
+                        isNewDestPlate = Convert.ToBoolean(rwPlate.Cells["DestPlateIsNew"].Value);
+
                         if (rwPlate.Cells["SourcePlate"].Value.ToString().IndexOf("BCR") >= 0)
                         {
                             hasBCR = true;
@@ -445,8 +447,11 @@ namespace winDDIRunBuilder
                         txbPrompt.Text += "The plate Barcode Printed for [" + barcode + "]" + Environment.NewLine;
 
                         //
-                        printPlateBarcode = new PrinBarCodeZXing();
-                        printPlateBarcode.Print(barcode, GetPrinterName());
+                        if (isNewDestPlate)
+                        {
+                            printPlateBarcode = new PrinBarCodeZXing();
+                            printPlateBarcode.Print(barcode, GetPrinterName());
+                        }
                         //
 
                         worklistName = rwPlate.Cells["CurWorkList"].Value.ToString();
@@ -608,7 +613,7 @@ namespace winDDIRunBuilder
             return actionResult;
         }
 
-        private string AddNewSpilloverValidPlate(string basePlateId, DBPlate dbPlate)
+        private string AddNewSpilloverValidPlate(string basePlateId, DBPlate dbPlate, string startWell="", string endtWell = "")
         {
             string actionResult = "SUCCCESS";
 
@@ -622,10 +627,8 @@ namespace winDDIRunBuilder
                     PlateType = "DEST",
                     SizeStartWell = findPlate.SizeStartWell,      //PlateSize
                     SizeEndWell = findPlate.SizeEndWell,          //PlateSize   
-                    StartX = findPlate.StartX,
-                    StartY = findPlate.StartY,
-                    EndX = findPlate.EndX,
-                    EndY = findPlate.EndY,
+                    StartWell = dbPlate.StartPos,
+                    EndWell=dbPlate.EndPos,
                     ExcludeWells = findPlate.ExcludeWells,
                     Exclude = string.Join(",", findPlate.Exclude),
                     Direction = findPlate.Direction,
@@ -795,12 +798,19 @@ namespace winDDIRunBuilder
                                             }
                                             else
                                             {
+                                                //Mapping spilt Plate sample
+                                                //update spilt samples DestPlateId,originalDestPateId=NewDestPlateId
+                                                OutPlateSamples.Where(ps => ps.DestPlateId.ToUpper() == destPlateId.ToUpper() && ps.DestId == pId.GroupName)
+                                                .ToList()
+                                                .ForEach(s => {s.DestPlateId = dbPlate.PlateId; 
+                                                });
+
                                                 //Add a new plate depends on Original Plate property
                                                 AddNewSpilloverValidPlate(destPlateId, dbPlate);
                                             }
 
                                             //Save to Plate
-                                            resultPlateSaveDB = sqlService.AddPlate(dbPlate);
+                                            resultPlateSaveDB = sqlService.AddPlate(dbPlate, Environment.UserName);
 
                                             //Save to Sample
                                             outSamples.ForEach(s =>
@@ -852,7 +862,7 @@ namespace winDDIRunBuilder
                                     });
 
                                     //Save to Plate
-                                    resultPlateSaveDB = sqlService.AddPlate(dbPlate);
+                                    resultPlateSaveDB = sqlService.AddPlate(dbPlate, Environment.UserName);
 
                                     //Save to Sample
                                     resultSampleSaveDB = sqlService.AddSamples(outSamples, Environment.UserName);
@@ -1623,16 +1633,20 @@ namespace winDDIRunBuilder
 
         private void btnPrint_Click(object sender, EventArgs e)
         {
-            string barCode = "";
-            if (dgvPlateSet.CurrentRow.Cells["DestPlate"].Value != null)
+            if (lblCurPlateId.Text.Trim().Length>0)
             {
-                barCode = dgvPlateSet.CurrentRow.Cells["DestPlate"].Value.ToString();
-
                 PrinBarCodeZXing printPlateBarcode = new PrinBarCodeZXing();
-                //PrintBarCode printPlateBarcode = new PrintBarCode();
-
-                printPlateBarcode.Print(barCode, GetPrinterName());
+                printPlateBarcode.Print(lblCurPlateId.Text.Trim(), GetPrinterName());
             }
+
+            //string barCode = "";
+            //if (dgvPlateSet.CurrentRow.Cells["DestPlate"].Value != null)
+            //{
+            //    barCode = dgvPlateSet.CurrentRow.Cells["DestPlate"].Value.ToString();
+            //    PrinBarCodeZXing printPlateBarcode = new PrinBarCodeZXing();
+            //    //PrintBarCode printPlateBarcode = new PrintBarCode();
+            //    printPlateBarcode.Print(barCode, GetPrinterName());
+            //}
 
             txbBarcode.Text = "";
             txbBarcode.Focus();
@@ -1667,6 +1681,7 @@ namespace winDDIRunBuilder
 
                             pCurMapPlateId = txbBarcode.Text.Trim();
 
+                            lblCurPlateId.Text= txbBarcode.Text.Trim();
                         }
                         else
                         {
@@ -1826,6 +1841,12 @@ namespace winDDIRunBuilder
 
                     sourcePlateId = (string)senderGrid.CurrentRow.Cells["SourcePlate"].Value;
                     destPlateId = (string)senderGrid.CurrentRow.Cells["DestPlate"].Value;
+
+                    if (included)
+                    {
+                        lblCurPlateId.Text = destPlateId;
+                    }
+
 
                     if (senderGrid.Columns[e.ColumnIndex].Name == "SourcePlateIsNew" && senderGrid.Columns[e.ColumnIndex] is DataGridViewCheckBoxColumn)
                     {
@@ -3044,7 +3065,7 @@ namespace winDDIRunBuilder
 
                         outSamples = transModel.DBSample2Outputs(ScannedDBPlateSamples);
 
-                        resultAddPlate = sqlService.AddPlate(ScannedDBPalte);
+                        resultAddPlate = sqlService.AddPlate(ScannedDBPalte, Environment.UserName);
                         if (resultAddPlate == "SUCCESS")
                         {
                             pCurMapPlateId = ScannedDBPalte.PlateId;

@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <startup>
+    <supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.6" />
+  </startup>
+  <connectionStrings>
+    <!--
+		<add name="cnnOracle_DEV" connectionString="Data Source=dev;User Id=develop;Password=quoxo;pooling=true" />
+		-->
+    <add name="cnnOracle_DEV" connectionString="Data Source=lims.headquarters.doctorsdata.com;User Id=sapphire;Password=vodo5gray;pooling=true" />
+    <add name="cnnOracle_PROD" connectionString="Data Source=lims.headquarters.doctorsdata.com;User Id=sapphire;Password=vodo5gray;pooling=true" />
+    <add name="cnnSQLReporting_DEV" connectionString="Data Source=COPIADBDEV\COPIA; Initial Catalog=StateReporting;User Id=COPIA;Password=copia;Integrated Security=false;" />
+    <add name="cnnSQLReporting_PROD" connectionString="Data Source=COPIADBDEV\COPIA; Initial Catalog=StateReporting;User Id=COPIA;Password=copia;Integrated Security=false;" />
+  </connectionStrings>
+  <appSettings>
+    <!--RunCondition: DEV, PROD-->
+    <add key="RunCondition" value="DEV" />
+	  
+    
+	<add key="PlateSettingFile_Dev" value="\\dd386\sys\freearea\DDIRunBuilder\Source\Plates.csv" />
+	<add key="PlateSettingFile_Prod" value="\\dd386\sys\freearea\DDIRunBuilder\Source\Plates.csv" />
+	
+	<!--<add key="BCROutput_DEV" value="\\dd386\sys\freearea\JANUS\Chemistry\BCR Output\" />
+    <add key="BCROutput_PROD" value="\\dd386\sys\freearea\JANUS\Chemistry\BCR Output\" />
+	<add key="RunBuilderOutput_DEV" value="\\dd386\sys\freearea\JANUS\Chemistry\RunBuilder Output\" />
+    <add key="RunBuilderOutput_PROD" value="\\dd386\sys\freearea\JANUS\Chemistry\RunBuilder Output\" />-->  
+	
+	  
+	<!--<add key="PlateSettingFile_Dev" value="C:\Users\sli\Documents\DDIRunBuilder\backup\Plates.csv" />
+	<add key="PlateSettingFile_Prod" value="C:\Users\sli\Documents\DDIRunBuilder\Plates.csv" />-->  
+	  
+    <!--<add key="BCROutput_DEV" value="C:\Users\sli\Documents\DDIRunBuilder\" />
+	<add key="BCROutput_PROD" value="C:\Users\sli\Documents\Logs\SFTransLog.txt" />
+	<add key="RunBuilderOutput_DEV" value="C:\Users\sli\Documents\DDIRunBuilder\" />
+	<add key="RunBuilderOutput_PROD" value="C:\Users\sli\Documents\Logs\SFTransLog.txt" />-->
+	  
+	  <!--http://ddi-jeff:1776/v1/worklist/my_batch-->
+	  <add key="DDIBatchClient_endpointPort_Dev" value="1776" />
+	  <!--<add key="DDIBatchClient_endpointUrl_Dev" value="http://192.168.254.74" />-->
+	  <add key="DDIBatchClient_endpointUrl_Dev" value="http://ddi-jeff" />
+	  <add key="DDIBatchClient_endpointResource" value="/v1/worklist" />
+	  
+
+	<!--http://prod.datagen.com:4001/verification/v1/shortidxref?shortids=111,112 -->
+    <!--SapphireAPI setting: DEV, PROD
+    <add key="SapphireClient_endpointPort_Dev" value="4001" />
+    <add key="SapphireClient_endpointUrl_Dev" value="http://prod.datagen.com" />
+    <add key="SapphireClient_endpointResource_GetSampleIds_Dev" value="verification/v1/shortidxref" />
+    <add key="DDIBatchClient_endpointPort_Dev" value="5011" />
+    <add key="DDIBatchClient_endpointUrl_Dev" value="http://192.168.254.74" />
+    <add key="DDIBatchClient_endpointResource_GetSampleIds_Dev" value="/v1/ddibatch" />
+    <add key="SapphireClient_endpointPort_Prod" value="4001" />
+    <add key="SapphireClient_endpointUrl_Prod" value="http://prod.datagen.com" />
+    <add key="SapphireClient_endpointResource_GetSampleIds_Prod" value="verification/v1/shortidxref" />
+    -->
+
+
+
+	  <add key="PlatePrinterName_Prod" value="ZDesigner" />
+
+	  
+	<add key="PlatePrinterName_Dev" value="ZDesigner" />
+
+	  <add key="Assay" value="eBeta,lyso,sIgA" />
+	  
+  </appSettings>
+  <runtime>
+    <assemblyBinding xmlns="urn:schemas-microsoft-com:asm.v1">
+      <dependentAssembly>
+        <assemblyIdentity name="Newtonsoft.Json" publicKeyToken="30ad4fe6b2a6aeed" culture="neutral" />
+        <bindingRedirect oldVersion="0.0.0.0-13.0.0.0" newVersion="13.0.0.0" />
+      </dependentAssembly>
+    </assemblyBinding>
+  </runtime>
+  <system.web>
+    <membership defaultProvider="ClientAuthenticationMembershipProvider">
+      <providers>
+        <add name="ClientAuthenticationMembershipProvider" type="System.Web.ClientServices.Providers.ClientFormsAuthenticationMembershipProvider, System.Web.Extensions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" serviceUri="" />
+      </providers>
+    </membership>
+    <roleManager defaultProvider="ClientRoleProvider" enabled="true">
+      <providers>
+        <add name="ClientRoleProvider" type="System.Web.ClientServices.Providers.ClientRoleProvider, System.Web.Extensions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" serviceUri="" cacheTimeout="86400" />
+      </providers>
+    </roleManager>
+  </system.web>
+</configuration>

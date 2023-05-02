@@ -29,10 +29,10 @@ namespace winDDIRunBuilder
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle14 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle16 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle15 = new System.Windows.Forms.DataGridViewCellStyle();
             this.label1 = new System.Windows.Forms.Label();
             this.cbProtocolCd = new System.Windows.Forms.ComboBox();
             this.gbPlate = new System.Windows.Forms.GroupBox();
@@ -77,6 +77,7 @@ namespace winDDIRunBuilder
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.btnPrintPlateBarcode = new System.Windows.Forms.Button();
             this.fileWatcherBCR = new System.IO.FileSystemWatcher();
+            this.lblCurPlateId = new System.Windows.Forms.Label();
             this.gbPlate.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvSamplePlate)).BeginInit();
@@ -271,14 +272,14 @@ namespace winDDIRunBuilder
             this.dgvSamplePlate.BackgroundColor = System.Drawing.SystemColors.Control;
             this.dgvSamplePlate.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.dgvSamplePlate.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgvSamplePlate.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle13.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle13.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle13.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle13.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle13.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle13.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgvSamplePlate.DefaultCellStyle = dataGridViewCellStyle13;
             this.dgvSamplePlate.Location = new System.Drawing.Point(177, 80);
             this.dgvSamplePlate.Name = "dgvSamplePlate";
             this.dgvSamplePlate.RowHeadersVisible = false;
@@ -363,6 +364,7 @@ namespace winDDIRunBuilder
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.lblCurPlateId);
             this.groupBox1.Controls.Add(this.lblJanusName);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.txbPrompt);
@@ -408,7 +410,7 @@ namespace winDDIRunBuilder
             this.txbPrompt.Name = "txbPrompt";
             this.txbPrompt.ReadOnly = true;
             this.txbPrompt.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txbPrompt.Size = new System.Drawing.Size(627, 59);
+            this.txbPrompt.Size = new System.Drawing.Size(540, 59);
             this.txbPrompt.TabIndex = 29;
             this.txbPrompt.Text = "Source File is ready to load. Or to get a existing batch to Modify.";
             // 
@@ -434,14 +436,14 @@ namespace winDDIRunBuilder
             this.dgvPlateSet.AllowUserToDeleteRows = false;
             this.dgvPlateSet.BackgroundColor = System.Drawing.SystemColors.Control;
             this.dgvPlateSet.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgvPlateSet.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle14.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle14.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle14.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle14.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle14.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle14.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgvPlateSet.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle14;
             this.dgvPlateSet.ColumnHeadersHeight = 40;
             this.dgvPlateSet.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Included,
@@ -464,8 +466,8 @@ namespace winDDIRunBuilder
             this.dgvPlateSet.Name = "dgvPlateSet";
             this.dgvPlateSet.RowHeadersVisible = false;
             this.dgvPlateSet.RowHeadersWidth = 51;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.dgvPlateSet.RowsDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle16.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.dgvPlateSet.RowsDefaultCellStyle = dataGridViewCellStyle16;
             this.dgvPlateSet.RowTemplate.Height = 42;
             this.dgvPlateSet.Size = new System.Drawing.Size(901, 177);
             this.dgvPlateSet.TabIndex = 27;
@@ -520,9 +522,9 @@ namespace winDDIRunBuilder
             // 
             // DestPlate
             // 
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.Color.Black;
-            this.DestPlate.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle15.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle15.ForeColor = System.Drawing.Color.Black;
+            this.DestPlate.DefaultCellStyle = dataGridViewCellStyle15;
             this.DestPlate.HeaderText = "Destination Plate";
             this.DestPlate.MinimumWidth = 6;
             this.DestPlate.Name = "DestPlate";
@@ -592,9 +594,9 @@ namespace winDDIRunBuilder
             this.btnExit.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnExit.Image = global::winDDIRunBuilder.Properties.Resources.UserExit32;
             this.btnExit.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnExit.Location = new System.Drawing.Point(7, 206);
+            this.btnExit.Location = new System.Drawing.Point(997, 16);
             this.btnExit.Name = "btnExit";
-            this.btnExit.Size = new System.Drawing.Size(154, 51);
+            this.btnExit.Size = new System.Drawing.Size(81, 51);
             this.btnExit.TabIndex = 20;
             this.btnExit.Text = "Exit";
             this.btnExit.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
@@ -618,7 +620,7 @@ namespace winDDIRunBuilder
             this.btnPrintPlateBarcode.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnPrintPlateBarcode.Image = global::winDDIRunBuilder.Properties.Resources.Print24;
             this.btnPrintPlateBarcode.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnPrintPlateBarcode.Location = new System.Drawing.Point(7, 144);
+            this.btnPrintPlateBarcode.Location = new System.Drawing.Point(7, 201);
             this.btnPrintPlateBarcode.Name = "btnPrintPlateBarcode";
             this.btnPrintPlateBarcode.Size = new System.Drawing.Size(154, 56);
             this.btnPrintPlateBarcode.TabIndex = 19;
@@ -634,10 +636,20 @@ namespace winDDIRunBuilder
             this.fileWatcherBCR.Changed += new System.IO.FileSystemEventHandler(this.fileWatcherBCR_Changed);
             this.fileWatcherBCR.Created += new System.IO.FileSystemEventHandler(this.fileWatcherBCR_Created);
             // 
+            // lblCurPlateId
+            // 
+            this.lblCurPlateId.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.lblCurPlateId.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.lblCurPlateId.Location = new System.Drawing.Point(7, 170);
+            this.lblCurPlateId.Name = "lblCurPlateId";
+            this.lblCurPlateId.Size = new System.Drawing.Size(154, 28);
+            this.lblCurPlateId.TabIndex = 44;
+            this.lblCurPlateId.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
             // frmMain
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.ClientSize = new System.Drawing.Size(1100, 353);
+            this.ClientSize = new System.Drawing.Size(1100, 347);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.gbPlate);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -705,5 +717,6 @@ namespace winDDIRunBuilder
         private System.Windows.Forms.TextBox txbManualPlateId;
         private System.Windows.Forms.Button btnPrintManuPlate;
         private System.Windows.Forms.Button btnQC;
+        private System.Windows.Forms.Label lblCurPlateId;
     }
 }
