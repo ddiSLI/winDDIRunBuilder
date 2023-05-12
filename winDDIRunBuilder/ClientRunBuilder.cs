@@ -43,9 +43,10 @@ namespace winDDIRunBuilder
                 PlatePrinterName = ConfigurationManager.AppSettings["PlatePrinterName_Dev"];
             }
 
-            Janus curJanus = new Janus();
+            List<Janus> curJanus = new List<Janus>();
             RepoSQL sqlService = new RepoSQL();
             curJanus = sqlService.GetJanus(System.Net.Dns.GetHostName());
+
             if (curJanus == null)
             {
                 Department = "";
@@ -56,12 +57,12 @@ namespace winDDIRunBuilder
              }
             else
             {
-                Department = curJanus.Department;
-                JanusName =curJanus.JanusName;
-                BCROutput = curJanus.BCROutput;
-                RunBuilderOutput = curJanus.RunBuilderOutput;
-                RunBuilderOutputArchive = curJanus.RunBuilderOutputArchive;
-                RunBuilderExport = curJanus.RunBuilderOutput;
+                Department = curJanus.FirstOrDefault().Department;
+                JanusName =curJanus.FirstOrDefault().JanusName;
+                BCROutput = curJanus.FirstOrDefault().BCROutput;
+                RunBuilderOutput = curJanus.FirstOrDefault().RunBuilderOutput;
+                RunBuilderOutputArchive = curJanus.FirstOrDefault().RunBuilderOutputArchive;
+                RunBuilderExport = curJanus.FirstOrDefault().RunBuilderExport;
             }
                         
         }

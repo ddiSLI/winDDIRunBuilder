@@ -8,6 +8,7 @@ namespace winDDIRunBuilder.Models
 {
     public class ValidPlate
     {
+        public string Department { set; get; }
         public string PlateName { set; get; }
         public string PlateId { set; get; }
         public string PlateType { set; get; } = "";

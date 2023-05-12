@@ -10,7 +10,7 @@ namespace winDDIRunBuilder
     interface ISQLService
     {
         string GetSeries(string Dept);
-        Janus GetJanus(string hostName);
+        List<Janus> GetJanus(string hostName);
         List<Protocol> GetProtocols(string dept);
 
         List<DBPlate> GetPlates(string plateId, string plateVersion=null);
@@ -23,6 +23,10 @@ namespace winDDIRunBuilder
         string AddPlateQCSamples(List<PlateSample> plateSamples,string user);
 
         string UpdatePlateQC(string plateId, string plateVersion, bool hasQC, string user);
+
+        string UpdateSampleStatus(List<SampleStatus> sampleStatus);
+
+        List<PlateSample> GetDeptSamples(DeptSample deptSample);
 
     }
 

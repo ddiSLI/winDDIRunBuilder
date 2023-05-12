@@ -22,6 +22,7 @@ namespace winDDIRunBuilder.Models
          public string Accept { set; get; }
         public string SampleId { set; get; }
         public string SampleType { set; get; }
+        public string Status { set; get; }
         public Dictionary<string,string> Attributes { get; set; }
 
     }

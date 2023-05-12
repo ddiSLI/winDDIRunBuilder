@@ -176,7 +176,7 @@ namespace winDDIRunBuilder
             this.txbPlateId.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txbPlateId.Location = new System.Drawing.Point(23, 32);
             this.txbPlateId.Name = "txbPlateId";
-            this.txbPlateId.Size = new System.Drawing.Size(187, 27);
+            this.txbPlateId.Size = new System.Drawing.Size(187, 23);
             this.txbPlateId.TabIndex = 53;
             // 
             // label2
@@ -216,7 +216,7 @@ namespace winDDIRunBuilder
             "Manual"});
             this.cbExportFormat.Location = new System.Drawing.Point(15, 43);
             this.cbExportFormat.Name = "cbExportFormat";
-            this.cbExportFormat.Size = new System.Drawing.Size(358, 28);
+            this.cbExportFormat.Size = new System.Drawing.Size(358, 25);
             this.cbExportFormat.TabIndex = 58;
             this.cbExportFormat.SelectedIndexChanged += new System.EventHandler(this.cbExportFormat_SelectedIndexChanged);
             // 
@@ -356,7 +356,7 @@ namespace winDDIRunBuilder
             this.cmbAssay.FormattingEnabled = true;
             this.cmbAssay.Location = new System.Drawing.Point(245, 32);
             this.cmbAssay.Name = "cmbAssay";
-            this.cmbAssay.Size = new System.Drawing.Size(190, 28);
+            this.cmbAssay.Size = new System.Drawing.Size(190, 25);
             this.cmbAssay.TabIndex = 63;
             // 
             // frmQC
@@ -376,8 +376,9 @@ namespace winDDIRunBuilder
             this.Controls.Add(this.btnAdd);
             this.Controls.Add(this.dgvQCSamples);
             this.Controls.Add(this.dgvSamplePlate);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Name = "frmQC";
-            this.Text = "frmQC";
+            this.Text = "QC - DDI RunBuilder";
             this.Load += new System.EventHandler(this.frmQC_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dgvSamplePlate)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvQCSamples)).EndInit();

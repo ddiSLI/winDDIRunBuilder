@@ -269,10 +269,14 @@ namespace winDDIRunBuilder
                         inSample.Add(sam.ShortId, "a");
                     }
 
+                    
+
                     if (isQC && sam.SampleType=="QC")
                     {
                         inSample.Add("QCId", sam.ShortId);
                     }
+
+
 
 
                     string jsonSample = JsonConvert.SerializeObject(new

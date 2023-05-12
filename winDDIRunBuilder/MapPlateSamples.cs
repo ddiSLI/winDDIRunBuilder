@@ -49,7 +49,7 @@ namespace winDDIRunBuilder
                     if (ScannedDBPlateSamples != null && ScannedDBPlateSamples.Count > 0)
                     {
                         //Reset windows size
-                        //this.Size = new Size(1111, 848);
+                        //this.Size = new Size(1280, 848);
 
                         foreach (var smp in ScannedDBPlateSamples)
                         {

@@ -243,6 +243,16 @@ namespace winDDIRunBuilder.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Go32 {
+            get {
+                object obj = ResourceManager.GetObject("Go32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap HideRight48 {
             get {
                 object obj = ResourceManager.GetObject("HideRight48", resourceCulture);
@@ -333,9 +343,29 @@ namespace winDDIRunBuilder.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Process32 {
+            get {
+                object obj = ResourceManager.GetObject("Process32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap qc {
             get {
                 object obj = ResourceManager.GetObject("qc", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Report32 {
+            get {
+                object obj = ResourceManager.GetObject("Report32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

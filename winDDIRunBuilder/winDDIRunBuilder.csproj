@@ -24,7 +24,7 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <InstallUrl>\\dd386\sys\freearea\DDIRunBuilder\Setup\</InstallUrl>
-    <ApplicationRevision>34</ApplicationRevision>
+    <ApplicationRevision>40</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -121,11 +121,18 @@
     <Compile Include="frmQC.Designer.cs">
       <DependentUpon>frmQC.cs</DependentUpon>
     </Compile>
+    <Compile Include="frmSampleStatus.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmSampleStatus.Designer.cs">
+      <DependentUpon>frmSampleStatus.cs</DependentUpon>
+    </Compile>
     <Compile Include="InputFile.cs" />
     <Compile Include="IRunBuilder.cs" />
     <Compile Include="MapPlateSamples.cs" />
     <Compile Include="Models\BCRSample.cs" />
     <Compile Include="Models\DBPlate.cs" />
+    <Compile Include="Models\DeptSample.cs" />
     <Compile Include="Models\InputPlate.cs" />
     <Compile Include="Models\InputSample.cs" />
     <Compile Include="Models\Janus.cs" />
@@ -135,6 +142,7 @@
     <Compile Include="Models\Protocol.cs" />
     <Compile Include="Models\ProtocolPlate.cs" />
     <Compile Include="Models\QCSample.cs" />
+    <Compile Include="Models\SampleStatus.cs" />
     <Compile Include="Models\ValidPlate.cs" />
     <Compile Include="ModelTransfer.cs" />
     <Compile Include="PrinBarCodeZXing.cs" />
@@ -155,6 +163,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="frmQC.resx">
       <DependentUpon>frmQC.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmSampleStatus.resx">
+      <DependentUpon>frmSampleStatus.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -313,6 +324,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Icons\Add32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\5211654791642418449-32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\4989360071577437010-32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\8324238931644666554-32.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

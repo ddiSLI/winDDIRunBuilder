@@ -8,6 +8,7 @@ namespace winDDIRunBuilder.Models
 {
     public class DBPlate
     {
+        public string Department { set; get; }
         public string PlateName { set; get; }
         public string PlateId { set; get; }
         public string HasQC { set; get; } = "0";
