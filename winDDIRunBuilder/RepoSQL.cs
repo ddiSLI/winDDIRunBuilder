@@ -738,6 +738,75 @@ namespace winDDIRunBuilder
 
             return samples;
         }
+
+        public List<ExportFile> GetExportFiles(string range="ACTIVE")
+        {
+            List<ExportFile> exports = new List<ExportFile>();
+            ExportFile exp = new ExportFile();
+
+            using (SqlConnection conn = new SqlConnection(CnsSQL))
+            {
+                SqlCommand cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = "uspRunBld_SelExports";
+
+                try
+                {
+                    cmd.Parameters.Add("@pRange", SqlDbType.VarChar).Value = range;
+
+                    conn.Open();
+                    SqlDataReader rdr = cmd.ExecuteReader();
+
+                    //DataTable dt = new DataTable();
+                    //dt.Load(rdr);
+
+                    if (rdr.HasRows)
+                    {
+                        while (rdr.Read())
+                        {
+                            exp = new ExportFile();
+                            exp.Id = rdr["Id"].ToString();
+                            exp.Name = rdr["SysName"]==null? "": rdr["SysName"].ToString();
+                            exp.WithHeader=(Boolean)rdr["WithHeader"];
+                            exp.Field0 = rdr["Field0"] == null ? "" : rdr["Field0"].ToString();
+                            exp.Field1 = rdr["Field1"] == null ? "" : rdr["Field1"].ToString();
+                            exp.Field2 = rdr["Field2"] == null ? "" : rdr["Field2"].ToString();
+                            exp.Field3 = rdr["Field3"] == null ? "" : rdr["Field3"].ToString();
+                            exp.Field4 = rdr["Field4"] == null ? "" : rdr["Field4"].ToString();
+                            exp.Field5 = rdr["Field5"] == null ? "" : rdr["Field5"].ToString();
+                            exp.Field6 = rdr["Field6"] == null ? "" : rdr["Field6"].ToString();
+                            exp.Field7 = rdr["Field7"] == null ? "" : rdr["Field7"].ToString();
+                            exp.Field8 = rdr["Field8"] == null ? "" : rdr["Field8"].ToString();
+                            exp.Field9 = rdr["Field9"] == null ? "" : rdr["Field9"].ToString();
+                            exp.ModifiedDate = rdr["ModifiedDate"].ToString();
+                            exp.ModifiedBy = rdr["ModifiedBy"].ToString();
+                            exp.IsActive = (Boolean)rdr["IsAvtive"];
+
+                            exports.Add(exp);
+                        }
+                    }
+
+                    rdr.Close();
+                }
+
+                catch (Exception ex)
+                {
+                    string msgEx = "SQL: GetExportFiles() met issue: ";
+                    msgEx += Environment.NewLine;
+                    msgEx += Environment.NewLine;
+                    msgEx += ex.Message;
+                    ErrMsg = ex.Message;
+                }
+                finally
+                {
+                    conn.Close();
+                }
+
+            }
+
+
+            return exports;
+        }
     }
 }
 

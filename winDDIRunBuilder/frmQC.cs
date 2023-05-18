@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
@@ -20,8 +21,9 @@ namespace winDDIRunBuilder
         public string PlateId { get; set; } = "";
         public DBPlate CurDBPlate { get; set; } = new DBPlate();
         public InputPlate QCInputPlate { get; set; } = new InputPlate();
-
+        private List<OutputPlateSample> HisQCSamples { get; set; }
         public string CurExportPath { get; set; }
+        private List<ExportFile> Exports { get; set; }
 
         private string pPlateSizeX = "";
         private string pPlateSizeY = "";
@@ -44,20 +46,36 @@ namespace winDDIRunBuilder
             List<string> assays = new List<string>();
             RepoSQL sqlService = new RepoSQL();
             List<DBPlate> dbPlates = new List<DBPlate>();
+            HisQCSamples = new List<OutputPlateSample>();
 
             try
             {
                 //Testing
                 //PlateId = "eBeta230228AH";
                 //
-                //
 
+                //Gen5
+                //Luminex GA - MAP
+                //Luminex GPP
+                //Aus
+                //ABI750
+                //Kashi.CSV
+                //Manual
+
+
+                Exports = new List<ExportFile>();
                 if (!string.IsNullOrEmpty(PlateId))
                 {
                     dbPlates = sqlService.GetPlates(PlateId).OrderByDescending(p => p.PlateVersion).ToList();
                     CurDBPlate = dbPlates.FirstOrDefault();
                     txbPlateId.Text = PlateId;
                     txbExportPath.Text = CurExportPath;
+
+                    //Set expoprts
+                    cbExportFormat.Items.Add("");
+                    Exports = sqlService.GetExportFiles(range: "ACTIVE");
+                    cbExportFormat.Items.AddRange(Exports.Select(s => s.Name).Cast<string>().ToArray());
+
                 }
 
                 if (CurDBPlate.PlateRotated)
@@ -73,9 +91,6 @@ namespace winDDIRunBuilder
 
 
                 SetWellXY();
-
-
-
 
                 //Get DBTests
                 assay = ConfigurationManager.AppSettings["Assay"];
@@ -113,7 +128,7 @@ namespace winDDIRunBuilder
                 {
                     mapPlateSamples.GetMapAnyPlateSamples(PlateId);
                     dtPlateSamples = mapPlateSamples.PlateSampleMapTable;
-                    MapPlates(dtPlateSamples);
+                    MapSamples(dtPlateSamples);
                     lastSampleWell = mapPlateSamples.LastSampleWell;
 
                     qcSamples = sqlService.GetQCSamples(qcPlate);
@@ -129,6 +144,12 @@ namespace winDDIRunBuilder
                 {
                     btnAddQC.Enabled = true;
                 }
+
+                //Testing
+                btnAddQC.Enabled = true;
+                //
+
+
             }
             catch (Exception ex)
             {
@@ -164,41 +185,60 @@ namespace winDDIRunBuilder
                         dgvQCSamples.Rows[iRw].Cells["Sample"].Value = qs.Sample;
                         dgvQCSamples.Rows[iRw].Cells["Prefix"].Value = qs.Prefix;
                         dgvQCSamples.Rows[iRw].Cells["HarvestId"].Value = qs.HarvestId;
+                        dgvQCSamples.Rows[iRw].Cells["QCType"].Value = "SYS";
 
                         if (qs.Well.ToUpper() == "END")
                         {
                             if (CurDBPlate.PlateRotated)
                             {
-                                if ((Char.Parse(lastSampleWell.Substring(0, 1)) <= Char.Parse(pPlateSizeX)) &&
-                                    (Convert.ToInt32(lastSampleWell.Substring(1)) < Convert.ToInt32(pPlateSizeY)))
+                                if (pHasQC)
                                 {
                                     wellX = lastSampleWell.Substring(0, 1);
-                                    //wellY = (Convert.ToInt32(lastSampleWell.Substring(1)) + 1).ToString();
-                                    wellY = ((char)((int)Char.Parse(lastSampleWell.Substring(1)) + 1)).ToString();
+                                    wellY = ((char)((int)Char.Parse(lastSampleWell.Substring(1)))).ToString();
                                 }
-                                else
+                                else if(! pHasQC)
                                 {
-                                    if (Convert.ToInt32(lastSampleWell.Substring(1)) == Convert.ToInt32(pPlateSizeY))
+                                    if ((Char.Parse(lastSampleWell.Substring(0, 1)) <= Char.Parse(pPlateSizeX)) &&
+                                    (Convert.ToInt32(lastSampleWell.Substring(1)) < Convert.ToInt32(pPlateSizeY)))
                                     {
-                                        wellX = (Char.Parse(lastSampleWell.Substring(0, 1)) + 1).ToString();
-                                        wellY = "1";
+                                        wellX = lastSampleWell.Substring(0, 1);
+                                        //wellY = (Convert.ToInt32(lastSampleWell.Substring(1)) + 1).ToString();
+                                        wellY = ((char)((int)Char.Parse(lastSampleWell.Substring(1)) + 1)).ToString();
+                                    }
+                                    else
+                                    {
+                                        if (Convert.ToInt32(lastSampleWell.Substring(1)) == Convert.ToInt32(pPlateSizeY))
+                                        {
+                                            wellX = (Char.Parse(lastSampleWell.Substring(0, 1)) + 1).ToString();
+                                            wellY = "1";
+                                        }
                                     }
                                 }
+
+
                             }
                             else
                             {
-                                if (Char.Parse(lastSampleWell.Substring(0, 1)) < Char.Parse(pPlateSizeY))
+                                if (pHasQC)
                                 {
                                     wellX = lastSampleWell.Substring(1);
-                                    wellY = ((char)((int)Char.Parse(lastSampleWell.Substring(0, 1)) + 1)).ToString();
-
+                                    wellY = ((char)((int)Char.Parse(lastSampleWell.Substring(0, 1)))).ToString();
                                 }
-                                else
+                                else if(! pHasQC)
                                 {
-                                    if (Convert.ToInt32(lastSampleWell.Substring(1)) < Convert.ToInt32(pPlateSizeX))
+                                    if (Char.Parse(lastSampleWell.Substring(0, 1)) < Char.Parse(pPlateSizeY))
                                     {
-                                        wellX = (Convert.ToInt32(lastSampleWell.Substring(1)) + 1).ToString();
-                                        wellY = "A";
+                                        wellX = lastSampleWell.Substring(1);
+                                        wellY = ((char)((int)Char.Parse(lastSampleWell.Substring(0, 1)) + 1)).ToString();
+
+                                    }
+                                    else
+                                    {
+                                        if (Convert.ToInt32(lastSampleWell.Substring(1)) < Convert.ToInt32(pPlateSizeX))
+                                        {
+                                            wellX = (Convert.ToInt32(lastSampleWell.Substring(1)) + 1).ToString();
+                                            wellY = "A";
+                                        }
                                     }
                                 }
                             }
@@ -268,15 +308,29 @@ namespace winDDIRunBuilder
             string sample = "";
             string wellX = "";
             string wellY = "";
+            string qcType = "";
             int iRw = 0;
 
             foreach (DataGridViewRow dr in dgvQCSamples.Rows)
             {
                 if (Convert.ToBoolean(dr.Cells["Include"].Value))
                 {
+                    qcType= dr.Cells["QCType"].Value.ToString();
+
                     // sample = dr.Cells["Sample"].Value.ToString() + "_QC";
                     //sample = dr.Cells["Prefix"].Value.ToString() + "_QC";
-                    sample = dr.Cells["HarvestId"].Value.ToString() + "_QC";
+
+                    if (qcType == "SYS")
+                    {
+                        sample = "QC_" + dr.Cells["HarvestId"].Value.ToString();
+                        sample = sample.Substring(0, 6) + "\n" + sample.Substring(6);
+                    }
+                    else
+                    {
+                        sample = "QC_" + dr.Cells["Sample"].Value.ToString();
+                        sample = sample.Substring(0, 6) + "\n" + sample.Substring(6);
+                    }
+
                     wellX = dr.Cells["WellX"].Value.ToString();
                     wellY = dr.Cells["WellY"].Value.ToString();
 
@@ -292,170 +346,172 @@ namespace winDDIRunBuilder
                             iRw = pAlpha.IndexOf(wellY);
                             dgvSamplePlate.Rows[iRw].Cells[wellX].Value = sample;
                         }
+                        dgvSamplePlate.Rows[iRw].Cells[wellX].Style.BackColor = Color.Yellow;
                     }
                 }
             }
         }
 
-        private void MapPlates(DataTable dtPlateSamples, bool pIsRotated = false)
+        private void MapSamples(DataTable dtPlateSamples, bool pIsRotated = false)
         {
             string curWell = "";
+            string smpItem = "";
 
-            dgvSamplePlate.Rows.Clear();
-            dgvSamplePlate.Columns.Clear();
+            HisQCSamples = new List<OutputPlateSample>();
 
-            if (dtPlateSamples != null && dtPlateSamples.Rows.Count > 0)
+            try
             {
-                foreach (DataColumn col in dtPlateSamples.Columns)
+                dgvSamplePlate.Rows.Clear();
+                dgvSamplePlate.Columns.Clear();
+                dgvSamplePlate.RowsDefaultCellStyle.Font = new Font("Microsoft Sans Serif", 7);
+
+                if (dtPlateSamples != null && dtPlateSamples.Rows.Count > 0)
                 {
-                    if (col.ColumnName == "0")
+                    foreach (DataColumn col in dtPlateSamples.Columns)
                     {
-                        DataGridViewTextBoxColumn dgvCol = new DataGridViewTextBoxColumn();
-                        dgvCol.Name = col.ColumnName;
-                        dgvCol.Width = 28;
-                        dgvSamplePlate.Columns.Add(dgvCol);
-                    }
-                    else
-                    {
-                        DataGridViewButtonColumn dgvBtn = new DataGridViewButtonColumn();
-                        dgvBtn.Name = col.ColumnName;
-                        dgvBtn.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
-                        dgvBtn.Width = 70;
-                        dgvSamplePlate.Columns.Add(dgvBtn);
-                    }
-                }
-
-                dgvSamplePlate.RowTemplate.Height = 50;
-                foreach (DataRow tRw in dtPlateSamples.Rows)
-                {
-                    dgvSamplePlate.Rows.Add();
-                    for (int tCol = 0; tCol < dtPlateSamples.Columns.Count; tCol++)
-                    {
-                        if (tRw[tCol] != null && tRw[tCol].ToString().IndexOf("QC") >= 0)
+                        if (col.ColumnName == "0")
                         {
-                            pHasQC = true;
-                        }
-
-                        if (pIsRotated)
-                        {
-                            //Rotated
-                            if (tCol == dgvSamplePlate.ColumnCount - 1)
-                            {
-                                dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Value = tRw[tCol];
-                            }
-                            else
-                            {
-                                dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Value = tRw[tCol];
-
-                                //Put info to Tag
-                                if (tRw[tCol] == null)
-                                {
-                                    dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Tag = "Empty Sample";
-                                }
-                                else
-                                {
-                                    curWell = dgvSamplePlate.Columns[tCol].Name;
-                                    curWell += dgvSamplePlate.RowCount.ToString();
-                                    dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Tag = "Well is " + curWell;
-                                }
-                            }
+                            DataGridViewTextBoxColumn dgvCol = new DataGridViewTextBoxColumn();
+                            dgvCol.Name = col.ColumnName;
+                            dgvCol.Width = 28;
+                            dgvSamplePlate.Columns.Add(dgvCol);
                         }
                         else
                         {
-                            // Not Rotated
-                            if (tCol == 0)
-                            {
-                                dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Value = tRw[tCol];
-                            }
-                            else
-                            {
-                                dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Value = tRw[tCol];
+                            DataGridViewButtonColumn dgvBtn = new DataGridViewButtonColumn();
+                            dgvBtn.Name = col.ColumnName;
+                            dgvBtn.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+                            dgvBtn.Width = 70;
+                            dgvSamplePlate.Columns.Add(dgvBtn);
+                        }
+                    }
 
-                                //Put info to Tag
-                                if (tRw[tCol] == null)
+                    dgvSamplePlate.RowTemplate.Height = 50;
+                    foreach (DataRow tRw in dtPlateSamples.Rows)
+                    {
+                        dgvSamplePlate.Rows.Add();
+                        for (int tCol = 0; tCol < dtPlateSamples.Columns.Count; tCol++)
+                        {
+                            if (tRw[tCol] != null && tRw[tCol].ToString().IndexOf("QC") >= 0)
+                            {
+                                pHasQC = true;
+                            }
+
+                            smpItem = tRw[tCol].ToString().Trim();
+
+                            if (smpItem.IndexOf("QC") >= 0)
+                            {
+                                HisQCSamples.Add(new OutputPlateSample {
+                                    SampleId= smpItem.Replace("QC_",""),
+                                    Status="HISQC"
+                                });
+                            }
+
+                            if (smpItem.Length > 6)
+                            {
+                                smpItem = smpItem.Substring(0, 6) + "\n" + smpItem.Substring(6);
+                                //smpItem = smpItem.Substring(0, 10) + Environment.NewLine + smpItem.Substring(10);
+                            }
+
+                            if (pIsRotated)
+                            {
+                                //Rotated
+                                if (tCol == dgvSamplePlate.ColumnCount - 1)
                                 {
-                                    dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Tag = "Empty Sample";
+                                    dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Value = smpItem;
+                                    //dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Value = tRw[tCol];
                                 }
                                 else
                                 {
-                                    curWell = dgvSamplePlate[0, dgvSamplePlate.RowCount - 1].Value.ToString();
-                                    curWell += dgvSamplePlate.Columns[tCol].Name;
-                                    dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Tag = "Well is " + curWell;
+                                    dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Value = smpItem;
+                                    //dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Value = tRw[tCol];
+
+                                    //Put info to Tag
+                                    if (tRw[tCol] == null)
+                                    {
+                                        dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Tag = "Empty Sample";
+                                    }
+                                    else
+                                    {
+                                        curWell = dgvSamplePlate.Columns[tCol].Name;
+                                        curWell += dgvSamplePlate.RowCount.ToString();
+                                        dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Tag = "Well is " + curWell;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                // Not Rotated
+                                if (tCol == 0)
+                                {
+                                    dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Value = smpItem;
+                                    //dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Value = tRw[tCol];
+                                }
+                                else
+                                {
+                                    dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Value = smpItem;
+                                    //dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Value = tRw[tCol];
+
+                                    //Put info to Tag
+                                    if (tRw[tCol] == null)
+                                    {
+                                        dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Tag = "Empty Sample";
+                                    }
+                                    else
+                                    {
+                                        curWell = dgvSamplePlate[0, dgvSamplePlate.RowCount - 1].Value.ToString();
+                                        curWell += dgvSamplePlate.Columns[tCol].Name;
+                                        dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Tag = "Well is " + curWell;
+                                    }
+
+                                    //var sampleName = InputFileValues.Where(smp => smp.PlateId.ToUpper() == pSelectedPlatePage.ToUpper() &&
+                                    //                                         smp.ShortId == tRw[tCol].ToString()).Select(smp => smp.FullSampleId).FirstOrDefault();
+                                    //if (sampleName == null || string.IsNullOrEmpty(sampleName.ToString()))
+                                    //{
+                                    //    dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Tag = "empty sample";
+                                    //}
+                                    //else
+                                    //{
+                                    //    dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Tag = sampleName.ToString();
+                                    //}
                                 }
 
-                                //var sampleName = InputFileValues.Where(smp => smp.PlateId.ToUpper() == pSelectedPlatePage.ToUpper() &&
-                                //                                         smp.ShortId == tRw[tCol].ToString()).Select(smp => smp.FullSampleId).FirstOrDefault();
-                                //if (sampleName == null || string.IsNullOrEmpty(sampleName.ToString()))
-                                //{
-                                //    dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Tag = "empty sample";
-                                //}
-                                //else
-                                //{
-                                //    dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Tag = sampleName.ToString();
-                                //}
+                            }
+
+                            //Set sample color
+                            if (dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Value.ToString().Length > 2)
+                            {
+                                if (dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Value.ToString().IndexOf("QC") >= 0)
+                                {
+                                    dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Style.BackColor = Color.Yellow;
+                                }
+                                else if (dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Value.ToString().IndexOf("REJ") >= 0)
+                                {
+                                    dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Style.BackColor = Color.HotPink;
+                                }
+                                else
+                                {
+                                    dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Style.BackColor = Color.LightGray;
+                                }
                             }
 
                         }
-
                     }
                 }
             }
-
-        }
-
-        private void dgvSamplePlate_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
-        {
-            bool pIsRotated = false;
-
-            if (e.RowIndex < 0)
-                return;
-
-            //I supposed your button column is at index 0
-            //if (e.ColumnIndex > 0 && string.IsNullOrEmpty(e.Value.ToString()) == false)
-            if (string.IsNullOrEmpty(e.Value.ToString()) == false)
+            catch (Exception ex)
             {
-                //if ((pIsRotated == false && e.ColumnIndex > 0) || (pIsRotated && e.ColumnIndex < dgvSamplePlate.ColumnCount - 1))
-                if (pIsRotated == false && e.ColumnIndex > 0)
-                {
-                    e.Paint(e.CellBounds, DataGridViewPaintParts.All);
-
-                    var w = Properties.Resources.tubeBlue64.Width / 3;  //Properties.Resources.tubeBlue64.Width;
-                    var h = Properties.Resources.tube64.Height / 3;     // Properties.Resources.tube64.Height;
-                    var x = e.CellBounds.Left + (e.CellBounds.Width - w) / 30; // e.CellBounds.Left + (e.CellBounds.Width - w) / 2;
-                    var y = e.CellBounds.Top + (e.CellBounds.Height - h) / 5; // e.CellBounds.Top + (e.CellBounds.Height - h) / 2;
-
-                    if (e.Value.ToString().IndexOf("QC") >= 0)
-                    {
-                        e.Graphics.DrawImage(Properties.Resources.tubePurple64, new Rectangle(x, y, w, h));
-                    }
-                    else
-                    {
-                        e.Graphics.DrawImage(Properties.Resources.tubeBlue64, new Rectangle(x, y, w, h));
-                    }
-
-
-
-                    e.Handled = true;
-                }
-                else if (pIsRotated && e.ColumnIndex < dgvSamplePlate.ColumnCount - 1)
-                {
-                    e.Paint(e.CellBounds, DataGridViewPaintParts.All);
-
-                    var w = Properties.Resources.tubeBlue64.Width / 3;  //Properties.Resources.tubeBlue64.Width;
-                    var h = Properties.Resources.tube64.Height / 3;     // Properties.Resources.tube64.Height;
-                    var x = e.CellBounds.Left + (e.CellBounds.Width - w) / 30; // e.CellBounds.Left + (e.CellBounds.Width - w) / 2;
-                    var y = e.CellBounds.Top + (e.CellBounds.Height - h) / 5; // e.CellBounds.Top + (e.CellBounds.Height - h) / 2;
-
-                    e.Graphics.DrawImage(Properties.Resources.tubeBlue64, new Rectangle(x, y, w, h));
-                    e.Handled = true;
-                }
-
+                string errMsg = "MapSamples() met errors: ";
+                errMsg += ex.Message;
+                lblMsg.Text = errMsg;
             }
+
         }
 
         private void dgvSamplePlate_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             var senderGrid = (DataGridView)sender;
+            string curCellValue = "";
             //string sourcePlate = "";
             //string destPlate = "";
 
@@ -475,9 +531,14 @@ namespace winDDIRunBuilder
 
                     if (senderGrid.Columns[e.ColumnIndex] is DataGridViewButtonColumn)
                     {
+                        //remove newline
+                        curCellValue = senderGrid.CurrentCell.Value.ToString();
+                        curCellValue = curCellValue.Replace("\n", "").Replace("\r", "");
+
                         senderGrid.CommitEdit(DataGridViewDataErrorContexts.Commit);
                         lblMsg.ForeColor = Color.DarkBlue;
-                        lblMsg.Text = "Tube Sample: " + senderGrid.CurrentCell.Value + "; [ " + senderGrid.CurrentCell.Tag + " ]";
+                        lblMsg.Text = "Tube Sample: " + curCellValue + "; [ " + senderGrid.CurrentCell.Tag + " ]";
+                        //lblMsg.Text = "Tube Sample: " + senderGrid.CurrentCell.Value + "; [ " + senderGrid.CurrentCell.Tag + " ]";
                         //lblMsg.Text = "Tube -" + senderGrid.CurrentCell.Value + " sample is : [ " + senderGrid.CurrentCell.Tag + " ]";
                     }
 
@@ -508,13 +569,7 @@ namespace winDDIRunBuilder
                                 dgvQCSamples.CurrentRow.Cells["WellY"].Value = cellY;
                             }
                         }
-
-
                     }
-
-
-
-
                 }
 
             }
@@ -539,6 +594,8 @@ namespace winDDIRunBuilder
             cbCell = new DataGridViewComboBoxCell();
             cbCell = (DataGridViewComboBoxCell)dgvQCSamples.Rows[dgvQCSamples.Rows.Count - 1].Cells["WellY"];
             cbCell.Items.AddRange(WellYs.ToArray());
+
+            dgvQCSamples.Rows[dgvQCSamples.Rows.Count - 1].Cells["QCType"].Value = "TEMP";
         }
 
         private void SetWellXY(string sizeX = "A1", string sizeY = "H12", bool isRotated = false)
@@ -620,11 +677,11 @@ namespace winDDIRunBuilder
             try
             {
                 curDate = curDateTime.Month.ToString("0#") + curDateTime.Day.ToString("0#") + curDateTime.Year.ToString("##");
-                curTime= curDateTime.Hour.ToString("0#") + curDateTime.Minute.ToString("0#") + curDateTime.Second.ToString("##");
+                curTime = curDateTime.Hour.ToString("0#") + curDateTime.Minute.ToString("0#") + curDateTime.Second.ToString("##");
 
                 if (!string.IsNullOrEmpty(cbExportFormat.SelectedItem.ToString()) && !string.IsNullOrEmpty(txbExportPath.Text))
                 {
-                    if (txbExportPath.Text.Trim().LastIndexOf("\\")== txbExportPath.Text.Trim().Length - 1)
+                    if (txbExportPath.Text.Trim().LastIndexOf("\\") == txbExportPath.Text.Trim().Length - 1)
                     {
                         exportFile = txbExportPath.Text.Trim();
                     }
@@ -632,7 +689,7 @@ namespace winDDIRunBuilder
                     {
                         exportFile = txbExportPath.Text.Trim() + "\\";
                     }
-                    
+
 
                     //if (cbExportFormat.SelectedIndex == 0)
                     //{
@@ -672,26 +729,31 @@ namespace winDDIRunBuilder
                         exportFile += "_" + curTime;
                         exportFile += ".CSV";
                     }
-                    
 
-                    //Collect plateSamples
+                    //Collect plateSamples for export
                     rawQCSamples = MakePlateQCSamples();
+
+                    //Collect QCSamples for upinsert
                     qcSamples = MakeQCSamples();
 
-                    //Call back serviceAPI
-                    //Tanslate QC Samples
-                    //dtoworklist = ProcessQCSamples(rawQCSamples);
-
-                    //
-                    //pltQCSamples = GetQCPlateSamples(dtoworklist);
-
-                    if (pHasQC == false)
+                    if(HisQCSamples !=null && HisQCSamples.Count > 0)
                     {
-                        //Add QC samples
+                        foreach(var hisQC in HisQCSamples)
+                        {
+                            qcSamples.RemoveAll(qc => qc.SampleId== hisQC.SampleId);
+                        }
+                    }
+
+                    
+                    //Add QC samples
+                    if(qcSamples !=null && qcSamples.Count > 0)
                         resultSaveSample = sqlService.AddSamples(qcSamples, Environment.UserName);
                         //resultSaveSample = sqlService.AddPlateQCSamples(rawQCSamples, Environment.UserName);
 
-                        //Update Plate Status
+
+                    if (pHasQC == false)
+                    {
+                         //Update Plate Status
                         if (resultSaveSample == "SUCCESS")
                         {
                             resultUpdPlate = sqlService.UpdatePlateQC(CurDBPlate.PlateId, CurDBPlate.PlateVersion, hasQC: true, Environment.UserName);
@@ -699,12 +761,12 @@ namespace winDDIRunBuilder
                     }
 
                     //Sent QC Samples
-                    if (WriteExport(CurDBPlate.PlateId, rawQCSamples, exportFile) == "SUCCESS")
+                    //if (WriteExport(CurDBPlate.PlateId, rawQCSamples, exportFile) == "SUCCESS")
+                    if (CreateExport(CurDBPlate.PlateId, rawQCSamples, exportFile) == "SUCCESS")
                     {
                         lblMsg.Text = "The Following samples exported to " + exportFile;
                         lblMsg.ForeColor = Color.DarkBlue;
                     }
-
                 }
 
             }
@@ -806,10 +868,12 @@ namespace winDDIRunBuilder
                                     well += dgvSamplePlate[cols - 1, rw].Value.ToString();
 
                                     sample = dgvSamplePlate[cl, rw].Value.ToString();
+                                    sample = sample.Replace("\n", "").Replace("\r", "");
 
                                     if (sample.IndexOf("QC") >= 0)
                                     {
-                                        pltSmp.SampleId = sample.Remove(sample.IndexOf("_QC"));
+                                        pltSmp.SampleId = sample.Replace("QC_", "");
+                                        //pltSmp.SampleId = sample.Remove(sample.IndexOf("_QC"));
                                         pltSmp.SampleType = "QC";
 
                                         pltSmp.DestWellId = well;
@@ -842,10 +906,12 @@ namespace winDDIRunBuilder
                                     well = dgvSamplePlate[0, rw].Value.ToString();
                                     well += dgvSamplePlate.Columns[cl].Name;
                                     sample = dgvSamplePlate[cl, rw].Value.ToString();
+                                    sample = sample.Replace("\n", "").Replace("\r", "");
 
                                     if (sample.IndexOf("QC") >= 0)
                                     {
-                                        pltSmp.SampleId = sample.Remove(sample.IndexOf("_QC"));
+                                        pltSmp.SampleId = sample.Replace("QC_", "");
+                                        //pltSmp.SampleId = sample.Remove(sample.IndexOf("_QC"));
                                         pltSmp.SampleType = "QC";
 
                                         pltSmp.DestWellId = well;
@@ -915,10 +981,12 @@ namespace winDDIRunBuilder
                                     well += dgvSamplePlate[cols - 1, rw].Value.ToString();
 
                                     sample = dgvSamplePlate[cl, rw].Value.ToString();
+                                    sample = sample.Replace("\n", "").Replace("\r", "");
 
                                     if (sample.IndexOf("QC") >= 0)
                                     {
-                                        pltSmp.SampleId = sample.Remove(sample.IndexOf("_QC"));
+                                        pltSmp.SampleId = sample.Replace("QC_", "");
+                                        //pltSmp.SampleId = sample.Remove(sample.IndexOf("QC_"));
                                         pltSmp.SampleType = "QC";
                                     }
                                     else
@@ -948,10 +1016,12 @@ namespace winDDIRunBuilder
                                     well = dgvSamplePlate[0, rw].Value.ToString();
                                     well += dgvSamplePlate.Columns[cl].Name;
                                     sample = dgvSamplePlate[cl, rw].Value.ToString();
+                                    sample = sample.Replace("\n", "").Replace("\r", "");
 
                                     if (sample.IndexOf("QC") >= 0)
                                     {
-                                        pltSmp.SampleId = sample.Remove(sample.IndexOf("_QC"));
+                                        pltSmp.SampleId = sample.Replace("QC_", "");
+                                        //pltSmp.SampleId = sample.Remove(sample.IndexOf("QC_"));
                                         pltSmp.SampleType = "QC";
                                     }
                                     else
@@ -981,53 +1051,6 @@ namespace winDDIRunBuilder
 
         }
 
-        public string WriteExport(string plateId, List<PlateSample> plateSamples, string exportPath)
-        {
-            string actionResult = "NA";
-            string exportArchivePath = "";
-
-            string itemValue = "";
-            string extValue = "";
-
-            string plateFileItems = "SampleID, Well, SampleType ";
-
-            try
-            {
-
-                using (var writer = new StreamWriter(exportPath))
-                {
-                    //writer.WriteLine(plateFileItems);
-
-
-                    foreach (var item in plateSamples)
-                    {
-                        //itemValue = plateId + ",";
-                        itemValue = item.SampleId.Replace("-", "") + ",";
-                        //itemValue += item.Well + ",";
-                        //itemValue += item.SampleType + "";
-
-                        itemValue += extValue;
-
-                        writer.WriteLine(itemValue);
-                        itemValue = "";
-                    }
-                }
-
-                //Archive
-                //File.Copy(exportPath, exportArchivePath, true);
-
-                actionResult = "SUCCESS";
-            }
-            catch (Exception ex)
-            {
-                string errMsg = "{WriteExport()} met the following error: ";
-                errMsg += Environment.NewLine;
-                errMsg += ex.Message;
-                actionResult = "ERROR:" + errMsg;
-            }
-
-            return actionResult;
-        }
 
         private List<DtoWorklist> ProcessQCSamples(List<PlateSample> rawQCSamples)
         {
@@ -1198,7 +1221,7 @@ namespace winDDIRunBuilder
 
         private void txbExportPath_TextChanged(object sender, EventArgs e)
         {
-            if (cbExportFormat.SelectedIndex>=0 && !string.IsNullOrEmpty(cbExportFormat.SelectedItem.ToString()) && !string.IsNullOrEmpty(txbExportPath.Text))
+            if (cbExportFormat.SelectedIndex >= 0 && !string.IsNullOrEmpty(cbExportFormat.SelectedItem.ToString()) && !string.IsNullOrEmpty(txbExportPath.Text))
             {
                 btnSent.Enabled = true;
             }
@@ -1208,10 +1231,174 @@ namespace winDDIRunBuilder
             }
         }
 
+        public string CreateExport(string plateId, List<PlateSample> plateSamples, string exportPath)
+        {
+            string actionResult = "NA";
+            string exportArchivePath = "";
+
+            string itemValue = "";
+            string curValue = "";
+
+            string fileHeader = "SampleID, Well, SampleType ";
+            List<string> fileItems = new List<string>();
+            ExportFile export = new ExportFile();
+            bool isFirstItem;
+
+            try
+            {
+                export = Exports.FirstOrDefault(exp => exp.Name == cbExportFormat.SelectedItem.ToString());
+                if (!string.IsNullOrEmpty(export.Field0))
+                    fileItems.Add(export.Field0);
+                if (!string.IsNullOrEmpty(export.Field1))
+                    fileItems.Add(export.Field1);
+                if (!string.IsNullOrEmpty(export.Field2))
+                    fileItems.Add(export.Field2);
+                if (!string.IsNullOrEmpty(export.Field3))
+                    fileItems.Add(export.Field3);
+                if (!string.IsNullOrEmpty(export.Field4))
+                    fileItems.Add(export.Field4);
+                if (!string.IsNullOrEmpty(export.Field5))
+                    fileItems.Add(export.Field5);
+                if (!string.IsNullOrEmpty(export.Field6))
+                    fileItems.Add(export.Field6);
+                if (!string.IsNullOrEmpty(export.Field7))
+                    fileItems.Add(export.Field7);
+                if (!string.IsNullOrEmpty(export.Field8))
+                    fileItems.Add(export.Field8);
+                if (!string.IsNullOrEmpty(export.Field9))
+                    fileItems.Add(export.Field9);
+
+                if (export.WithHeader)
+                {
+                    isFirstItem = true;
+                    foreach (var itm in fileItems)
+                    {
+                        if (isFirstItem)
+                        {
+                            fileHeader = itm;
+                            isFirstItem = false;
+                        }
+                        else
+                        {
+                            fileHeader += "," + itm;
+                        }
+                    }
+                }
+
+                using (var writer = new StreamWriter(exportPath))
+                {
+                    if (export.WithHeader)
+                        writer.WriteLine(fileHeader);
+
+
+                    foreach (var item in plateSamples)
+                    {
+                        isFirstItem = true;
+                        foreach (var head in fileItems)
+                        {
+                            Type t = item.GetType();
+                            PropertyInfo[] props = t.GetProperties();
+                            foreach (var prop in props)
+                            {
+                                if (prop.Name.ToUpper() == head.ToUpper())
+                                {
+                                    curValue = prop.GetValue(item) == null ? "" : prop.GetValue(item).ToString();
+                                    if (isFirstItem)
+                                    {
+                                        itemValue += curValue;
+                                        isFirstItem = false;
+                                    }
+                                    else
+                                    {
+                                        itemValue += "," + curValue;
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+
+                        writer.WriteLine(itemValue);
+                        itemValue = "";
+                    }
+                }
+
+                //Archive
+                //File.Copy(exportPath, exportArchivePath, true);
+
+                actionResult = "SUCCESS";
+            }
+            catch (Exception ex)
+            {
+                string errMsg = "{CreateExport()} met the following error: ";
+                errMsg += Environment.NewLine;
+                errMsg += ex.Message;
+                actionResult = "ERROR:" + errMsg;
+            }
+
+            return actionResult;
+        }
+
+        public string WriteExport(string plateId, List<PlateSample> plateSamples, string exportPath)
+        {
+            string actionResult = "NA";
+            string exportArchivePath = "";
+
+            string itemValue = "";
+            string extValue = "";
+
+            string plateFileItems = "SampleID, Well, SampleType ";
+
+            try
+            {
+
+
+
+                using (var writer = new StreamWriter(exportPath))
+                {
+                    //writer.WriteLine(plateFileItems);
+
+
+                    foreach (var item in plateSamples)
+                    {
+
+
+
+                        //itemValue = plateId + ",";
+                        itemValue = item.SampleId;
+                        //itemValue = item.SampleId.Replace("-", "") + ",";
+                        //itemValue += item.Well + ",";
+                        //itemValue += item.SampleType + "";
+
+                        if (!string.IsNullOrEmpty(extValue))
+                            itemValue += "," + extValue;
+
+                        writer.WriteLine(itemValue);
+                        itemValue = "";
+                    }
+                }
+
+                //Archive
+                //File.Copy(exportPath, exportArchivePath, true);
+
+                actionResult = "SUCCESS";
+            }
+            catch (Exception ex)
+            {
+                string errMsg = "{WriteExport()} met the following error: ";
+                errMsg += Environment.NewLine;
+                errMsg += ex.Message;
+                actionResult = "ERROR:" + errMsg;
+            }
+
+            return actionResult;
+        }
+
+
         private void btnGoBack_Click(object sender, EventArgs e)
         {
             this.DialogResult = DialogResult.OK;
             this.Close();
         }
+
     }
 }

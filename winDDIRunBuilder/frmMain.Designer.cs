@@ -37,13 +37,18 @@ namespace winDDIRunBuilder
             this.cbProtocolCd = new System.Windows.Forms.ComboBox();
             this.gbPlate = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.btnPrintManuPlate = new System.Windows.Forms.Button();
+            this.btnCreateManualPlate = new System.Windows.Forms.Button();
             this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.txbManualPlateDesc = new System.Windows.Forms.TextBox();
             this.txbManualPlateId = new System.Windows.Forms.TextBox();
+            this.btnCloseMapping = new System.Windows.Forms.Button();
             this.dgvSamplePlate = new System.Windows.Forms.DataGridView();
             this.label3 = new System.Windows.Forms.Label();
             this.cbPlates = new System.Windows.Forms.ComboBox();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             this.lblMsg = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.txbBarcode = new System.Windows.Forms.TextBox();
@@ -52,6 +57,7 @@ namespace winDDIRunBuilder
             this.lblJanusName = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.txbPrompt = new System.Windows.Forms.TextBox();
+            this.btnGo = new System.Windows.Forms.Button();
             this.dgvPlateSet = new System.Windows.Forms.DataGridView();
             this.Included = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.PlateDesc = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -67,25 +73,19 @@ namespace winDDIRunBuilder
             this.ProcessedWL = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.MultiOutput = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.ProcessType = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.btnPrintPlateBarcode = new System.Windows.Forms.Button();
             this.fileWatcherBCR = new System.IO.FileSystemWatcher();
             this.btnSampleStatus = new System.Windows.Forms.Button();
             this.btnQC = new System.Windows.Forms.Button();
-            this.btnGo = new System.Windows.Forms.Button();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.btnPrintPlateBarcode = new System.Windows.Forms.Button();
-            this.btnPrintManuPlate = new System.Windows.Forms.Button();
-            this.btnCreateManualPlate = new System.Windows.Forms.Button();
-            this.btnCloseMapping = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
             this.btnExit = new System.Windows.Forms.Button();
             this.gbPlate.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvSamplePlate)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvPlateSet)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.fileWatcherBCR)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.fileWatcherBCR)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -141,6 +141,40 @@ namespace winDDIRunBuilder
             this.groupBox2.TabIndex = 40;
             this.groupBox2.TabStop = false;
             // 
+            // btnPrintManuPlate
+            // 
+            this.btnPrintManuPlate.Enabled = false;
+            this.btnPrintManuPlate.FlatAppearance.BorderColor = System.Drawing.SystemColors.Highlight;
+            this.btnPrintManuPlate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnPrintManuPlate.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnPrintManuPlate.Image = global::winDDIRunBuilder.Properties.Resources.Print24;
+            this.btnPrintManuPlate.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnPrintManuPlate.Location = new System.Drawing.Point(6, 199);
+            this.btnPrintManuPlate.Name = "btnPrintManuPlate";
+            this.btnPrintManuPlate.Size = new System.Drawing.Size(154, 48);
+            this.btnPrintManuPlate.TabIndex = 43;
+            this.btnPrintManuPlate.Text = "Print ManuPlate Bar Code";
+            this.btnPrintManuPlate.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnPrintManuPlate.UseVisualStyleBackColor = true;
+            this.btnPrintManuPlate.Click += new System.EventHandler(this.btnPrintManuPlate_Click);
+            // 
+            // btnCreateManualPlate
+            // 
+            this.btnCreateManualPlate.Enabled = false;
+            this.btnCreateManualPlate.FlatAppearance.BorderColor = System.Drawing.SystemColors.Highlight;
+            this.btnCreateManualPlate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnCreateManualPlate.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnCreateManualPlate.Image = global::winDDIRunBuilder.Properties.Resources.New32;
+            this.btnCreateManualPlate.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnCreateManualPlate.Location = new System.Drawing.Point(7, 143);
+            this.btnCreateManualPlate.Name = "btnCreateManualPlate";
+            this.btnCreateManualPlate.Size = new System.Drawing.Size(154, 50);
+            this.btnCreateManualPlate.TabIndex = 41;
+            this.btnCreateManualPlate.Text = "Create Manual Plate";
+            this.btnCreateManualPlate.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnCreateManualPlate.UseVisualStyleBackColor = true;
+            this.btnCreateManualPlate.Click += new System.EventHandler(this.btnCreateManualPlate_Click);
+            // 
             // label6
             // 
             this.label6.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
@@ -184,6 +218,22 @@ namespace winDDIRunBuilder
             this.txbManualPlateId.Size = new System.Drawing.Size(158, 24);
             this.txbManualPlateId.TabIndex = 39;
             // 
+            // btnCloseMapping
+            // 
+            this.btnCloseMapping.FlatAppearance.BorderColor = System.Drawing.SystemColors.Highlight;
+            this.btnCloseMapping.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnCloseMapping.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnCloseMapping.Image = global::winDDIRunBuilder.Properties.Resources.clearFilter32;
+            this.btnCloseMapping.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnCloseMapping.Location = new System.Drawing.Point(5, 471);
+            this.btnCloseMapping.Name = "btnCloseMapping";
+            this.btnCloseMapping.Size = new System.Drawing.Size(154, 50);
+            this.btnCloseMapping.TabIndex = 21;
+            this.btnCloseMapping.Text = "Close Mapping";
+            this.btnCloseMapping.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnCloseMapping.UseVisualStyleBackColor = true;
+            this.btnCloseMapping.Click += new System.EventHandler(this.btnCloseMapping_Click);
+            // 
             // dgvSamplePlate
             // 
             this.dgvSamplePlate.AllowUserToAddRows = false;
@@ -208,7 +258,7 @@ namespace winDDIRunBuilder
             this.dgvSamplePlate.RowTemplate.Height = 24;
             this.dgvSamplePlate.Size = new System.Drawing.Size(902, 441);
             this.dgvSamplePlate.TabIndex = 0;
-            this.dgvSamplePlate.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvSamplePlate_CellContentClick);
+            this.dgvSamplePlate.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvSamplePlate_CellContentDoubleClick);
             this.dgvSamplePlate.CellContentDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvSamplePlate_CellContentDoubleClick);
             // 
             // label3
@@ -233,6 +283,34 @@ namespace winDDIRunBuilder
             this.cbPlates.Size = new System.Drawing.Size(156, 28);
             this.cbPlates.TabIndex = 30;
             this.cbPlates.SelectedIndexChanged += new System.EventHandler(this.cbPlates_SelectedIndexChanged);
+            // 
+            // button2
+            // 
+            this.button2.FlatAppearance.BorderColor = System.Drawing.SystemColors.Highlight;
+            this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button2.Image = global::winDDIRunBuilder.Properties.Resources.BarcodeScanner32;
+            this.button2.Location = new System.Drawing.Point(2, -265);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(199, 49);
+            this.button2.TabIndex = 20;
+            this.button2.Text = "Import From BCR";
+            this.button2.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.button2.UseVisualStyleBackColor = true;
+            // 
+            // button1
+            // 
+            this.button1.FlatAppearance.BorderColor = System.Drawing.SystemColors.Highlight;
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button1.Image = global::winDDIRunBuilder.Properties.Resources.searchLocation32;
+            this.button1.Location = new System.Drawing.Point(2, -198);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(199, 49);
+            this.button1.TabIndex = 22;
+            this.button1.Text = "Import From DB\r\n";
+            this.button1.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.button1.UseVisualStyleBackColor = true;
             // 
             // lblMsg
             // 
@@ -326,6 +404,22 @@ namespace winDDIRunBuilder
             this.txbPrompt.Size = new System.Drawing.Size(627, 59);
             this.txbPrompt.TabIndex = 29;
             this.txbPrompt.Text = "Source File is ready to load. Or to get a existing batch to Modify.";
+            // 
+            // btnGo
+            // 
+            this.btnGo.FlatAppearance.BorderColor = System.Drawing.SystemColors.Highlight;
+            this.btnGo.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnGo.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnGo.Image = global::winDDIRunBuilder.Properties.Resources.Go32;
+            this.btnGo.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnGo.Location = new System.Drawing.Point(7, 90);
+            this.btnGo.Name = "btnGo";
+            this.btnGo.Size = new System.Drawing.Size(154, 47);
+            this.btnGo.TabIndex = 28;
+            this.btnGo.Text = "    Go";
+            this.btnGo.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnGo.UseVisualStyleBackColor = true;
+            this.btnGo.Click += new System.EventHandler(this.btnGo_Click);
             // 
             // dgvPlateSet
             // 
@@ -484,6 +578,33 @@ namespace winDDIRunBuilder
             this.ProcessType.Visible = false;
             this.ProcessType.Width = 125;
             // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Image = global::winDDIRunBuilder.Properties.Resources.ddilogo512;
+            this.pictureBox1.Location = new System.Drawing.Point(6, 21);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(103, 53);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox1.TabIndex = 21;
+            this.pictureBox1.TabStop = false;
+            // 
+            // btnPrintPlateBarcode
+            // 
+            this.btnPrintPlateBarcode.Enabled = false;
+            this.btnPrintPlateBarcode.FlatAppearance.BorderColor = System.Drawing.SystemColors.Highlight;
+            this.btnPrintPlateBarcode.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnPrintPlateBarcode.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnPrintPlateBarcode.Image = global::winDDIRunBuilder.Properties.Resources.Print24;
+            this.btnPrintPlateBarcode.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnPrintPlateBarcode.Location = new System.Drawing.Point(7, 194);
+            this.btnPrintPlateBarcode.Name = "btnPrintPlateBarcode";
+            this.btnPrintPlateBarcode.Size = new System.Drawing.Size(154, 56);
+            this.btnPrintPlateBarcode.TabIndex = 19;
+            this.btnPrintPlateBarcode.Text = "Print Plate Bar Code";
+            this.btnPrintPlateBarcode.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnPrintPlateBarcode.UseVisualStyleBackColor = true;
+            this.btnPrintPlateBarcode.Click += new System.EventHandler(this.btnPrint_Click);
+            // 
             // fileWatcherBCR
             // 
             this.fileWatcherBCR.EnableRaisingEvents = true;
@@ -523,127 +644,6 @@ namespace winDDIRunBuilder
             this.btnQC.UseVisualStyleBackColor = true;
             this.btnQC.Click += new System.EventHandler(this.btnQC_Click);
             // 
-            // btnGo
-            // 
-            this.btnGo.FlatAppearance.BorderColor = System.Drawing.SystemColors.Highlight;
-            this.btnGo.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnGo.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnGo.Image = global::winDDIRunBuilder.Properties.Resources.Go32;
-            this.btnGo.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnGo.Location = new System.Drawing.Point(7, 90);
-            this.btnGo.Name = "btnGo";
-            this.btnGo.Size = new System.Drawing.Size(154, 47);
-            this.btnGo.TabIndex = 28;
-            this.btnGo.Text = "    Go";
-            this.btnGo.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnGo.UseVisualStyleBackColor = true;
-            this.btnGo.Click += new System.EventHandler(this.btnGo_Click);
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Image = global::winDDIRunBuilder.Properties.Resources.ddilogo512;
-            this.pictureBox1.Location = new System.Drawing.Point(6, 21);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(103, 53);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox1.TabIndex = 21;
-            this.pictureBox1.TabStop = false;
-            // 
-            // btnPrintPlateBarcode
-            // 
-            this.btnPrintPlateBarcode.Enabled = false;
-            this.btnPrintPlateBarcode.FlatAppearance.BorderColor = System.Drawing.SystemColors.Highlight;
-            this.btnPrintPlateBarcode.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnPrintPlateBarcode.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnPrintPlateBarcode.Image = global::winDDIRunBuilder.Properties.Resources.Print24;
-            this.btnPrintPlateBarcode.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnPrintPlateBarcode.Location = new System.Drawing.Point(7, 194);
-            this.btnPrintPlateBarcode.Name = "btnPrintPlateBarcode";
-            this.btnPrintPlateBarcode.Size = new System.Drawing.Size(154, 56);
-            this.btnPrintPlateBarcode.TabIndex = 19;
-            this.btnPrintPlateBarcode.Text = "Print Plate Bar Code";
-            this.btnPrintPlateBarcode.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnPrintPlateBarcode.UseVisualStyleBackColor = true;
-            this.btnPrintPlateBarcode.Click += new System.EventHandler(this.btnPrint_Click);
-            // 
-            // btnPrintManuPlate
-            // 
-            this.btnPrintManuPlate.Enabled = false;
-            this.btnPrintManuPlate.FlatAppearance.BorderColor = System.Drawing.SystemColors.Highlight;
-            this.btnPrintManuPlate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnPrintManuPlate.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnPrintManuPlate.Image = global::winDDIRunBuilder.Properties.Resources.Print24;
-            this.btnPrintManuPlate.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnPrintManuPlate.Location = new System.Drawing.Point(6, 199);
-            this.btnPrintManuPlate.Name = "btnPrintManuPlate";
-            this.btnPrintManuPlate.Size = new System.Drawing.Size(154, 48);
-            this.btnPrintManuPlate.TabIndex = 43;
-            this.btnPrintManuPlate.Text = "Print ManuPlate Bar Code";
-            this.btnPrintManuPlate.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnPrintManuPlate.UseVisualStyleBackColor = true;
-            this.btnPrintManuPlate.Click += new System.EventHandler(this.btnPrintManuPlate_Click);
-            // 
-            // btnCreateManualPlate
-            // 
-            this.btnCreateManualPlate.Enabled = false;
-            this.btnCreateManualPlate.FlatAppearance.BorderColor = System.Drawing.SystemColors.Highlight;
-            this.btnCreateManualPlate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCreateManualPlate.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnCreateManualPlate.Image = global::winDDIRunBuilder.Properties.Resources.New32;
-            this.btnCreateManualPlate.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnCreateManualPlate.Location = new System.Drawing.Point(7, 143);
-            this.btnCreateManualPlate.Name = "btnCreateManualPlate";
-            this.btnCreateManualPlate.Size = new System.Drawing.Size(154, 50);
-            this.btnCreateManualPlate.TabIndex = 41;
-            this.btnCreateManualPlate.Text = "Create Manual Plate";
-            this.btnCreateManualPlate.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnCreateManualPlate.UseVisualStyleBackColor = true;
-            this.btnCreateManualPlate.Click += new System.EventHandler(this.btnCreateManualPlate_Click);
-            // 
-            // btnCloseMapping
-            // 
-            this.btnCloseMapping.FlatAppearance.BorderColor = System.Drawing.SystemColors.Highlight;
-            this.btnCloseMapping.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCloseMapping.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnCloseMapping.Image = global::winDDIRunBuilder.Properties.Resources.clearFilter32;
-            this.btnCloseMapping.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnCloseMapping.Location = new System.Drawing.Point(5, 471);
-            this.btnCloseMapping.Name = "btnCloseMapping";
-            this.btnCloseMapping.Size = new System.Drawing.Size(154, 50);
-            this.btnCloseMapping.TabIndex = 21;
-            this.btnCloseMapping.Text = "Close Mapping";
-            this.btnCloseMapping.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnCloseMapping.UseVisualStyleBackColor = true;
-            this.btnCloseMapping.Click += new System.EventHandler(this.btnCloseMapping_Click);
-            // 
-            // button2
-            // 
-            this.button2.FlatAppearance.BorderColor = System.Drawing.SystemColors.Highlight;
-            this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button2.Image = global::winDDIRunBuilder.Properties.Resources.BarcodeScanner32;
-            this.button2.Location = new System.Drawing.Point(2, -265);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(199, 49);
-            this.button2.TabIndex = 20;
-            this.button2.Text = "Import From BCR";
-            this.button2.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.button2.UseVisualStyleBackColor = true;
-            // 
-            // button1
-            // 
-            this.button1.FlatAppearance.BorderColor = System.Drawing.SystemColors.Highlight;
-            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button1.Image = global::winDDIRunBuilder.Properties.Resources.searchLocation32;
-            this.button1.Location = new System.Drawing.Point(2, -198);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(199, 49);
-            this.button1.TabIndex = 22;
-            this.button1.Text = "Import From DB\r\n";
-            this.button1.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.button1.UseVisualStyleBackColor = true;
-            // 
             // btnExit
             // 
             this.btnExit.FlatAppearance.BorderColor = System.Drawing.SystemColors.Highlight;
@@ -663,7 +663,7 @@ namespace winDDIRunBuilder
             // frmMain
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.ClientSize = new System.Drawing.Size(1262, 359);
+            this.ClientSize = new System.Drawing.Size(1262, 353);
             this.Controls.Add(this.btnSampleStatus);
             this.Controls.Add(this.btnQC);
             this.Controls.Add(this.groupBox1);
@@ -684,8 +684,8 @@ namespace winDDIRunBuilder
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvPlateSet)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.fileWatcherBCR)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.fileWatcherBCR)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 

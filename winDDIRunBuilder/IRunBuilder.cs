@@ -26,7 +26,7 @@ namespace winDDIRunBuilder
 
         string UpdateSampleStatus(List<SampleStatus> sampleStatus);
 
-        List<PlateSample> GetDeptSamples(DeptSample deptSample);
+        List<ExportFile> GetExportFiles(string range);
 
     }
 
