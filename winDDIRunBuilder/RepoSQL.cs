@@ -780,7 +780,7 @@ namespace winDDIRunBuilder
                             exp.Field9 = rdr["Field9"] == null ? "" : rdr["Field9"].ToString();
                             exp.ModifiedDate = rdr["ModifiedDate"].ToString();
                             exp.ModifiedBy = rdr["ModifiedBy"].ToString();
-                            exp.IsActive = (Boolean)rdr["IsAvtive"];
+                            exp.IsActive = (Boolean)rdr["IsActive"];
 
                             exports.Add(exp);
                         }

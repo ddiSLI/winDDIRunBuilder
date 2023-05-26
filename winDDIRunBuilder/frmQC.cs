@@ -20,7 +20,6 @@ namespace winDDIRunBuilder
     {
         public string PlateId { get; set; } = "";
         public DBPlate CurDBPlate { get; set; } = new DBPlate();
-        public InputPlate QCInputPlate { get; set; } = new InputPlate();
         private List<OutputPlateSample> HisQCSamples { get; set; }
         public string CurExportPath { get; set; }
         private List<ExportFile> Exports { get; set; }
@@ -1243,6 +1242,7 @@ namespace winDDIRunBuilder
             List<string> fileItems = new List<string>();
             ExportFile export = new ExportFile();
             bool isFirstItem;
+            bool isSampleField=true;
 
             try
             {
@@ -1285,6 +1285,10 @@ namespace winDDIRunBuilder
                     }
                 }
 
+                //Current plate info
+                Type tP = CurDBPlate.GetType();
+                PropertyInfo[] propsP = tP.GetProperties();
+
                 using (var writer = new StreamWriter(exportPath))
                 {
                     if (export.WithHeader)
@@ -1296,12 +1300,15 @@ namespace winDDIRunBuilder
                         isFirstItem = true;
                         foreach (var head in fileItems)
                         {
+                            isSampleField = false;
                             Type t = item.GetType();
                             PropertyInfo[] props = t.GetProperties();
+
                             foreach (var prop in props)
                             {
                                 if (prop.Name.ToUpper() == head.ToUpper())
                                 {
+                                    isSampleField = true;
                                     curValue = prop.GetValue(item) == null ? "" : prop.GetValue(item).ToString();
                                     if (isFirstItem)
                                     {
@@ -1314,6 +1321,28 @@ namespace winDDIRunBuilder
                                     }
                                     break;
                                 }
+                            }
+
+                            if(isSampleField == false)
+                            {
+                                foreach (var propP in propsP)
+                                {
+                                    if (propP.Name.ToUpper() == head.ToUpper())
+                                    {
+                                        curValue = propP.GetValue(CurDBPlate) == null ? "" : propP.GetValue(CurDBPlate).ToString();
+                                        if (isFirstItem)
+                                        {
+                                            itemValue += curValue;
+                                            isFirstItem = false;
+                                        }
+                                        else
+                                        {
+                                            itemValue += "," + curValue;
+                                        }
+                                        break;
+                                    }
+                                }
+
                             }
                         }
 

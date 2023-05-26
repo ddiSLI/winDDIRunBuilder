@@ -24,7 +24,7 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <InstallUrl>\\dd386\sys\freearea\DDIRunBuilder\Setup\</InstallUrl>
-    <ApplicationRevision>43</ApplicationRevision>
+    <ApplicationRevision>46</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -143,6 +143,7 @@
     <Compile Include="Models\Protocol.cs" />
     <Compile Include="Models\ProtocolPlate.cs" />
     <Compile Include="Models\QCSample.cs" />
+    <Compile Include="Models\ReportField.cs" />
     <Compile Include="Models\SampleStatus.cs" />
     <Compile Include="Models\ValidPlate.cs" />
     <Compile Include="ModelTransfer.cs" />
@@ -334,6 +335,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\8324238931644666554-32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icons8-append-clip-30.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

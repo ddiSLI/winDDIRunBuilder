@@ -37,6 +37,7 @@ namespace winDDIRunBuilder
             this.cbProtocolCd = new System.Windows.Forms.ComboBox();
             this.gbPlate = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.lblManualPlateId = new System.Windows.Forms.Label();
             this.btnPrintManuPlate = new System.Windows.Forms.Button();
             this.btnCreateManualPlate = new System.Windows.Forms.Button();
             this.label6 = new System.Windows.Forms.Label();
@@ -129,6 +130,7 @@ namespace winDDIRunBuilder
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.lblManualPlateId);
             this.groupBox2.Controls.Add(this.btnPrintManuPlate);
             this.groupBox2.Controls.Add(this.btnCreateManualPlate);
             this.groupBox2.Controls.Add(this.label6);
@@ -137,9 +139,19 @@ namespace winDDIRunBuilder
             this.groupBox2.Controls.Add(this.txbManualPlateId);
             this.groupBox2.Location = new System.Drawing.Point(0, 90);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(166, 253);
+            this.groupBox2.Size = new System.Drawing.Size(166, 288);
             this.groupBox2.TabIndex = 40;
             this.groupBox2.TabStop = false;
+            // 
+            // lblManualPlateId
+            // 
+            this.lblManualPlateId.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.lblManualPlateId.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.lblManualPlateId.Location = new System.Drawing.Point(6, 201);
+            this.lblManualPlateId.Name = "lblManualPlateId";
+            this.lblManualPlateId.Size = new System.Drawing.Size(154, 28);
+            this.lblManualPlateId.TabIndex = 45;
+            this.lblManualPlateId.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // btnPrintManuPlate
             // 
@@ -149,7 +161,7 @@ namespace winDDIRunBuilder
             this.btnPrintManuPlate.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnPrintManuPlate.Image = global::winDDIRunBuilder.Properties.Resources.Print24;
             this.btnPrintManuPlate.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnPrintManuPlate.Location = new System.Drawing.Point(6, 199);
+            this.btnPrintManuPlate.Location = new System.Drawing.Point(6, 230);
             this.btnPrintManuPlate.Name = "btnPrintManuPlate";
             this.btnPrintManuPlate.Size = new System.Drawing.Size(154, 48);
             this.btnPrintManuPlate.TabIndex = 43;
@@ -663,7 +675,7 @@ namespace winDDIRunBuilder
             // frmMain
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.ClientSize = new System.Drawing.Size(1262, 353);
+            this.ClientSize = new System.Drawing.Size(1262, 354);
             this.Controls.Add(this.btnSampleStatus);
             this.Controls.Add(this.btnQC);
             this.Controls.Add(this.groupBox1);
@@ -738,5 +750,6 @@ namespace winDDIRunBuilder
         private System.Windows.Forms.Button btnQC;
         private System.Windows.Forms.Label lblCurPlateId;
         private System.Windows.Forms.Button btnSampleStatus;
+        private System.Windows.Forms.Label lblManualPlateId;
     }
 }

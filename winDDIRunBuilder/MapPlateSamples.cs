@@ -35,6 +35,8 @@ namespace winDDIRunBuilder
             ScannedDBPlateSamples = new List<PlateSample>();
 
             string sample = "";
+            string sampleType = "";
+            string sampleStatus = "";
 
             try
             {
@@ -53,12 +55,17 @@ namespace winDDIRunBuilder
 
                         foreach (var smp in ScannedDBPlateSamples)
                         {
+                            sampleType = smp.SampleType ==null? "" : smp.SampleType;
+                            sampleStatus = smp.Status ==null? "" : smp.Status;
 
-                            if (!string.IsNullOrEmpty(smp.SampleType) && (smp.SampleType.IndexOf("QC") >= 0))
+                            if (sampleType.IndexOf("QC") >= 0)
                             {
                                 sample = "QC_" + smp.SampleId;
-
                             }
+                            else if (sampleStatus.IndexOf("REJECT") >= 0)
+                            {
+                                sample = "REJ_" + smp.SampleId;
+                            }        
                             else
                             {
                                 sample = smp.SampleId;

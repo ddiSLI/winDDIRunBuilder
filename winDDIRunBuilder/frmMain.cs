@@ -74,7 +74,7 @@ namespace winDDIRunBuilder
 
             try
             {
-                string runBuilderVersion = "1.0.0.42";
+                string runBuilderVersion = "1.0.0.45";
                 //var ver = Assembly.GetExecutingAssembly().GetName().Version;
                 //string runBuilderVersion = System.Windows.Forms.Application.pu;
                 //string runBuilderVersion = System.Windows.Forms.Application.ProductVersion;
@@ -97,10 +97,11 @@ namespace winDDIRunBuilder
                 lblJanusName.Text = CurRunBuilder.JanusName;
 
                 //get Protocol From CSV
-                pProtocol = GetProtocols();
+                //pProtocol = GetProtocols();
 
                 //get Protocol From SQL
-                //pProtocol =sqlService.GetProtocols(CurRunBuilder.Department);
+                //CurRunBuilder.Department = "Chemistry";    //testing
+                pProtocol =sqlService.GetProtocols(CurRunBuilder.Department);
 
                 if (pProtocol.Count > 0)
                 {
@@ -1648,6 +1649,7 @@ namespace winDDIRunBuilder
             {
                 dgvSamplePlate.Rows.Clear();
                 dgvSamplePlate.Columns.Clear();
+                dgvSamplePlate.Refresh();
 
                 dgvSamplePlate.RowsDefaultCellStyle.Font = new Font("Microsoft Sans Serif", 7);
 
@@ -1841,6 +1843,8 @@ namespace winDDIRunBuilder
                         {
                             txbPrompt.Text = mapPlateResult;
                         }
+
+                        lblManualPlateId.Text = "";
                     }
 
                 }
@@ -1890,16 +1894,18 @@ namespace winDDIRunBuilder
 
                         foreach (var smp in ScannedDBPlateSamples)
                         {
-                            if (!string.IsNullOrEmpty(smp.SampleType) && smp.SampleType == "QCEND")
-                            {
-                                smpWell = tranService.GetNextWell(ScannedDBPalte.SizeEndWell
-                                                                , ScannedDBPalte.EndPos
-                                                                , ScannedDBPalte.PlateRotated);
-                            }
-                            else
-                            {
-                                smpWell = smp.Well;
-                            }
+
+                            smpWell = smp.Well;
+                            //if (!string.IsNullOrEmpty(smp.SampleType) && smp.SampleType == "QCEND")
+                            //{
+                            //    smpWell = tranService.GetNextWell(ScannedDBPalte.SizeEndWell
+                            //                                    , ScannedDBPalte.EndPos
+                            //                                    , ScannedDBPalte.PlateRotated);
+                            //}
+                            //else
+                            //{
+                            //    smpWell = smp.Well;
+                            //}
 
                             outSamples.Add(new OutputPlateSample
                             {
@@ -3222,6 +3228,7 @@ namespace winDDIRunBuilder
                         curPlateTimeVersion = $"{DateTime.Now.ToString("yyMMddHHmmss")}";
                         plateNewSerialNo = sqlService.GetSeries();
 
+                        ScannedDBPalte.Department = CurRunBuilder.Department;
                         ScannedDBPalte.SourcePlateId = ScannedDBPalte.PlateId;
                         ScannedDBPalte.SourcePlateVersion = ScannedDBPalte.PlateVersion;
 
@@ -3256,19 +3263,38 @@ namespace winDDIRunBuilder
 
                         if (resultAddSamples == "SUCCESS")
                         {
-                            mapPlateResult = GetMapAnyPlateSamples(ScannedDBPalte.PlateId);
+                            //print manualPlateId
+                            lblManualPlateId.Text= txbManualPlateId.Text.Trim();
 
-                            if (mapPlateResult == "SUCCESS")
-                            {
-                                lblMsg.ForeColor = Color.DarkBlue;
-                                lblMsg.Text = "Manual Plate, " + ScannedDBPalte.PlateId + ", Created";
-                                btnPrintManuPlate.Enabled = true;
-                            }
-                            else
-                            {
-                                txbPrompt.Text = mapPlateResult;
-                                btnPrintManuPlate.Enabled = false;
-                            }
+                            //Auto create another PlateId
+                            txbManualPlateId.Text = ScannedDBPalte.PlateName + plateNewSerialNo;
+
+                            //show create ManualPlate result
+                            MessageBox.Show("The Plate," + lblManualPlateId.Text + ", created." +
+                                        Environment.NewLine +
+                                        "You can print the Plate barcode." + Environment.NewLine
+                                        + Environment.NewLine + 
+                                        "Or to create another Manual Plate",
+                                        "Manual Plate",
+                                        MessageBoxButtons.OK);
+
+                            //lblMsg.ForeColor = Color.DarkBlue;
+                            //lblMsg.Text = "Manual Plate, " + ScannedDBPalte.PlateId + ", Created";
+
+                            btnPrintManuPlate.Enabled = true;
+
+                            //mapPlateResult = GetMapAnyPlateSamples(ScannedDBPalte.PlateId);
+                            //if (mapPlateResult == "SUCCESS")
+                            //{
+                            //    lblMsg.ForeColor = Color.DarkBlue;
+                            //    lblMsg.Text = "Manual Plate, " + ScannedDBPalte.PlateId + ", Created";
+                            //    btnPrintManuPlate.Enabled = true;
+                            //}
+                            //else
+                            //{
+                            //    txbPrompt.Text = mapPlateResult;
+                            //    btnPrintManuPlate.Enabled = false;
+                            //}
                         }
                         else
                         {
