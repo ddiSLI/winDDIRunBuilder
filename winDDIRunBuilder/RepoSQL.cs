@@ -442,7 +442,7 @@ namespace winDDIRunBuilder
                     cmd.Parameters.Add("@pEndPos", SqlDbType.VarChar).Value = dbPlate.EndPos;
                     cmd.Parameters.Add("@pExcludeWells", SqlDbType.VarChar).Value = dbPlate.ExcludeWells;
                     cmd.Parameters.Add("@pDiluent", SqlDbType.Decimal).Value = Convert.ToDecimal(dbPlate.Diluent);
-                    cmd.Parameters.Add("@pSample", SqlDbType.Int).Value = Convert.ToInt16(dbPlate.Sample);
+                    cmd.Parameters.Add("@pSample", SqlDbType.Int).Value = Convert.ToInt16(Math.Floor(Convert.ToDouble(dbPlate.Sample)));
                     cmd.Parameters.Add("@pAccept", SqlDbType.VarChar).Value = dbPlate.Accept;
                     cmd.Parameters.Add("@pPlateRotated", SqlDbType.Bit).Value = dbPlate.PlateRotated == false ? 0 : 1;
                     cmd.Parameters.Add("@pSourcePlateId", SqlDbType.VarChar).Value = dbPlate.SourcePlateId;

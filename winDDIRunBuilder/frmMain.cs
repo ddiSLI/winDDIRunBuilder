@@ -74,7 +74,7 @@ namespace winDDIRunBuilder
 
             try
             {
-                string runBuilderVersion = "1.0.0.45";
+                string runBuilderVersion = "1.0.0.46";
                 //var ver = Assembly.GetExecutingAssembly().GetName().Version;
                 //string runBuilderVersion = System.Windows.Forms.Application.pu;
                 //string runBuilderVersion = System.Windows.Forms.Application.ProductVersion;
@@ -101,6 +101,7 @@ namespace winDDIRunBuilder
 
                 //get Protocol From SQL
                 //CurRunBuilder.Department = "Chemistry";    //testing
+                //
                 pProtocol =sqlService.GetProtocols(CurRunBuilder.Department);
 
                 if (pProtocol.Count > 0)
@@ -1371,6 +1372,45 @@ namespace winDDIRunBuilder
 
         //    }
         //}
+
+        private void dgvSamplePlate_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            var senderGrid = (DataGridView)sender;
+            //string sourcePlate = "";
+            //string destPlate = "";
+            string curCellValue = "";
+            try
+            {
+                if (e.RowIndex >= 0)
+                {
+                    //bool included = Convert.ToBoolean(senderGrid.CurrentRow.Cells["Included"].Value);
+                    //bool isReadySourcePlate = Convert.ToBoolean(senderGrid.CurrentRow.Cells["SourcePlateIsNew"].Value);
+
+                    //sourcePlate = (string)senderGrid.CurrentRow.Cells["SourcePlate"].Value;
+                    //destPlate = (string)senderGrid.CurrentRow.Cells["DestPlate"].Value;
+
+                    if (senderGrid.Columns[e.ColumnIndex] is DataGridViewButtonColumn)
+                    {
+                        senderGrid.CommitEdit(DataGridViewDataErrorContexts.Commit);
+                        curCellValue = senderGrid.CurrentCell.Value.ToString();
+                        curCellValue = curCellValue.Replace("\n", "").Replace("\r", "");
+
+                        lblMsg.ForeColor = Color.DarkBlue;
+                        lblMsg.Text = "Tube Sample: " + curCellValue + "; [ " + senderGrid.CurrentCell.Tag + " ]";
+                        //lblMsg.Text = "Tube -" + senderGrid.CurrentCell.Value + " sample is : [ " + senderGrid.CurrentCell.Tag + " ]";
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                string errMsg = "dgvSamplePlate_CellContentClick() met some issues:";
+                errMsg += ex.Message;
+
+                lblMsg.ForeColor = Color.Red;
+                lblMsg.Text = errMsg;
+            }
+        }
 
         private void dgvSamplePlate_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
         {

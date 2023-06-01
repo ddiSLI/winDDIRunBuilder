@@ -13,6 +13,7 @@ C:\Users\sli\source\repos\winDDIRunBuilder\winDDIRunBuilder\bin\Debug\Newtonsoft
 C:\Users\sli\source\repos\winDDIRunBuilder\winDDIRunBuilder\bin\Debug\RestSharp.xml
 C:\Users\sli\source\repos\winDDIRunBuilder\winDDIRunBuilder\bin\Debug\zxing.xml
 C:\Users\sli\source\repos\winDDIRunBuilder\winDDIRunBuilder\bin\Debug\zxing.presentation.xml
+C:\Users\sli\source\repos\winDDIRunBuilder\winDDIRunBuilder\obj\Debug\winDDIRunBuilder.csproj.AssemblyReference.cache
 C:\Users\sli\source\repos\winDDIRunBuilder\winDDIRunBuilder\obj\Debug\winDDIRunBuilder.frmImportFromDB.resources
 C:\Users\sli\source\repos\winDDIRunBuilder\winDDIRunBuilder\obj\Debug\winDDIRunBuilder.frmMain.resources
 C:\Users\sli\source\repos\winDDIRunBuilder\winDDIRunBuilder\obj\Debug\winDDIRunBuilder.frmQC.resources

@@ -270,7 +270,7 @@ namespace winDDIRunBuilder
             this.dgvSamplePlate.RowTemplate.Height = 24;
             this.dgvSamplePlate.Size = new System.Drawing.Size(902, 441);
             this.dgvSamplePlate.TabIndex = 0;
-            this.dgvSamplePlate.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvSamplePlate_CellContentDoubleClick);
+            this.dgvSamplePlate.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvSamplePlate_CellContentClick);
             this.dgvSamplePlate.CellContentDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvSamplePlate_CellContentDoubleClick);
             // 
             // label3
