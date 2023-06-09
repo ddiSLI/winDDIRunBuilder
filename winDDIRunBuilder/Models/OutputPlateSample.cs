@@ -19,8 +19,9 @@ namespace winDDIRunBuilder.Models
         public string DestPlateVersion { set; get; }
         public string DestNewPlateId { set; get; }
         public string DestWellId { set; get; }
-         public string Accept { set; get; }
+        public string Accept { set; get; }
         public string SampleId { set; get; }
+        public string Alias { set; get; }
         public string SampleType { set; get; }
         public string Status { set; get; }
         public Dictionary<string,string> Attributes { get; set; }

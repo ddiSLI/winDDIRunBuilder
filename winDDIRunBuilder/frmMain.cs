@@ -74,7 +74,7 @@ namespace winDDIRunBuilder
 
             try
             {
-                string runBuilderVersion = "1.0.0.46";
+                string runBuilderVersion = "1.0.0.47";
                 //var ver = Assembly.GetExecutingAssembly().GetName().Version;
                 //string runBuilderVersion = System.Windows.Forms.Application.pu;
                 //string runBuilderVersion = System.Windows.Forms.Application.ProductVersion;
@@ -100,8 +100,13 @@ namespace winDDIRunBuilder
                 //pProtocol = GetProtocols();
 
                 //get Protocol From SQL
-                //CurRunBuilder.Department = "Chemistry";    //testing
+                if (CurRunBuilder.Department == "IT")
+                {
+                    //CurRunBuilder.Department = "Chemistry";    //testing
+                    CurRunBuilder.Department = "Chromatography";    //testing
+                }
                 //
+
                 pProtocol =sqlService.GetProtocols(CurRunBuilder.Department);
 
                 if (pProtocol.Count > 0)
@@ -860,6 +865,9 @@ namespace winDDIRunBuilder
                                                     s.DestPlateId = dbPlate.PlateId;
                                                 });
 
+
+
+
                                                 //Add a new plate depends on Original Plate property
                                                 AddNewSpilloverValidPlate(destPlateId, dbPlate);
                                             }
@@ -873,6 +881,14 @@ namespace winDDIRunBuilder
                                                 s.DestPlateVersion = curPlateTimeVersion;
                                                 s.DestNewPlateId = dbPlate.PlateId;
                                             });
+
+                                            foreach (var outS in outSamples)
+                                            {
+                                                if (!string.IsNullOrEmpty(outS.Alias) && outS.Alias.ToUpper().IndexOf("X") > 0)
+                                                {
+                                                    outS.SampleId = outS.SampleId + outS.Alias.ToUpper().Substring(outS.Alias.ToUpper().IndexOf("X"));
+                                                }
+                                            }
 
                                             resultSampleSaveDB = sqlService.AddSamples(outSamples, Environment.UserName);
 
@@ -920,6 +936,14 @@ namespace winDDIRunBuilder
 
                                     //Save to Plate
                                     resultPlateSaveDB = sqlService.AddPlate(dbPlate, Environment.UserName);
+
+                                    foreach (var outS in outSamples)
+                                    {
+                                        if (!string.IsNullOrEmpty(outS.Alias) && outS.Alias.ToUpper().IndexOf("X") >0)
+                                        {
+                                            outS.SampleId = outS.SampleId + outS.Alias.ToUpper().Substring(outS.Alias.ToUpper().IndexOf("X"));
+                                        }
+                                    }
 
                                     //Save to Sample
                                     resultSampleSaveDB = sqlService.AddSamples(outSamples, Environment.UserName);
@@ -1167,7 +1191,16 @@ namespace winDDIRunBuilder
                     {
                         //itemValue += item.SourcePlateId + ",";
 
-                        itemValue = item.SampleId + ",";
+                        //if (item.Alias != null && item.Alias.ToUpper().IndexOf("X") > 0)
+                        //{
+                        //    itemValue = item.Alias + ",";
+                        //}
+                        //else
+                        //{
+                        //    itemValue = item.SampleId + ",";
+                        //}
+                         itemValue = item.SampleId + ",";
+
                         //itemValue = item.SampleId.Replace("-", "") + ",";
 
                         itemValue += sourcePlate + ",";
@@ -2820,6 +2853,7 @@ namespace winDDIRunBuilder
                     //    newSample.SampleId = smp.Attributes["SampleId"];
                     //}
                     newSample.SampleId = smp.Attributes["SampleId"];
+                    newSample.Alias= smp.Attributes["Alias"];
 
                     OutPlateSamples.Add(newSample);
                 }
@@ -3493,6 +3527,5 @@ namespace winDDIRunBuilder
             }
         }
 
-       
     }
 }

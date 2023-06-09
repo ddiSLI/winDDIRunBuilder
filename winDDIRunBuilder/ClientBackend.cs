@@ -27,13 +27,14 @@ namespace winDDIRunBuilder
             public string DestWellId { set; get; }
 
             //Accept,siga, SampleId
-            public Dictionary<string,string> Attributes { set; get; } 
+            public Dictionary<string, string> Attributes { set; get; }
         }
 
         public class Attributes
         {
             public string Accept { set; get; }
             public string SampleId { set; get; }
+            public string Alias { set; get; }
         }
 
 
@@ -139,7 +140,7 @@ namespace winDDIRunBuilder
         {
             string[] values = csvLine.Split(',');
             DtoProtocol inProtocol = new DtoProtocol();
-            inProtocol.Department= values[0].Trim();
+            inProtocol.Department = values[0].Trim();
             inProtocol.PlateId = values[1].Trim();
             inProtocol.SourcePlate = values[2].Trim();
             inProtocol.ProtocolName = values[3].Trim();
@@ -188,7 +189,7 @@ namespace winDDIRunBuilder
 
             try
             {
-                endPointResource = _endpointResourceDDIBatch ;
+                endPointResource = _endpointResourceDDIBatch;
 
                 if (inputPlate != null && !string.IsNullOrEmpty(inputPlate.Name))
                 {
@@ -214,7 +215,7 @@ namespace winDDIRunBuilder
             }
             catch (Exception ex)
             {
-                
+
                 actionResult = "ERROR";
                 //  GenMessaging errProcess = new GenMessaging(DateTime.Now.ToLongTimeString(), "Sapphire sync to SalesForce");
                 string errMsg = "ClientBackend.CreatePlate() met an issue:";
@@ -227,9 +228,12 @@ namespace winDDIRunBuilder
 
             return actionResult;
         }
-        public string AddSamples(string plateName, List<InputFile> plateSamples, bool isQC=false)
+
+        public string AddSamples(string plateName, List<InputFile> plateSamples, bool isQC = false)
         {
             string actionResult = "YES";
+            //List<InputFile> processSamples = new List<InputFile>();
+            ModelTransfer runFun = new ModelTransfer();
 
             try
             {
@@ -240,12 +244,129 @@ namespace winDDIRunBuilder
 
                 foreach (var sam in plateSamples)
                 {
-                    var inSample = new Dictionary<string,string>();
+                    var inSample = new Dictionary<string, string>();
+                    string inSampleId = sam.ShortId.ToUpper();
+                    string indexSample = "";
+
+                    if (string.IsNullOrWhiteSpace(inSampleId) != true)
+                    {
+                        if (inSampleId.IndexOf("X") > 0)
+                        {
+                            inSampleId = inSampleId.Substring(0, inSampleId.IndexOf("X"));
+                        }
+
+                        var match = Regex.Match(inSampleId, "([0-9]{6}-[0-9]{4}-[0-9]{1,2}).*", RegexOptions.None);
+                        if (match.Success)
+                        {
+                            inSampleId = match.Value;
+                        }
+                        else
+                        {
+                            match = Regex.Match(inSampleId, "([0-9]{6})([0-9]{4})([0-9]{1,2})", RegexOptions.None);
+                            if (match.Success)
+                            {
+                                inSampleId = $"{match.Groups[1].Value}-{match.Groups[2].Value}-{match.Groups[3].Value}";
+                            }
+                            else
+                            {
+                                inSample.Add(inSampleId, "a");
+                            }
+                        }
+                    }
+
+                    inSample.Add("SampleId", inSampleId);
+                    inSample.Add("Alias", sam.ShortId);
+
+                    //if (inSampleId == null)
+                    //{
+                    //    inSample.Add(sam.ShortId, "a");
+                    //}
+
+                    if (isQC && sam.SampleType == "QC")
+                    {
+                        inSample.Add("QCId", sam.ShortId);
+                    }
+
+                    string jsonSample = JsonConvert.SerializeObject(new
+                    {
+                        Attributes = inSample
+                    });
+                    //jsonSample=Newtonsoft.Json.JsonConvert.SerializeObject(new { SampleId = "sss" });
+
+                    string endPointResource = $"{_endpointResourceDDIBatch}/{plateName}/{sam.WellX}/{sam.WellY}";
+
+                    //string endPointResource = $"{_endpointResourceDDIBatch}/{plateName}/{int.Parse(sam.Position.Split(',')[0])}/{int.Parse(sam.Position.Split(',')[1])}";
+
+                    var request = new RestRequest(endPointResource, Method.POST);
+                    request.AddParameter("application/json", jsonSample, ParameterType.RequestBody);
+
+                    var response = _DDIBatchClient.Execute(request);
+
+                    if (!response.IsSuccessful)
+                    {
+                        StringBuilder sbResult = new StringBuilder();
+                        ErrMsg = "APIService.AddSamples() error: " + response.Content;
+                        actionResult = "FAILED";
+                        sbResult.Append("APIPost_ERROR: " + inSampleId + "; " + indexSample + "; ");
+                        sbResult.AppendLine();
+                        throw new Exception(response.Content);
+                    }
+                }
+
+                return actionResult;
+                //return JsonConvert.DeserializeObject<DtoScannedSample>(response.Content);
+            }
+            catch (Exception ex)
+            {
+                actionResult = "ERROR";
+                //  GenMessaging errProcess = new GenMessaging(DateTime.Now.ToLongTimeString(), "Sapphire sync to SalesForce");
+                string errMsg = "ClientBackend.GetSamples() met an issue:";
+                errMsg += Environment.NewLine;
+                errMsg += Environment.NewLine;
+                errMsg += ex.Message;
+                //errProcess.MsgHandler(msgType: "SYS-ERROR", errMsg);
+                ErrMsg = "APIService.AddSamples() Exception: " + ex.Message;
+            }
+
+            return actionResult;
+        }
+        public string AddSamples_His(string plateName, List<InputFile> plateSamples, bool isQC = false)
+        {
+            string actionResult = "YES";
+            ModelTransfer runFun = new ModelTransfer();
+
+            try
+            {
+                if (plateSamples == null || plateSamples.Count <= 0)
+                {
+                    return actionResult;
+                }
+
+                //Add year to dilut SampleId 
+                InputFile dilutSmp = new InputFile();
+                foreach (var smp in plateSamples)
+                {
+                    if (smp.ShortId.ToUpper().IndexOf("X") > 0)
+                    {
+                        dilutSmp = new InputFile();
+                        dilutSmp.ShortId = runFun.GetYearSampleId(smp.ShortId);
+                        dilutSmp.RackName = smp.RackName;
+                        dilutSmp.Position = smp.Position;
+                        dilutSmp.WellX= smp.Position;
+                        dilutSmp.WellY = "0";
+                        plateSamples.Add(dilutSmp);
+                    }
+                }
+
+
+                foreach (var sam in plateSamples)
+                {
+                    var inSample = new Dictionary<string, string>();
                     string inSampleId = null;
                     string indexSample = "";
 
 
-                    if (string.IsNullOrWhiteSpace(sam.ShortId) != true)
+                    if (string.IsNullOrWhiteSpace(sam.ShortId) != true && sam.ShortId.ToUpper().IndexOf("X") < 0)
                     {
                         var match = Regex.Match(sam.ShortId, "([0-9]{6}-[0-9]{4}-[0-9]{1,2}).*", RegexOptions.None);
                         if (match.Success)
@@ -269,9 +390,9 @@ namespace winDDIRunBuilder
                         inSample.Add(sam.ShortId, "a");
                     }
 
-                    
 
-                    if (isQC && sam.SampleType=="QC")
+
+                    if (isQC && sam.SampleType == "QC")
                     {
                         inSample.Add("QCId", sam.ShortId);
                     }
@@ -333,7 +454,7 @@ namespace winDDIRunBuilder
             {
                 //v1/worklist/BCR/transfer/SigA1?options=lookup_alias,skip_cancelled
                 endPointResource = $"{_endpointResourceDDIBatch}/{sourcePlate}/transfer/{destPlate}?options={options}";
-               
+
                 var request = new RestRequest(endPointResource, Method.GET);
 
                 //if (!string.IsNullOrEmpty(sourcePlate) && !string.IsNullOrEmpty(destPlate))
@@ -349,7 +470,7 @@ namespace winDDIRunBuilder
                     throw new Exception(response.Content);
                 }
 
-                 return JsonConvert.DeserializeObject<List<DtoWorklist>>(response.Content);
+                return JsonConvert.DeserializeObject<List<DtoWorklist>>(response.Content);
             }
             catch (Exception ex)
             {

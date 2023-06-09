@@ -76,9 +76,9 @@ namespace winDDIRunBuilder
             List<OutputPlateSample> outSamples = new List<OutputPlateSample>();
             OutputPlateSample outSample = new OutputPlateSample();
 
-            if (dbSamples != null && dbSamples.Count>0)
+            if (dbSamples != null && dbSamples.Count > 0)
             {
-                foreach(var dbSmp in dbSamples)
+                foreach (var dbSmp in dbSamples)
                 {
                     outSample = new OutputPlateSample();
                     outSample.DestPlateId = dbSmp.PlateId;
@@ -92,11 +92,11 @@ namespace winDDIRunBuilder
                     outSamples.Add(outSample);
                 }
             }
-            
+
             return outSamples;
         }
 
-        public string GetNextWell(string plateSize, string lastSampleWell, bool isRotated=false)
+        public string GetNextWell(string plateSize, string lastSampleWell, bool isRotated = false)
         {
             string nextWell = "";
             string pltSizeX = "";
@@ -107,7 +107,7 @@ namespace winDDIRunBuilder
 
             if (isRotated)
             {
-                pltSizeX = plateSize.Substring(0,1);
+                pltSizeX = plateSize.Substring(0, 1);
                 pltSizeY = plateSize.Substring(1);
 
                 if ((Char.Parse(lastSampleWell.Substring(0, 1)) <= Char.Parse(pltSizeX)) &&
@@ -124,7 +124,7 @@ namespace winDDIRunBuilder
 
                 nextWell = wellX + wellY;
             }
-            else if (isRotated==false)
+            else if (isRotated == false)
             {
                 pltSizeX = plateSize.Substring(1);
                 pltSizeY = plateSize.Substring(0, 1);
@@ -166,6 +166,49 @@ namespace winDDIRunBuilder
                     + (int.Parse(xyString.Substring(0, xyString.IndexOf(','))) + 1).ToString();
             }
         }
+
+        public string GetYearSampleId(string idWithYear)
+        {
+            string yearSampleId = "";
+
+            //testing
+            //idWithYear = "0717046601X2";
+            //
+            if (idWithYear.ToUpper().IndexOf("X") >= 0)
+            {
+                idWithYear = idWithYear.Substring(0, idWithYear.ToUpper().IndexOf('X'));
+                //var str = $"{DateTime.Now.Year.ToString().Substring(2)}{idWithYear.Substring(0, 4)}";
+
+                //for (var i = DateTime.Now.Year; ; i--)
+                //{
+                //    var year = i;
+                //    var month = int.Parse(idWithYear.Substring(0, 2));
+                //    var day = int.Parse(idWithYear.Substring(2, 2));
+                //    var date = new DateTime(year, month, day);
+                //    var diff = DateTime.Now.Subtract(date);
+
+                //    if (diff.TotalMilliseconds < 0)
+                //    {
+                //        continue;
+                //    }
+                //    else
+                //    {
+                //        yearSampleId = year.ToString().Substring(2) + idWithYear;
+                //        break;
+                //    }
+                //}
+
+                yearSampleId = idWithYear;
+            }
+            else
+            {
+                yearSampleId = idWithYear;
+            }
+
+
+            return yearSampleId;
+        }
+
 
     }
 }

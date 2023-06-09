@@ -386,7 +386,18 @@ namespace winDDIRunBuilder
                     foreach (var smp in plateSamples)
                     {
                         cmd.Parameters["@pPlateId"].Value = smp.DestNewPlateId == null ? smp.DestPlateId : smp.DestNewPlateId;
+                        
+                        //if(smp.Alias !=null && smp.Alias.ToUpper().IndexOf("X") > 0)
+                        //{
+                        //    cmd.Parameters["@pSampleId"].Value = smp.Alias;
+                        //}
+                        //else
+                        //{
+                        //    cmd.Parameters["@pSampleId"].Value = smp.SampleId;
+                        //}
+
                         cmd.Parameters["@pSampleId"].Value = smp.SampleId;
+
                         cmd.Parameters["@pSampleType"].Value = string.IsNullOrEmpty(smp.SampleType) ? "" : smp.SampleType;
                         cmd.Parameters["@pWell"].Value = smp.DestWellId;
                         cmd.Parameters["@pPosition"].Value = smp.Sequence;
