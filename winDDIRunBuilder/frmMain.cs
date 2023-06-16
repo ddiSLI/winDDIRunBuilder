@@ -20,6 +20,7 @@ namespace winDDIRunBuilder
     {
         public ClientRunBuilder CurRunBuilder { get; set; }
         public List<InputFile> InputFileValues { get; set; }
+        public List<InputFile> BCRSourceSamples { get; set; }
         public List<ValidPlate> CurValidPlates { get; set; }
         public List<PlateSample> CurPlateSamples { get; set; }          //samples from history plates
         public List<OutputPlateSample> OutPlateSamples { get; set; }    //samples from plates transfer, worklist samples
@@ -74,7 +75,7 @@ namespace winDDIRunBuilder
 
             try
             {
-                string runBuilderVersion = "1.0.0.47";
+                string runBuilderVersion = "1.0.0.49";
                 //var ver = Assembly.GetExecutingAssembly().GetName().Version;
                 //string runBuilderVersion = System.Windows.Forms.Application.pu;
                 //string runBuilderVersion = System.Windows.Forms.Application.ProductVersion;
@@ -85,6 +86,7 @@ namespace winDDIRunBuilder
                 CurValidPlates = new List<ValidPlate>();
                 OutPlateSamples = new List<OutputPlateSample>();
                 InputFileValues = new List<InputFile>();
+                BCRSourceSamples = new List<InputFile>();
 
                 ScannedDBPalte = new DBPlate();
                 ScannedDBPlateSamples = new List<PlateSample>();
@@ -107,7 +109,7 @@ namespace winDDIRunBuilder
                 }
                 //
 
-                pProtocol =sqlService.GetProtocols(CurRunBuilder.Department);
+                pProtocol = sqlService.GetProtocols(CurRunBuilder.Department);
 
                 if (pProtocol.Count > 0)
                 {
@@ -939,7 +941,7 @@ namespace winDDIRunBuilder
 
                                     foreach (var outS in outSamples)
                                     {
-                                        if (!string.IsNullOrEmpty(outS.Alias) && outS.Alias.ToUpper().IndexOf("X") >0)
+                                        if (!string.IsNullOrEmpty(outS.Alias) && outS.Alias.ToUpper().IndexOf("X") > 0)
                                         {
                                             outS.SampleId = outS.SampleId + outS.Alias.ToUpper().Substring(outS.Alias.ToUpper().IndexOf("X"));
                                         }
@@ -1199,7 +1201,7 @@ namespace winDDIRunBuilder
                         //{
                         //    itemValue = item.SampleId + ",";
                         //}
-                         itemValue = item.SampleId + ",";
+                        itemValue = item.SampleId + ",";
 
                         //itemValue = item.SampleId.Replace("-", "") + ",";
 
@@ -2338,6 +2340,26 @@ namespace winDDIRunBuilder
                                     dtoWorklist = ProcessHisDestPlate(sourcePlateId, destPlateId);
                                 }
 
+                                //BCRSampleIssueHandle_34
+                                //check worklist and back.AddSample.Error
+                                List<ErrorInfo> bcrErrs = new List<ErrorInfo>();
+                                string bcrErrMsg = "";
+                                bcrErrs = CheckBCRErrors(backService.AddSampleErrs, dtoWorklist);
+                                if (bcrErrs != null && bcrErrs.Count > 0)
+                                {
+                                    foreach (var err in bcrErrs)
+                                    {
+                                        bcrErrMsg += Environment.NewLine;
+                                        bcrErrMsg += "BCR Sample, " + err.SampleId + ", has the issue: " + err.ErrDesc + " ;";
+                                    }
+
+                                    if (!string.IsNullOrEmpty(bcrErrMsg))
+                                    {
+                                        MessageBox.Show(bcrErrMsg, "BCR processing -Issue ", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                    }
+                                }
+                                //
+
                                 //Worklist
                                 if (dtoWorklist != null && dtoWorklist.Count > 0)
                                 {
@@ -2853,7 +2875,7 @@ namespace winDDIRunBuilder
                     //    newSample.SampleId = smp.Attributes["SampleId"];
                     //}
                     newSample.SampleId = smp.Attributes["SampleId"];
-                    newSample.Alias= smp.Attributes["Alias"];
+                    newSample.Alias = smp.Attributes["Alias"];
 
                     OutPlateSamples.Add(newSample);
                 }
@@ -3077,6 +3099,9 @@ namespace winDDIRunBuilder
         {
             InputPlate bcrPlate = new InputPlate();
 
+            //Build BCR-SourceSamples
+            BCRSourceSamples = new List<InputFile>();
+
             try
             {
                 importFile = CurRunBuilder.BCROutput + importFile;
@@ -3085,6 +3110,9 @@ namespace winDDIRunBuilder
                     .Skip(1)
                     .Select(v => InputFile.ReadInputFile(v))
                     .ToList();
+
+
+
 
                 if (rawValues != null && rawValues.Count > 0)
                 {
@@ -3100,6 +3128,20 @@ namespace winDDIRunBuilder
                             WellY = "0",                // wY.ToString(),
                             PlateId = ""
                         });
+
+                        //BCRSampleIssueHandle_14
+                        //Build BCR-SourceSamples for UnProcessed Samples
+                        BCRSourceSamples.Add(new InputFile
+                        {
+                            FullSampleId = smp.FullSampleId,
+                            ShortId = smp.ShortId,
+                            RackName = "BCR",
+                            Position = smp.Position,
+                            WellX = smp.Position,       //wX.ToString(),
+                            WellY = "0",                // wY.ToString(),
+                            PlateId = ""
+                        });
+                        //
                     }
 
                     var startSample = InputFileValues.FirstOrDefault();
@@ -3338,7 +3380,7 @@ namespace winDDIRunBuilder
                         if (resultAddSamples == "SUCCESS")
                         {
                             //print manualPlateId
-                            lblManualPlateId.Text= txbManualPlateId.Text.Trim();
+                            lblManualPlateId.Text = txbManualPlateId.Text.Trim();
 
                             //Auto create another PlateId
                             txbManualPlateId.Text = ScannedDBPalte.PlateName + plateNewSerialNo;
@@ -3347,7 +3389,7 @@ namespace winDDIRunBuilder
                             MessageBox.Show("The Plate," + lblManualPlateId.Text + ", created." +
                                         Environment.NewLine +
                                         "You can print the Plate barcode." + Environment.NewLine
-                                        + Environment.NewLine + 
+                                        + Environment.NewLine +
                                         "Or to create another Manual Plate",
                                         "Manual Plate",
                                         MessageBoxButtons.OK);
@@ -3526,6 +3568,68 @@ namespace winDDIRunBuilder
                 lblMsg.Text = errMsg;
             }
         }
+
+        private List<ErrorInfo> CheckBCRErrors(List<ErrorInfo> AddSampleErrs, List<DtoWorklist> bcrWorklist)
+        {
+            //BCRSampleIssueHandle_44:
+            List<ErrorInfo> bcrErrors = new List<ErrorInfo>();
+            int smpProcessed = 0;
+            ErrorInfo bcrError = new ErrorInfo();
+
+            try
+            {
+                //BackServer.AddSample error 
+                if (AddSampleErrs != null && AddSampleErrs.Count > 0)
+                {
+                    foreach (var smpErr in AddSampleErrs)
+                    {
+                        bcrError = new ErrorInfo();
+                        bcrError.SampleId = smpErr.SampleId;
+                        bcrError.ErrDesc = "Sopphire met issue: " + smpErr.ErrDesc;
+                        bcrErrors.Add(bcrError);
+                    }
+                }
+
+                //Compare source samples with returned worklist samples 
+                if (bcrWorklist != null && bcrWorklist.Count > 0)
+                {
+                    if (BCRSourceSamples != null && BCRSourceSamples.Count > 0)
+                    {
+                        foreach (var bcrsmp in BCRSourceSamples)
+                        {
+                            smpProcessed = bcrWorklist.Where(s => s.Attributes["SampleId"].Replace("-", "").ToUpper() == bcrsmp.ShortId.ToUpper()
+                                                               || s.Attributes["Alias"].Replace("-", "").ToUpper() == bcrsmp.ShortId.ToUpper()).ToList().Count();
+                            if (smpProcessed <= 0)
+                            {
+                                bcrError = new ErrorInfo();
+                                bcrError.SampleId = bcrsmp.ShortId;
+                                bcrError.ErrDesc = "Not processed";
+                                bcrErrors.Add(bcrError);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    bcrError = new ErrorInfo();
+                    bcrError.SampleId = "AllBCRSamples";
+                    bcrError.ErrDesc = "There is no worklist returned";
+                    bcrErrors.Add(bcrError);
+                }
+            }
+            catch (Exception ex)
+            {
+                string errMsg = "CheckBCRErrors() met the following error: ";
+                errMsg += Environment.NewLine;
+                errMsg += ex.Message;
+                lblMsg.ForeColor = Color.DarkRed;
+                lblMsg.Text = errMsg;
+            }
+
+
+            return bcrErrors;
+        }
+
 
     }
 }

@@ -17,6 +17,8 @@ namespace winDDIRunBuilder
         // public ClientRunBuilder CurRunBuilder { get; set; }
 
         public string ErrMsg { set; get; } = "";
+
+        public List<ErrorInfo> AddSampleErrs { set; get; }
         public class DtoWorklist
         {
             public string SourcePlateId { set; get; }
@@ -108,6 +110,7 @@ namespace winDDIRunBuilder
 
         public ClientBackend(string processType = null)
         {
+            AddSampleErrs = new List<ErrorInfo>();
             string runCondition = ConfigurationManager.AppSettings["RunCondition"];
             string endpointUrlDDIBatch = "";
             string endpointPortDDIBatch = "";
@@ -234,6 +237,7 @@ namespace winDDIRunBuilder
             string actionResult = "YES";
             //List<InputFile> processSamples = new List<InputFile>();
             ModelTransfer runFun = new ModelTransfer();
+            AddSampleErrs = new List<ErrorInfo>();
 
             try
             {
@@ -309,6 +313,16 @@ namespace winDDIRunBuilder
                         actionResult = "FAILED";
                         sbResult.Append("APIPost_ERROR: " + inSampleId + "; " + indexSample + "; ");
                         sbResult.AppendLine();
+
+                        //BCRSampleIssueHandle_24
+                        //Collect backend issues
+                        AddSampleErrs.Add(new ErrorInfo
+                        {
+                            SampleId = inSampleId,
+                            ErrDesc = response.Content
+                        });
+                        //
+
                         throw new Exception(response.Content);
                     }
                 }
@@ -352,7 +366,7 @@ namespace winDDIRunBuilder
                         dilutSmp.ShortId = runFun.GetYearSampleId(smp.ShortId);
                         dilutSmp.RackName = smp.RackName;
                         dilutSmp.Position = smp.Position;
-                        dilutSmp.WellX= smp.Position;
+                        dilutSmp.WellX = smp.Position;
                         dilutSmp.WellY = "0";
                         plateSamples.Add(dilutSmp);
                     }

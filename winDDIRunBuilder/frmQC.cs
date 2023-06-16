@@ -1243,6 +1243,7 @@ namespace winDDIRunBuilder
             ExportFile export = new ExportFile();
             bool isFirstItem;
             bool isSampleField=true;
+            bool addPlateId = false;
 
             try
             {
@@ -1298,18 +1299,33 @@ namespace winDDIRunBuilder
                     foreach (var item in plateSamples)
                     {
                         isFirstItem = true;
+                        
+                        if (string.IsNullOrEmpty(item.SampleType) ==false && item.SampleType.IndexOf("QC") >= 0)
+                        {
+                            addPlateId = true;
+                        }
+                        else
+                        {
+                            addPlateId = false;
+                        }
+
                         foreach (var head in fileItems)
                         {
                             isSampleField = false;
                             Type t = item.GetType();
                             PropertyInfo[] props = t.GetProperties();
 
+                            //Sample Field(s) processing
                             foreach (var prop in props)
                             {
                                 if (prop.Name.ToUpper() == head.ToUpper())
                                 {
                                     isSampleField = true;
                                     curValue = prop.GetValue(item) == null ? "" : prop.GetValue(item).ToString();
+
+                                    if (addPlateId)
+                                        curValue = curValue + "_" + plateId;
+
                                     if (isFirstItem)
                                     {
                                         itemValue += curValue;
@@ -1323,6 +1339,7 @@ namespace winDDIRunBuilder
                                 }
                             }
 
+                            //Plate Field(s) processing
                             if(isSampleField == false)
                             {
                                 foreach (var propP in propsP)
@@ -1330,6 +1347,7 @@ namespace winDDIRunBuilder
                                     if (propP.Name.ToUpper() == head.ToUpper())
                                     {
                                         curValue = propP.GetValue(CurDBPlate) == null ? "" : propP.GetValue(CurDBPlate).ToString();
+
                                         if (isFirstItem)
                                         {
                                             itemValue += curValue;
@@ -1379,9 +1397,6 @@ namespace winDDIRunBuilder
 
             try
             {
-
-
-
                 using (var writer = new StreamWriter(exportPath))
                 {
                     //writer.WriteLine(plateFileItems);
