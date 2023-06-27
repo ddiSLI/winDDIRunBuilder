@@ -82,9 +82,9 @@ namespace winDDIRunBuilder
                         FirstSampleWell = outSamples.FirstOrDefault().DestWellId;
                         LastSampleWell = outSamples.LastOrDefault().DestWellId;
 
-                        if (validPlate.Direction == "1")
+                        if (validPlate.Rotated)
                         {
-                            //Rotated
+                            //Rotated (validPlate.Direction == "1")
                             MappingPlateSamplesRotated(validPlate, outSamples);
                         }
                         else

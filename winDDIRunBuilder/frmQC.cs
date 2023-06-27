@@ -88,8 +88,9 @@ namespace winDDIRunBuilder
                     pPlateSizeY = CurDBPlate.SizeEndWell.Substring(0, 1);
                 }
 
+                IsRotated = CurDBPlate.PlateRotated;
 
-                SetWellXY();
+                SetWellXY(sizeX: "A1", sizeY: CurDBPlate.SizeEndWell, isRotated: CurDBPlate.PlateRotated);
 
                 //Get DBTests
                 assay = ConfigurationManager.AppSettings["Assay"];
@@ -145,9 +146,10 @@ namespace winDDIRunBuilder
                 }
 
                 //Testing
-                btnAddQC.Enabled = true;
                 //
-
+                //btnAddQC.Enabled = true;
+                //
+                //
 
             }
             catch (Exception ex)
@@ -193,16 +195,16 @@ namespace winDDIRunBuilder
                                 if (pHasQC)
                                 {
                                     wellX = lastSampleWell.Substring(0, 1);
-                                    wellY = ((char)((int)Char.Parse(lastSampleWell.Substring(1)))).ToString();
+                                    wellY = lastSampleWell.Substring(1);
+                                    //wellY = ((char)((int)Char.Parse(lastSampleWell.Substring(1)))).ToString();
                                 }
-                                else if(! pHasQC)
+                                else if (!pHasQC)
                                 {
-                                    if ((Char.Parse(lastSampleWell.Substring(0, 1)) <= Char.Parse(pPlateSizeX)) &&
-                                    (Convert.ToInt32(lastSampleWell.Substring(1)) < Convert.ToInt32(pPlateSizeY)))
+                                    if ((Char.Parse(lastSampleWell.Substring(0, 1)) <= Char.Parse(pPlateSizeY)) &&
+                                    (Convert.ToInt32(lastSampleWell.Substring(1)) < Convert.ToInt32(pPlateSizeX)))
                                     {
                                         wellX = lastSampleWell.Substring(0, 1);
-                                        //wellY = (Convert.ToInt32(lastSampleWell.Substring(1)) + 1).ToString();
-                                        wellY = ((char)((int)Char.Parse(lastSampleWell.Substring(1)) + 1)).ToString();
+                                        wellY = (Convert.ToInt32(lastSampleWell.Substring(1)) + 1).ToString();
                                     }
                                     else
                                     {
@@ -212,18 +214,33 @@ namespace winDDIRunBuilder
                                             wellY = "1";
                                         }
                                     }
+
+                                    ////if ((Char.Parse(lastSampleWell.Substring(0, 1)) <= Char.Parse(pPlateSizeX)) &&
+                                    ////(Convert.ToInt32(lastSampleWell.Substring(1)) < Convert.ToInt32(pPlateSizeY)))
+                                    ////{
+                                    ////    wellX = lastSampleWell.Substring(0, 1);
+                                    ////    //wellY = (Convert.ToInt32(lastSampleWell.Substring(1)) + 1).ToString();
+                                    ////    wellY = ((char)((int)Char.Parse(lastSampleWell.Substring(1)) + 1)).ToString();
+                                    ////}
+                                    ////else
+                                    ////{
+                                    ////    if (Convert.ToInt32(lastSampleWell.Substring(1)) == Convert.ToInt32(pPlateSizeY))
+                                    ////    {
+                                    ////        wellX = (Char.Parse(lastSampleWell.Substring(0, 1)) + 1).ToString();
+                                    ////        wellY = "1";
+                                    ////    }
+                                    ////}
                                 }
 
-
                             }
-                            else
+                            else if (CurDBPlate.PlateRotated == false)
                             {
                                 if (pHasQC)
                                 {
                                     wellX = lastSampleWell.Substring(1);
                                     wellY = ((char)((int)Char.Parse(lastSampleWell.Substring(0, 1)))).ToString();
                                 }
-                                else if(! pHasQC)
+                                else if (!pHasQC)
                                 {
                                     if (Char.Parse(lastSampleWell.Substring(0, 1)) < Char.Parse(pPlateSizeY))
                                     {
@@ -244,15 +261,25 @@ namespace winDDIRunBuilder
                         }
                         else
                         {
-                            wellX = qs.Well.Substring(1);
-                            wellY = qs.Well.Substring(0, 1);
+                            if (CurDBPlate.PlateRotated)
+                            {
+                                wellY = qs.Well.Substring(1);
+                                wellX = qs.Well.Substring(0, 1);
+                            }
+                            else
+                            {
+                                wellX = qs.Well.Substring(1);
+                                wellY = qs.Well.Substring(0, 1);
+                            }
                         }
 
+                        //WellX setting
                         cbCell = new DataGridViewComboBoxCell();
                         cbCell = (DataGridViewComboBoxCell)dgvQCSamples.Rows[iRw].Cells["WellX"];
                         cbCell.Items.AddRange(WellXs.ToArray());
                         dgvQCSamples.Rows[iRw].Cells["WellX"].Value = wellX;
 
+                        //WellY setting
                         cbCell = new DataGridViewComboBoxCell();
                         cbCell = (DataGridViewComboBoxCell)dgvQCSamples.Rows[iRw].Cells["WellY"];
                         cbCell.Items.AddRange(WellYs.ToArray());
@@ -310,48 +337,60 @@ namespace winDDIRunBuilder
             string qcType = "";
             int iRw = 0;
 
-            foreach (DataGridViewRow dr in dgvQCSamples.Rows)
+            try
             {
-                if (Convert.ToBoolean(dr.Cells["Include"].Value))
+                foreach (DataGridViewRow dr in dgvQCSamples.Rows)
                 {
-                    qcType= dr.Cells["QCType"].Value.ToString();
-
-                    // sample = dr.Cells["Sample"].Value.ToString() + "_QC";
-                    //sample = dr.Cells["Prefix"].Value.ToString() + "_QC";
-
-                    if (qcType == "SYS")
+                    if (Convert.ToBoolean(dr.Cells["Include"].Value))
                     {
-                        sample = "QC_" + dr.Cells["HarvestId"].Value.ToString();
-                        sample = sample.Substring(0, 6) + "\n" + sample.Substring(6);
-                    }
-                    else
-                    {
-                        sample = "QC_" + dr.Cells["Sample"].Value.ToString();
-                        sample = sample.Substring(0, 6) + "\n" + sample.Substring(6);
-                    }
+                        qcType = dr.Cells["QCType"].Value.ToString();
 
-                    wellX = dr.Cells["WellX"].Value.ToString();
-                    wellY = dr.Cells["WellY"].Value.ToString();
+                        // sample = dr.Cells["Sample"].Value.ToString() + "_QC";
+                        //sample = dr.Cells["Prefix"].Value.ToString() + "_QC";
 
-                    if (!string.IsNullOrEmpty(wellX) && !string.IsNullOrEmpty(wellY))
-                    {
-                        if (IsRotated)
+                        if (qcType == "SYS")
                         {
-                            iRw = pAlpha.IndexOf(wellY);
-                            dgvSamplePlate.Rows[iRw].Cells[wellX].Value = sample;
+                            sample = "QC_" + dr.Cells["HarvestId"].Value.ToString();
+                            sample = sample.Substring(0, 6) + "\n" + sample.Substring(6);
                         }
                         else
                         {
-                            iRw = pAlpha.IndexOf(wellY);
-                            dgvSamplePlate.Rows[iRw].Cells[wellX].Value = sample;
+                            sample = "QC_" + dr.Cells["Sample"].Value.ToString();
+                            sample = sample.Substring(0, 6) + "\n" + sample.Substring(6);
                         }
-                        dgvSamplePlate.Rows[iRw].Cells[wellX].Style.BackColor = Color.Yellow;
+
+                        wellX = dr.Cells["WellX"].Value.ToString();
+                        wellY = dr.Cells["WellY"].Value.ToString();
+
+                        if (!string.IsNullOrEmpty(wellX) && !string.IsNullOrEmpty(wellY))
+                        {
+                            if (IsRotated)
+                            {
+                                iRw = Convert.ToInt32(wellY)-1;
+                                dgvSamplePlate.Rows[iRw].Cells[wellX].Value = sample;
+                                //iRw = pAlpha.IndexOf(wellX);
+                                //dgvSamplePlate.Rows[iRw].Cells[wellY].Value = sample;
+                            }
+                            else
+                            {
+                                iRw = pAlpha.IndexOf(wellY);
+                                dgvSamplePlate.Rows[iRw].Cells[wellX].Value = sample;
+                            }
+                            dgvSamplePlate.Rows[iRw].Cells[wellX].Style.BackColor = Color.Yellow;
+                        }
                     }
                 }
             }
+            catch (Exception ex)
+            {
+                string errMsg = "btnAddQC_Click() met some issues:";
+                errMsg += ex.Message;
+                lblMsg.ForeColor = Color.Red;
+                lblMsg.Text = errMsg;
+            }
         }
 
-        private void MapSamples(DataTable dtPlateSamples, bool pIsRotated = false)
+        private void MapSamples(DataTable dtPlateSamples)
         {
             string curWell = "";
             string smpItem = "";
@@ -400,9 +439,10 @@ namespace winDDIRunBuilder
 
                             if (smpItem.IndexOf("QC") >= 0)
                             {
-                                HisQCSamples.Add(new OutputPlateSample {
-                                    SampleId= smpItem.Replace("QC_",""),
-                                    Status="HISQC"
+                                HisQCSamples.Add(new OutputPlateSample
+                                {
+                                    SampleId = smpItem.Replace("QC_", ""),
+                                    Status = "HISQC"
                                 });
                             }
 
@@ -412,7 +452,7 @@ namespace winDDIRunBuilder
                                 //smpItem = smpItem.Substring(0, 10) + Environment.NewLine + smpItem.Substring(10);
                             }
 
-                            if (pIsRotated)
+                            if (IsRotated)
                             {
                                 //Rotated
                                 if (tCol == dgvSamplePlate.ColumnCount - 1)
@@ -616,7 +656,7 @@ namespace winDDIRunBuilder
                 wx = sizeY.Substring(1);
                 for (int intY = 1; intY <= Convert.ToInt32(wx); intY++)
                 {
-                    WellXs.Add(intY.ToString());
+                    WellYs.Add(intY.ToString());
                 }
 
             }
@@ -735,24 +775,24 @@ namespace winDDIRunBuilder
                     //Collect QCSamples for upinsert
                     qcSamples = MakeQCSamples();
 
-                    if(HisQCSamples !=null && HisQCSamples.Count > 0)
+                    if (HisQCSamples != null && HisQCSamples.Count > 0)
                     {
-                        foreach(var hisQC in HisQCSamples)
+                        foreach (var hisQC in HisQCSamples)
                         {
-                            qcSamples.RemoveAll(qc => qc.SampleId== hisQC.SampleId);
+                            qcSamples.RemoveAll(qc => qc.SampleId == hisQC.SampleId);
                         }
                     }
 
-                    
+
                     //Add QC samples
-                    if(qcSamples !=null && qcSamples.Count > 0)
+                    if (qcSamples != null && qcSamples.Count > 0)
                         resultSaveSample = sqlService.AddSamples(qcSamples, Environment.UserName);
-                        //resultSaveSample = sqlService.AddPlateQCSamples(rawQCSamples, Environment.UserName);
+                    //resultSaveSample = sqlService.AddPlateQCSamples(rawQCSamples, Environment.UserName);
 
 
                     if (pHasQC == false)
                     {
-                         //Update Plate Status
+                        //Update Plate Status
                         if (resultSaveSample == "SUCCESS")
                         {
                             resultUpdPlate = sqlService.UpdatePlateQC(CurDBPlate.PlateId, CurDBPlate.PlateVersion, hasQC: true, Environment.UserName);
@@ -1242,7 +1282,7 @@ namespace winDDIRunBuilder
             List<string> fileItems = new List<string>();
             ExportFile export = new ExportFile();
             bool isFirstItem;
-            bool isSampleField=true;
+            bool isSampleField = true;
             bool addPlateId = false;
 
             try
@@ -1299,8 +1339,8 @@ namespace winDDIRunBuilder
                     foreach (var item in plateSamples)
                     {
                         isFirstItem = true;
-                        
-                        if (string.IsNullOrEmpty(item.SampleType) ==false && item.SampleType.IndexOf("QC") >= 0)
+
+                        if (string.IsNullOrEmpty(item.SampleType) == false && item.SampleType.IndexOf("QC") >= 0)
                         {
                             addPlateId = true;
                         }
@@ -1340,7 +1380,7 @@ namespace winDDIRunBuilder
                             }
 
                             //Plate Field(s) processing
-                            if(isSampleField == false)
+                            if (isSampleField == false)
                             {
                                 foreach (var propP in propsP)
                                 {

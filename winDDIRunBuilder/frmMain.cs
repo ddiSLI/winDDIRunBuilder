@@ -75,7 +75,7 @@ namespace winDDIRunBuilder
 
             try
             {
-                string runBuilderVersion = "1.0.0.49";
+                string runBuilderVersion = "1.0.0.50";
                 //var ver = Assembly.GetExecutingAssembly().GetName().Version;
                 //string runBuilderVersion = System.Windows.Forms.Application.pu;
                 //string runBuilderVersion = System.Windows.Forms.Application.ProductVersion;
@@ -398,8 +398,6 @@ namespace winDDIRunBuilder
                                 newPlate.Attributes.Add("Opt5", "");
                             }
 
-
-
                             ProtocolPlates.Add(newPlate);
                         }
                     }
@@ -644,6 +642,7 @@ namespace winDDIRunBuilder
                     {
                         Department = CurRunBuilder.Department,
                         PlateId = inputPlate.Name,
+                        Rotated=inputPlate.Rotated,
                         PlateName = findPlate.DestPlateName,
                         PlateType = "DEST",
                         SizeStartWell = findPlate.StartPos,      //PlateSize
@@ -778,6 +777,7 @@ namespace winDDIRunBuilder
                                 destPlateName = validPlate.PlateName;
                                 dbPlate.Department = validPlate.Department;
                                 dbPlate.PlateName = validPlate.PlateName;
+                                dbPlate.PlateRotated = validPlate.Rotated;
                                 //dbPlate.HasQC
                                 dbPlate.SizeStartWell = validPlate.SizeStartWell;
                                 dbPlate.SizeEndWell = validPlate.SizeEndWell;
@@ -1694,7 +1694,21 @@ namespace winDDIRunBuilder
 
                     if (wellX <= RotateSizeY && wellY <= RotateSizeX)
                     {
-                        dtPlateSamples.Rows[wellX - 1][wellColSatrtId - wellY] = smp.SampleId;
+                        if (string.IsNullOrEmpty(smp.Status) && string.IsNullOrEmpty(smp.SampleType))
+                        {
+                            dtPlateSamples.Rows[wellX - 1][wellColSatrtId - wellY] = smp.SampleId;
+                        }
+                        else if (!string.IsNullOrEmpty(smp.Status) && smp.Status == "REJECT")
+                        {
+                            dtPlateSamples.Rows[wellX - 1][wellColSatrtId - wellY] = "REJ_" + smp.SampleId;
+                        }
+                        else if (smp.SampleType.IndexOf("QC") >= 0)
+                        {
+                            dtPlateSamples.Rows[wellX - 1][wellColSatrtId - wellY] = "QC_" + smp.SampleId;
+                        }
+
+                        //
+                        //dtPlateSamples.Rows[wellX - 1][wellColSatrtId - wellY] = smp.SampleId;
                         //dtPlateSamples.Rows[RotateSizeX - wellY][wellX] = smp.SampleId;
                     }
                     else
@@ -3086,7 +3100,8 @@ namespace winDDIRunBuilder
                 getPlate.Name = findPlate.DestPlateId;
                 getPlate.Exclude = findPlate.ExcludeWells.Split('|').Distinct().Select(WellToPosition).ToList();
 
-                getPlate.Direction = "0";
+                getPlate.Rotated = findPlate.PlateRotated;
+                getPlate.Direction = findPlate.PlateRotated==true? "1": "0";
                 getPlate.Attributes = findPlate.Attributes;
 
             }
