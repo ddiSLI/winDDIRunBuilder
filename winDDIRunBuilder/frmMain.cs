@@ -75,7 +75,7 @@ namespace winDDIRunBuilder
 
             try
             {
-                string runBuilderVersion = "1.0.0.50";
+                string runBuilderVersion = "1.0.0.51";
                 //var ver = Assembly.GetExecutingAssembly().GetName().Version;
                 //string runBuilderVersion = System.Windows.Forms.Application.pu;
                 //string runBuilderVersion = System.Windows.Forms.Application.ProductVersion;
@@ -2354,25 +2354,25 @@ namespace winDDIRunBuilder
                                     dtoWorklist = ProcessHisDestPlate(sourcePlateId, destPlateId);
                                 }
 
-                                //BCRSampleIssueHandle_34
-                                //check worklist and back.AddSample.Error
-                                List<ErrorInfo> bcrErrs = new List<ErrorInfo>();
-                                string bcrErrMsg = "";
-                                bcrErrs = CheckBCRErrors(backService.AddSampleErrs, dtoWorklist);
-                                if (bcrErrs != null && bcrErrs.Count > 0)
-                                {
-                                    foreach (var err in bcrErrs)
-                                    {
-                                        bcrErrMsg += Environment.NewLine;
-                                        bcrErrMsg += "BCR Sample, " + err.SampleId + ", has the issue: " + err.ErrDesc + " ;";
-                                    }
+                                ////BCRSampleIssueHandle_34
+                                ////check worklist and back.AddSample.Error
+                                //List<ErrorInfo> bcrErrs = new List<ErrorInfo>();
+                                //string bcrErrMsg = "";
+                                //bcrErrs = CheckBCRErrors(backService.AddSampleErrs, dtoWorklist);
+                                //if (bcrErrs != null && bcrErrs.Count > 0)
+                                //{
+                                //    foreach (var err in bcrErrs)
+                                //    {
+                                //        bcrErrMsg += Environment.NewLine;
+                                //        bcrErrMsg += "BCR Sample, " + err.SampleId + ", has the issue: " + err.ErrDesc + " ;";
+                                //    }
 
-                                    if (!string.IsNullOrEmpty(bcrErrMsg))
-                                    {
-                                        MessageBox.Show(bcrErrMsg, "BCR processing -Issue ", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                    }
-                                }
-                                //
+                                //    if (!string.IsNullOrEmpty(bcrErrMsg))
+                                //    {
+                                //        MessageBox.Show(bcrErrMsg, "BCR processing-Issue ", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                //    }
+                                //}
+                                ////
 
                                 //Worklist
                                 if (dtoWorklist != null && dtoWorklist.Count > 0)
@@ -2436,6 +2436,11 @@ namespace winDDIRunBuilder
                     txbPrompt.ForeColor = Color.DarkRed;
                     txbPrompt.Text = backService.ErrMsg;
                 }
+
+                ////
+                //DataTable dtWorklist = new DataTable();
+                //dtWorklist = ToDataTable(dtoWorklist);
+                ////
             }
 
             return dtoWorklist;
@@ -3645,6 +3650,28 @@ namespace winDDIRunBuilder
             return bcrErrors;
         }
 
-
+        public DataTable ToDataTable<T>(List<T> items)
+        {
+            DataTable dataTable = new DataTable(typeof(T).Name);
+            //Get all the properties
+            PropertyInfo[] Props = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            foreach (PropertyInfo prop in Props)
+            {
+                //Setting column names as Property names
+                dataTable.Columns.Add(prop.Name);
+            }
+            foreach (T item in items)
+            {
+                var values = new object[Props.Length];
+                for (int i = 0; i < Props.Length; i++)
+                {
+                    //inserting property values to datatable rows
+                    values[i] = Props[i].GetValue(item, null);
+                }
+                dataTable.Rows.Add(values);
+            }
+            //put a breakpoint here and check datatable
+            return dataTable;
+        }
     }
 }
