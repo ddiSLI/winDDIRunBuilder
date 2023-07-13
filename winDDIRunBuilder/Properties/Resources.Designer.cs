@@ -373,6 +373,16 @@ namespace winDDIRunBuilder.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap QusMark96 {
+            get {
+                object obj = ResourceManager.GetObject("QusMark96", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Report32 {
             get {
                 object obj = ResourceManager.GetObject("Report32", resourceCulture);

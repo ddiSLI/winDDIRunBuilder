@@ -18,6 +18,7 @@ namespace winDDIRunBuilder
 {
     public partial class frmQC : Form
     {
+        public string DeptName { get; set; } = "";
         public string PlateId { get; set; } = "";
         public DBPlate CurDBPlate { get; set; } = new DBPlate();
         private List<OutputPlateSample> HisQCSamples { get; set; }
@@ -42,6 +43,7 @@ namespace winDDIRunBuilder
         private void frmQC_Load(object sender, EventArgs e)
         {
             string assay = "";
+            List<QCSample> DeptQCPlates = new List<QCSample>();
             List<string> assays = new List<string>();
             RepoSQL sqlService = new RepoSQL();
             List<DBPlate> dbPlates = new List<DBPlate>();
@@ -93,8 +95,13 @@ namespace winDDIRunBuilder
                 SetWellXY(sizeX: "A1", sizeY: CurDBPlate.SizeEndWell, isRotated: CurDBPlate.PlateRotated);
 
                 //Get DBTests
-                assay = ConfigurationManager.AppSettings["Assay"];
-                assays = assay.Split(',').ToList();
+                DeptQCPlates = sqlService.GetQCSamples(plateName: "", dept: DeptName, qcType: "DEPT");
+                if(DeptQCPlates !=null && DeptQCPlates.Count > 0)
+                {
+                    assays = DeptQCPlates.Select(p => p.Plate).Distinct().ToList();
+                }
+                //assay = ConfigurationManager.AppSettings["Assay"];
+                //assays = assay.Split(',').ToList();
 
                 //Add DBTest to Control
                 cmbAssay.Items.AddRange(assays.ToArray());

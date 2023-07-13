@@ -24,7 +24,7 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <InstallUrl>\\dd386\sys\freearea\DDIRunBuilder\Setup\</InstallUrl>
-    <ApplicationRevision>52</ApplicationRevision>
+    <ApplicationRevision>53</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -115,6 +115,12 @@
     <Compile Include="frmMain.Designer.cs">
       <DependentUpon>frmMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="frmMsg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmMsg.Designer.cs">
+      <DependentUpon>frmMsg.cs</DependentUpon>
+    </Compile>
     <Compile Include="frmQC.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -140,6 +146,7 @@
     <Compile Include="Models\Janus.cs" />
     <Compile Include="Models\OutputPlate.cs" />
     <Compile Include="Models\OutputPlateSample.cs" />
+    <Compile Include="Models\PathFile.cs" />
     <Compile Include="Models\PlateSample.cs" />
     <Compile Include="Models\Protocol.cs" />
     <Compile Include="Models\ProtocolPlate.cs" />
@@ -163,6 +170,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="frmMain.resx">
       <DependentUpon>frmMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmMsg.resx">
+      <DependentUpon>frmMsg.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="frmQC.resx">
       <DependentUpon>frmQC.cs</DependentUpon>
@@ -339,6 +349,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\icons8-append-clip-30.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\QusMark96.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

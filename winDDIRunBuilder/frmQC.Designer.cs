@@ -297,7 +297,7 @@ namespace winDDIRunBuilder
             this.btnSent.Name = "btnSent";
             this.btnSent.Size = new System.Drawing.Size(116, 41);
             this.btnSent.TabIndex = 49;
-            this.btnSent.Text = "Sent To Instrument";
+            this.btnSent.Text = "Send To Instrument";
             this.btnSent.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnSent.UseVisualStyleBackColor = true;
             this.btnSent.Click += new System.EventHandler(this.btnSent_Click);

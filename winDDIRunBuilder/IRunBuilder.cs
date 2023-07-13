@@ -18,7 +18,7 @@ namespace winDDIRunBuilder
         List<PlateSample> GetPlateSamples(string plateId, string plateVersion = null);
         string AddSamples(List<OutputPlateSample> plateSamples, string user);
 
-        List<QCSample> GetQCSamples(string plateName);
+        List<QCSample> GetQCSamples(string plateName, string dept, string qcType);
 
         string AddPlateQCSamples(List<PlateSample> plateSamples,string user);
 

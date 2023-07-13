@@ -75,7 +75,10 @@ namespace winDDIRunBuilder
 
             try
             {
-                string runBuilderVersion = "1.0.0.51";
+
+                //"Spillover run in queue".
+
+                string runBuilderVersion = "1.0.0.52";
                 //var ver = Assembly.GetExecutingAssembly().GetName().Version;
                 //string runBuilderVersion = System.Windows.Forms.Application.pu;
                 //string runBuilderVersion = System.Windows.Forms.Application.ProductVersion;
@@ -148,17 +151,26 @@ namespace winDDIRunBuilder
                 txbBarcode.Text = "";
                 this.ActiveControl = txbBarcode;
             }
-
         }
 
+        private void NewProtocolInitial()
+        {
+            CurPlateSamples = new List<PlateSample>();
+            CurValidPlates = new List<ValidPlate>();
+            OutPlateSamples = new List<OutputPlateSample>();
+            InputFileValues = new List<InputFile>();
+            BCRSourceSamples = new List<InputFile>();
 
+            ScannedDBPalte = new DBPlate();
+            ScannedDBPlateSamples = new List<PlateSample>();
+            ProcessedWorklist = new List<string>();
+        }
 
         private List<Protocol> GetProtocols()
         {
             ClientBackend backendService = new ClientBackend();
             List<Protocol> prots = new List<Protocol>();
             List<ClientBackend.DtoProtocol> dtoProts = new List<ClientBackend.DtoProtocol>();
-
 
             dtoProts = (List<ClientBackend.DtoProtocol>)backendService.GetProtocolPlates(CurRunBuilder.PlateSettingFile);
             //dtoProts = (List<ClientBackend.DtoProtocol>)backendService.GetProtocols();
@@ -205,15 +217,26 @@ namespace winDDIRunBuilder
             string[] platePos;
             List<string> delWorklists = new List<string>();
 
-
             try
             {
+                NewProtocolInitial();
+
+                DirectoryInfo csvFolder = new DirectoryInfo(CurRunBuilder.RunBuilderOutput);
+                                
                 //CurUniqueId = $"{DateTime.Now.ToString("yyMMddHHmm")}";
                 //CurUniqueId = $"{DateTime.Now.ToString("yyMMddffff")}";
                 //dgvPlateSet.ReadOnly = false;
-
+                
                 if (pIsFrmLoaded && cbProtocolCd.SelectedValue != null && cbProtocolCd.SelectedValue.ToString().Length > 0)
                 {
+                    //Initial the environment
+                    btnGo.Enabled = true;
+                    txbPrompt.Text = "";
+                    txbPrompt.Font = new Font("Arial", 11, FontStyle.Regular);
+                    txbPrompt.ForeColor = txbPrompt.ForeColor;
+                    txbPrompt.ForeColor = Color.DarkGray;
+                    txbPrompt.Text = "";
+                    
                     //Clean properties
                     txbPrompt.Text = "";
                     CurPlateSamples = new List<PlateSample>();
@@ -243,51 +266,6 @@ namespace winDDIRunBuilder
                     //Get current sesion serial No.
                     RepoSQL sqlService = new RepoSQL();
                     CurUniqueId = sqlService.GetSeries();
-
-                    //Delete Previous worklists and BCR files
-                    foreach (string csvFile in Directory.GetFiles(CurRunBuilder.RunBuilderOutput, "*.csv"))
-                    {
-                        //Delete worklist files
-                        if (csvFile.IndexOf("_") < 0)
-                        {
-                            delWorklists.Add(csvFile);
-                            File.Delete(csvFile);
-                        }
-                    }
-
-                    //Rename worklist file
-                    string fileNameWithoutExt = "";
-                    string newWorlistName = "";
-                    string justName = "";
-                    string origWL = "";
-
-                    if (delWorklists != null && delWorklists.Count > 0)
-                    {
-                        foreach (var delWL in delWorklists)
-                        {
-                            foreach (string csvFile in Directory.GetFiles(CurRunBuilder.RunBuilderOutput, "*.csv"))
-                            {
-                                fileNameWithoutExt = csvFile.Substring(0, csvFile.IndexOf("."));
-
-                                if (fileNameWithoutExt.IndexOf("_") >= 0)
-                                {
-                                    origWL = fileNameWithoutExt.Substring(0, fileNameWithoutExt.IndexOf("_")) + ".csv";
-
-                                    if (delWL == origWL)
-                                    {
-                                        newWorlistName = fileNameWithoutExt.Substring(0, fileNameWithoutExt.IndexOf("_")) + ".csv";
-                                        File.Move(csvFile, newWorlistName);
-                                        if (!File.Exists(csvFile))
-                                        {
-                                            justName = Path.GetFileName(newWorlistName);
-                                            ProcessedWorklist.Add(justName);
-                                        }
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
 
                     string dbTests = "";
                     string curProtName = cbProtocolCd.SelectedValue.ToString();
@@ -404,11 +382,37 @@ namespace winDDIRunBuilder
 
                     SetProtocolPlates();
 
+                    ////Delete Previous worklists and BCR files
+                    //foreach (string csvFile in Directory.GetFiles(CurRunBuilder.RunBuilderOutput, "*.csv"))
+                    //{
+                    //    if (csvFile.IndexOf("_") < 0)
+                    //    {
+                    //        File.Delete(csvFile);
+                    //    }
+                    //}
+                    //csvFolder.Refresh();
+
+                    //Process spillover worklists
+                    processSpilloverFiles();
+                    csvFolder.Refresh();
+
                     //set default plate
                     pSelectedPlatePage = (string)cbPlates.SelectedItem;
 
                     txbPrompt.ForeColor = Color.DarkBlue;
                     txbPrompt.Text = "The avaliable protocol selected. Please make sure the available plates";
+
+                    //spilover happened
+                    if (ProcessedWorklist.Count > 0)
+                    {
+                        btnGo.Enabled = false;
+                        txbPrompt.Font = new Font("Arial", 16, FontStyle.Bold);
+                        txbPrompt.Text = cbProtocolCd.SelectedValue.ToString() + " worklists created already.";
+                        txbPrompt.Text += Environment.NewLine + "Spillover run in queue.";
+                        txbPrompt.BackColor = txbPrompt.BackColor;
+                        txbPrompt.ForeColor = Color.DarkGreen;
+                        txbPrompt.Refresh();
+                    }
 
                     txbBarcode.Text = "";
                     txbBarcode.Focus();
@@ -428,6 +432,118 @@ namespace winDDIRunBuilder
                 txbBarcode.Focus();
             }
         }
+
+        private void processSpilloverFiles()
+        {
+            List<string> worklists = new List<string>();
+            List<PathFile> spilWorklists = new List<PathFile>();
+            List<PathFile> finishedWorklists = new List<PathFile>();
+            PathFile firstList = new PathFile();
+            DirectoryInfo csvFolder = new DirectoryInfo(CurRunBuilder.RunBuilderOutput);
+
+            string fileNameWithoutExt = "";
+            string newWorlistName = "";
+            string pathFileName = "";
+            string pathName = "";
+
+            try
+            {
+                csvFolder.Refresh();
+
+                //Get protocol worklists
+                if (ProtocolPlates != null && ProtocolPlates.Count > 0)
+                {
+                    foreach (var pp in ProtocolPlates)
+                    {
+                        worklists.Add(pp.WorklistName);
+                    }
+                }
+
+                //collect all finishedWorklists csvname==currentProtocol.WorklistName info
+                foreach (string csvFile in Directory.GetFiles(CurRunBuilder.RunBuilderOutput, "*.csv"))
+                {
+                    pathFileName = Path.GetFileName(csvFile);
+                    pathName = Path.GetDirectoryName(csvFile);
+
+                    if (pathFileName.IndexOf("_") < 0)
+                    {
+                        finishedWorklists.Add(new PathFile
+                        {
+                            JustName = pathFileName,
+                            FullName = csvFile
+                        });
+                    }
+                }
+
+                //Delete Previous finished worklists and BCR files
+                foreach (var wlt in worklists)
+                {
+                    firstList = new PathFile();
+                    firstList = finishedWorklists.Where(wl => wl.JustName.ToUpper() == wlt.ToUpper())
+                                           .OrderBy(n => n.JustName)
+                                           .FirstOrDefault();
+                    if (firstList != null)
+                    {
+                        File.Delete(firstList.FullName);
+                        csvFolder.Refresh();
+                    }
+                }
+
+                //collect all worklist info
+                csvFolder.Refresh();
+                foreach (string csvFile in Directory.GetFiles(CurRunBuilder.RunBuilderOutput, "*.csv"))
+                {
+                    pathFileName = Path.GetFileName(csvFile);
+                    pathName = Path.GetDirectoryName(csvFile);
+                    fileNameWithoutExt = pathFileName.Substring(0, pathFileName.IndexOf("."));
+
+                    if (fileNameWithoutExt.IndexOf("_") > 0)
+                    {
+                        spilWorklists.Add(new PathFile
+                        {
+                            JustName = pathFileName,
+                            Path = pathName,
+                            FullName = csvFile,
+                            PlateWorklist = fileNameWithoutExt.Substring(0, fileNameWithoutExt.IndexOf("_")) + ".csv"
+                        });
+                    }
+                }
+
+                //Rename worklist file
+                csvFolder.Refresh();
+                foreach (var wlt in worklists)
+                {
+                    firstList = new PathFile();
+                    firstList = spilWorklists.Where(wl => wl.PlateWorklist.ToUpper() == wlt.ToUpper())
+                                           .OrderBy(n => n.JustName)
+                                           .FirstOrDefault();
+                    if (firstList != null)
+                    {
+                        pathFileName = firstList.JustName;
+                        fileNameWithoutExt = pathFileName.Substring(0, pathFileName.IndexOf("."));
+                        newWorlistName = fileNameWithoutExt.Substring(0, fileNameWithoutExt.IndexOf("_")) + ".csv";
+                        newWorlistName = firstList.Path + "\\" + newWorlistName;
+
+                        File.Move(firstList.FullName, newWorlistName);
+                        csvFolder.Refresh();
+
+                        if (!File.Exists(firstList.FullName))
+                        {
+                            ProcessedWorklist.Add(wlt);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                string errMsg = "processSpilloverFiles() met the following error: ";
+                errMsg += Environment.NewLine;
+                errMsg += ex.Message;
+                txbPrompt.ForeColor = Color.Red;
+                txbPrompt.Text = errMsg;
+            }
+        }
+
 
         private void btnGo_Click(object sender, EventArgs e)
         {
@@ -642,7 +758,7 @@ namespace winDDIRunBuilder
                     {
                         Department = CurRunBuilder.Department,
                         PlateId = inputPlate.Name,
-                        Rotated=inputPlate.Rotated,
+                        Rotated = inputPlate.Rotated,
                         PlateName = findPlate.DestPlateName,
                         PlateType = "DEST",
                         SizeStartWell = findPlate.StartPos,      //PlateSize
@@ -749,6 +865,7 @@ namespace winDDIRunBuilder
             bool isIncluded = false;
             bool isProcessedDB = false;
             bool isOneWorklist = false;
+            bool isSpillResult = false;
 
             try
             {
@@ -808,12 +925,27 @@ namespace winDDIRunBuilder
                             else if (outPlates != null && outPlates.Count() > 1)
                             {
                                 //Message box
-                                DialogResult dialogResult = MessageBox.Show("Number of samples exceeds plate capacity." +
-                                                                            "Do you want to create a spillover plate/worklist ?",
-                                                                            "Spillover Plate/Worklist",
-                                                                            MessageBoxButtons.YesNo);
-                                if (dialogResult == DialogResult.Yes)
+                                frmMsg spilMsg = new frmMsg();
+                                spilMsg.Text = "Spillover Plate/Worklist";
+                                spilMsg.MyMsg = validPlate.PlateName;
+                                spilMsg.MyMsg += Environment.NewLine;
+                                spilMsg.MyMsg += "Number of samples exceeds plate capacity.";
+                                spilMsg.MyMsg += Environment.NewLine;
+                                spilMsg.MyMsg += "Spillover run in queue";
+                                spilMsg.MyMsg += Environment.NewLine;
+                                spilMsg.MyMsg += Environment.NewLine;
+                                spilMsg.MyMsg += "Do you want to create a spillover plate/worklist ?";
+
+                                //DialogResult dialogResult = MessageBox.Show("Number of samples exceeds plate capacity." +
+                                //                                            "Do you want to create a spillover plate/worklist ?",
+                                //                                            "Spillover Plate/Worklist",
+                                //                                            MessageBoxButtons.YesNo);
+
+                                spilMsg.ShowDialog();
+                                if (spilMsg.DialogResult == DialogResult.Yes)
                                 {
+                                    isSpillResult = true;
+
                                     //Plate Spillover processing
                                     isOneWorklist = false;
 
@@ -907,7 +1039,7 @@ namespace winDDIRunBuilder
                                     rwPlate.Cells["ProcessedDB"].Value = 1;
                                     rwPlate.Cells["MultiOutput"].Value = 1;
                                 }
-                                else if (dialogResult == DialogResult.No)
+                                else if (spilMsg.DialogResult == DialogResult.No)
                                 {
                                     isOneWorklist = true;
                                     dbPlate.PlateId = destPlateId;
@@ -970,6 +1102,17 @@ namespace winDDIRunBuilder
                                 rwPlate.DefaultCellStyle.BackColor = Color.LightGreen;
                                 //rwPlate.Cells["CurWorkList"].Value = destPlateId.Substring(0, destPlateId.Length - CurUniqueId.Length) + ".csv";
                                 rwPlate.Cells["PlateDesc"].Value = "Plate and Samples saved; Worklist created";
+
+                                if (isSpillResult)
+                                {
+                                    btnGo.Enabled = false;
+                                    txbPrompt.Font = new Font("Arial", 16, FontStyle.Bold);
+                                    txbPrompt.Text = cbProtocolCd.SelectedValue.ToString() + " worklists created already.";
+                                    txbPrompt.Text += Environment.NewLine + "Spillover run in queue.";
+                                    txbPrompt.ForeColor = txbPrompt.ForeColor;
+                                    txbPrompt.ForeColor = Color.DarkGreen;
+                                }
+
                             }
                             else if (resultMakeWorklist != "SUCCESS")
                             {
@@ -3106,7 +3249,7 @@ namespace winDDIRunBuilder
                 getPlate.Exclude = findPlate.ExcludeWells.Split('|').Distinct().Select(WellToPosition).ToList();
 
                 getPlate.Rotated = findPlate.PlateRotated;
-                getPlate.Direction = findPlate.PlateRotated==true? "1": "0";
+                getPlate.Direction = findPlate.PlateRotated == true ? "1" : "0";
                 getPlate.Attributes = findPlate.Attributes;
 
             }
@@ -3552,6 +3695,7 @@ namespace winDDIRunBuilder
                 }
                 else
                 {
+                    addQC.DeptName = CurRunBuilder.Department;
                     addQC.PlateId = pCurMapPlateId;
                     addQC.CurExportPath = CurRunBuilder.RunBuilderExport;
                     addQC.ShowDialog();

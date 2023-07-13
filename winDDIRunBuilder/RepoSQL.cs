@@ -486,7 +486,7 @@ namespace winDDIRunBuilder
             return resultSaveDB;
         }
 
-        public List<QCSample> GetQCSamples(string plateName)
+        public List<QCSample> GetQCSamples(string plateName, string dept="", string qcType="PLATE")
         {
             List<QCSample> qcSamples = new List<QCSample>();
             QCSample qcSmp = new QCSample();
@@ -499,7 +499,15 @@ namespace winDDIRunBuilder
 
                 try
                 {
-                    cmd.Parameters.Add("@pPlate", SqlDbType.VarChar).Value = plateName;
+                    if (qcType == "PLATE")
+                    {
+                        cmd.Parameters.Add("@pPlate", SqlDbType.VarChar).Value = plateName;
+                    }
+                    else if (qcType == "DEPT")
+                    {
+                        cmd.Parameters.Add("@pPlate", SqlDbType.VarChar).Value = "";
+                        cmd.Parameters.Add("@pDept", SqlDbType.VarChar).Value = dept;
+                    }
 
                     conn.Open();
                     SqlDataReader rdr = cmd.ExecuteReader();

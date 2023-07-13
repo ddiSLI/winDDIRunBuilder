@@ -675,7 +675,7 @@ namespace winDDIRunBuilder
             // frmMain
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.ClientSize = new System.Drawing.Size(1262, 355);
+            this.ClientSize = new System.Drawing.Size(1262, 356);
             this.Controls.Add(this.btnSampleStatus);
             this.Controls.Add(this.btnQC);
             this.Controls.Add(this.groupBox1);
