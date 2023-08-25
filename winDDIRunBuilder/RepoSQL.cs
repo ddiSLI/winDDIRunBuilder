@@ -460,6 +460,7 @@ namespace winDDIRunBuilder
                     cmd.Parameters.Add("@pSourcePlateVersion", SqlDbType.VarChar).Value = dbPlate.SourcePlateVersion;
                     cmd.Parameters.Add("@pPlateTimeVersion", SqlDbType.VarChar).Value = dbPlate.PlateVersion;
                     cmd.Parameters.Add("@pUser", SqlDbType.VarChar).Value = user;
+                    cmd.Parameters.Add("@pSampleType", SqlDbType.VarChar).Value = string.IsNullOrEmpty(dbPlate.SampleType) ? "" : dbPlate.SampleType;
 
                     conn.Open();
                     cmd.ExecuteNonQuery();

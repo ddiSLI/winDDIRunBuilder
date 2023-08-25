@@ -32,6 +32,7 @@ namespace winDDIRunBuilder.Models
         public string SourcePlateVersion { set; get; }
         public string ModifiedDate { set; get; }
         public string ModifiedBy { set; get; }
+        public string SampleType { set; get; }
 
 
     }

@@ -102,7 +102,9 @@ namespace winDDIRunBuilder
             this.Controls.Add(this.picMsgType);
             this.Controls.Add(this.txbMsg);
             this.Name = "frmMsg";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Message - DDI Run Builder";
+            this.TopMost = true;
             this.Load += new System.EventHandler(this.frmMsg_Load);
             ((System.ComponentModel.ISupportInitialize)(this.picMsgType)).EndInit();
             this.ResumeLayout(false);

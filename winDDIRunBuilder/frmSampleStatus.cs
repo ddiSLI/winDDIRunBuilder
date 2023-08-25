@@ -14,6 +14,7 @@ namespace winDDIRunBuilder
     public partial class frmSampleStatus : Form
     {
         public List<Protocol> AllProtocols { get; set; } = new List<Protocol>();
+        public string CurUser { get; set; } = "";
         public frmSampleStatus()
         {
             InitializeComponent();
@@ -213,7 +214,7 @@ namespace winDDIRunBuilder
                         {
                             smpStatus = new SampleStatus();
                             smpStatus.Status = "";
-                            smpStatus.User = Environment.UserName;
+                            smpStatus.User = CurUser;
                             smpStatus.Id = srw.Cells["Id"].Value.ToString();
                             smpStatus.SampleId = srw.Cells["SampleId"].Value.ToString();
                             smpStatus.PlateId = srw.Cells["PlateId"].Value.ToString();

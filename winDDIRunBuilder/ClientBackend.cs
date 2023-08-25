@@ -458,7 +458,7 @@ namespace winDDIRunBuilder
             return actionResult;
         }
 
-        public IEnumerable<DtoWorklist> GetWorklist(string sourcePlate, string destPlate, string options)
+        public IEnumerable<DtoWorklist> GetWorklist(string sourcePlate, string destPlate, string options, bool isSchedCompletedSamples)
         {
 
             List<DtoWorklist> dtoWorklist = new List<DtoWorklist>();
@@ -466,6 +466,13 @@ namespace winDDIRunBuilder
 
             try
             {
+                options = "lookup_alias,in_process,cherry_pick";
+                if (isSchedCompletedSamples)
+                {
+                    //"lookup_alias,skip_cancelled,cherry_pick", 
+                    options = "lookup_alias,in_process,approved,cherry_pick";
+                }
+
                 //v1/worklist/BCR/transfer/SigA1?options=lookup_alias,skip_cancelled
                 endPointResource = $"{_endpointResourceDDIBatch}/{sourcePlate}/transfer/{destPlate}?options={options}";
 

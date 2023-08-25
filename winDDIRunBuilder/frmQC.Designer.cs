@@ -396,6 +396,7 @@ namespace winDDIRunBuilder
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "frmQC";
             this.Text = "QC - DDI RunBuilder";
+            this.TopMost = true;
             this.Load += new System.EventHandler(this.frmQC_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dgvSamplePlate)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvQCSamples)).EndInit();

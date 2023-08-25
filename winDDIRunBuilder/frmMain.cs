@@ -19,6 +19,10 @@ namespace winDDIRunBuilder
     public partial class frmMain : Form
     {
         public ClientRunBuilder CurRunBuilder { get; set; }
+        private string pCurUser { get; set; } = "";
+        private string pInitial { get; set; }
+        private Boolean pIsSchedCompletedSample { get; set; } = false;
+
         public List<InputFile> InputFileValues { get; set; }
         public List<InputFile> BCRSourceSamples { get; set; }
         public List<ValidPlate> CurValidPlates { get; set; }
@@ -42,6 +46,7 @@ namespace winDDIRunBuilder
         private DBPlate ScannedDBPalte { get; set; }
         private List<PlateSample> ScannedDBPlateSamples { get; set; }
 
+        //private List<OutputPlateSample> pCurMapPlateSamples { get; set; }
 
         private bool pIsRotated = false;
         private bool pIsFrmLoaded = false;
@@ -78,12 +83,15 @@ namespace winDDIRunBuilder
 
                 //"Spillover run in queue".
 
-                string runBuilderVersion = "1.0.0.52";
+                string runBuilderVersion = "1.0.0.56";
                 //var ver = Assembly.GetExecutingAssembly().GetName().Version;
                 //string runBuilderVersion = System.Windows.Forms.Application.pu;
                 //string runBuilderVersion = System.Windows.Forms.Application.ProductVersion;
 
                 this.Text += String.Format("  Version {0}", runBuilderVersion);
+
+                pInitial = string.Empty;
+                pCurUser = Environment.UserName;
 
                 CurPlateSamples = new List<PlateSample>();
                 CurValidPlates = new List<ValidPlate>();
@@ -94,10 +102,14 @@ namespace winDDIRunBuilder
                 ScannedDBPalte = new DBPlate();
                 ScannedDBPlateSamples = new List<PlateSample>();
 
+                //pCurMapPlateSamples = new List<OutputPlateSample>();
+
                 //setup fileWatcherPlate
                 fileWatcherBCR.Path = CurRunBuilder.BCROutput;
                 fileWatcherBCR.Filter = "*.CSV";
                 //
+
+                //var orientation = SystemInformation.ScreenOrientation;
 
                 lblJanusName.Text = CurRunBuilder.JanusName;
 
@@ -164,6 +176,14 @@ namespace winDDIRunBuilder
             ScannedDBPalte = new DBPlate();
             ScannedDBPlateSamples = new List<PlateSample>();
             ProcessedWorklist = new List<string>();
+
+           // pCurMapPlateSamples = new List<OutputPlateSample>();
+
+            btnGo.BackColor = SystemColors.Control;
+
+            txbInitial.Text= "Initial Here";
+            pInitial = "";
+            pCurUser = Environment.UserName;
         }
 
         private List<Protocol> GetProtocols()
@@ -222,11 +242,11 @@ namespace winDDIRunBuilder
                 NewProtocolInitial();
 
                 DirectoryInfo csvFolder = new DirectoryInfo(CurRunBuilder.RunBuilderOutput);
-                                
+
                 //CurUniqueId = $"{DateTime.Now.ToString("yyMMddHHmm")}";
                 //CurUniqueId = $"{DateTime.Now.ToString("yyMMddffff")}";
                 //dgvPlateSet.ReadOnly = false;
-                
+
                 if (pIsFrmLoaded && cbProtocolCd.SelectedValue != null && cbProtocolCd.SelectedValue.ToString().Length > 0)
                 {
                     //Initial the environment
@@ -236,7 +256,7 @@ namespace winDDIRunBuilder
                     txbPrompt.ForeColor = txbPrompt.ForeColor;
                     txbPrompt.ForeColor = Color.DarkGray;
                     txbPrompt.Text = "";
-                    
+
                     //Clean properties
                     txbPrompt.Text = "";
                     CurPlateSamples = new List<PlateSample>();
@@ -414,6 +434,13 @@ namespace winDDIRunBuilder
                         txbPrompt.Refresh();
                     }
 
+                    if(dgvPlateSet !=null && dgvPlateSet.RowCount > 0)
+                    {
+                        btnGo.Enabled = true;
+                        btnGo.BackColor = Color.Orange;
+                    }
+
+
                     txbBarcode.Text = "";
                     txbBarcode.Focus();
                 }
@@ -552,8 +579,26 @@ namespace winDDIRunBuilder
             bool hasInclude = false;
             bool hasBCR = false;
             bool isNewDestPlate = false;
+
+            bool didRunGo = false;
+            bool didRunIncluded = false;
+
             try
             {
+                txbPrompt.Font = new Font("Arial", 11, FontStyle.Bold);
+                txbPrompt.Text = "";
+                txbPrompt.ForeColor = Color.DarkGray;
+                txbPrompt.BackColor = txbPrompt.BackColor;
+                if (string.IsNullOrEmpty(pInitial))
+                {
+                    txbPrompt.Font = new Font("Arial", 16, FontStyle.Bold);
+                    txbPrompt.Text = "Please first enter your initials.";
+                    txbPrompt.ForeColor = Color.DarkRed;
+                    txbPrompt.BackColor = txbPrompt.BackColor;
+                    //MessageBox.Show("Please first enter the initial.", "RunBuilder processing-Issue ", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                    return;
+                }
 
                 txbPrompt.Text = "";
                 PrinBarCodeZXing printPlateBarcode = new PrinBarCodeZXing();
@@ -598,6 +643,8 @@ namespace winDDIRunBuilder
                             rwPlate.Cells["ProcessedDB"].Value = true;
                             rwPlate.Cells["ProcessedWL"].Value = true;
                         }
+
+                        didRunGo = true;
                     }
                 }
 
@@ -626,6 +673,8 @@ namespace winDDIRunBuilder
                     }
                     txbPrompt.Font = new Font("Arial", 11, FontStyle.Regular);
                     txbPrompt.ForeColor = Color.Black;
+
+                    didRunIncluded = true;
                 }
 
                 //Just for developer using
@@ -667,6 +716,12 @@ namespace winDDIRunBuilder
             }
             finally
             {
+                if (didRunGo || didRunIncluded)
+                {
+                    btnGo.BackColor = SystemColors.Control;
+                    btnGo.Enabled = false;
+                }
+
                 txbBarcode.Text = "";
                 txbBarcode.Focus();
             }
@@ -1007,7 +1062,11 @@ namespace winDDIRunBuilder
                                             }
 
                                             //Save to Plate
-                                            resultPlateSaveDB = sqlService.AddPlate(dbPlate, Environment.UserName);
+                                            if (pIsSchedCompletedSample)
+                                            {
+                                                dbPlate.SampleType = "Completed";
+                                            }
+                                            resultPlateSaveDB = sqlService.AddPlate(dbPlate, pCurUser);
 
                                             //Save to Sample
                                             outSamples.ForEach(s =>
@@ -1024,7 +1083,7 @@ namespace winDDIRunBuilder
                                                 }
                                             }
 
-                                            resultSampleSaveDB = sqlService.AddSamples(outSamples, Environment.UserName);
+                                            resultSampleSaveDB = sqlService.AddSamples(outSamples, pCurUser);
 
                                             //CurValidPlates.Where(p => p.PlateId.ToUpper() == dbPlate.PlateId.ToUpper()).ToList().ForEach(v => v.PlateVersion = dbPlate.PlateVersion);
 
@@ -1069,7 +1128,11 @@ namespace winDDIRunBuilder
                                     });
 
                                     //Save to Plate
-                                    resultPlateSaveDB = sqlService.AddPlate(dbPlate, Environment.UserName);
+                                    if (pIsSchedCompletedSample)
+                                    {
+                                        dbPlate.SampleType = "Completed";
+                                    }
+                                    resultPlateSaveDB = sqlService.AddPlate(dbPlate, pCurUser);
 
                                     foreach (var outS in outSamples)
                                     {
@@ -1080,7 +1143,7 @@ namespace winDDIRunBuilder
                                     }
 
                                     //Save to Sample
-                                    resultSampleSaveDB = sqlService.AddSamples(outSamples, Environment.UserName);
+                                    resultSampleSaveDB = sqlService.AddSamples(outSamples, pCurUser);
 
 
                                     //Make Worklist
@@ -1467,6 +1530,8 @@ namespace winDDIRunBuilder
                             lblMsg.ForeColor = Color.Navy;
                             lblMsg.Text = "The plate, " + pSelectedPlatePage + " , has following sample(s).";
 
+                            //pCurMapPlateSamples = new List<OutputPlateSample>();
+                            //pCurMapPlateSamples = plateSamples;
                             if (curOutPlate.Direction == "1")
                             {
                                 //Rotated
@@ -1609,7 +1674,7 @@ namespace winDDIRunBuilder
                     curCellValue = curCellValue.Replace("\n", "").Replace("\r", "");
 
                     smpStatus.SampleId = curCellValue;
-                    smpStatus.User = Environment.UserName;
+                    smpStatus.User = pCurUser;
 
                     if (string.IsNullOrEmpty(pCurSelectedPlateId) && ScannedDBPalte != null)
                     {
@@ -2040,57 +2105,62 @@ namespace winDDIRunBuilder
         {
             if (e.KeyCode == Keys.Enter)
             {
-                string mapPlateResult = "NA";
-                string plateNewSerialNo = "";
-                try
+                LoadPlateSamples(txbBarcode.Text.Trim());
+            }
+        }
+
+        private void LoadPlateSamples(string loadPlateId)
+        {
+            string mapPlateResult = "NA";
+            string plateNewSerialNo = "";
+            try
+            {
+                pCurSelectedPlateId = "";
+                pCurSelectedPlateVersion = "";
+
+                ScannedDBPalte = new DBPlate();
+                ScannedDBPlateSamples = new List<PlateSample>();
+                btnCreateManualPlate.Enabled = false;
+                btnPrintManuPlate.Enabled = false;
+
+                RepoSQL sqlService = new RepoSQL();
+
+                if (!string.IsNullOrEmpty(loadPlateId.Trim()))
                 {
-                    pCurSelectedPlateId = "";
-                    pCurSelectedPlateVersion = "";
 
-                    ScannedDBPalte = new DBPlate();
-                    ScannedDBPlateSamples = new List<PlateSample>();
-                    btnCreateManualPlate.Enabled = false;
-                    btnPrintManuPlate.Enabled = false;
+                    mapPlateResult = GetMapAnyPlateSamples(loadPlateId.Trim());
 
-                    RepoSQL sqlService = new RepoSQL();
-
-                    if (!string.IsNullOrEmpty(txbBarcode.Text.Trim()))
+                    if (mapPlateResult == "SUCCESS")
                     {
+                        plateNewSerialNo = sqlService.GetSeries();
+                        txbManualPlateId.Text = ScannedDBPalte.PlateName + plateNewSerialNo;
+                        txbManualPlateDesc.Text = "From " + loadPlateId;
+                        btnCreateManualPlate.Enabled = true;
 
-                        mapPlateResult = GetMapAnyPlateSamples(txbBarcode.Text.Trim());
+                        pCurMapPlateId = loadPlateId;
 
-                        if (mapPlateResult == "SUCCESS")
-                        {
-                            plateNewSerialNo = sqlService.GetSeries();
-                            txbManualPlateId.Text = ScannedDBPalte.PlateName + plateNewSerialNo;
-                            txbManualPlateDesc.Text = "From " + txbBarcode.Text.Trim();
-                            btnCreateManualPlate.Enabled = true;
-
-                            pCurMapPlateId = txbBarcode.Text.Trim();
-
-                            lblCurPlateId.Text = txbBarcode.Text.Trim();
-                            btnPrintPlateBarcode.Enabled = true;
-                        }
-                        else
-                        {
-                            txbPrompt.Text = mapPlateResult;
-                        }
-
-                        lblManualPlateId.Text = "";
+                        lblCurPlateId.Text = loadPlateId;
+                        btnPrintPlateBarcode.Enabled = true;
+                    }
+                    else
+                    {
+                        txbPrompt.Text = mapPlateResult;
                     }
 
+                    lblManualPlateId.Text = "";
                 }
-                catch (Exception ex)
-                {
-                    string errMsg = "{txbBarcode_KeyDown} met the following error: ";
-                    errMsg += Environment.NewLine;
-                    errMsg += ex.Message;
-                }
-                finally
-                {
-                    txbBarcode.Text = "";
-                    txbBarcode.Focus();
-                }
+
+            }
+            catch (Exception ex)
+            {
+                string errMsg = "LoadPlateSamples() met the following error: ";
+                errMsg += Environment.NewLine;
+                errMsg += ex.Message;
+            }
+            finally
+            {
+                txbBarcode.Text = "";
+                txbBarcode.Focus();
             }
         }
 
@@ -2157,7 +2227,8 @@ namespace winDDIRunBuilder
                         //validPlate.Direction = "1";
                         //end
 
-
+                        //pCurMapPlateSamples = new List<OutputPlateSample>();
+                        //pCurMapPlateSamples = outSamples;
                         if (validPlate.Direction == "1")
                         {
                             //Rotated
@@ -2279,18 +2350,36 @@ namespace winDDIRunBuilder
                             }
                             else
                             {
+                                frmSelectSamples selectSamples = new frmSelectSamples();
+
                                 frmImportFromDB importDB = new frmImportFromDB();
                                 importDB.IsSourcePlate = true;
                                 importDB.ShowDialog();
                                 if (importDB.DialogResult == DialogResult.Yes)
                                 {
+                                    selectSamples.OriginalPlateSamples = importDB.SelectedPlateSamples;
+                                    selectSamples.CurPlate = importDB.SelectedDBPlate;
+                                    selectSamples.ShowDialog();
+                                    if (selectSamples.DialogResult == DialogResult.OK)
+                                    {
+                                        List<PlateSample> selectedHisSamples = selectSamples.OriginalPlateSamples
+                                                                              .Where(s => s.SampleId.IndexOf("*") >= 0)
+                                                                              .ToList();
+
+                                        selectedHisSamples.ForEach(sp => sp.SampleId = sp.SampleId.Replace("*",""));
+
+                                        CurPlateSamples.AddRange(selectedHisSamples);
+                                    }
                                     CurValidPlates.RemoveAll(bp => bp.PlateId == importDB.SelectedDBPlate.PlateId);
-                                    CurValidPlates.Add(importDB.SelectedDBPlate);
-                                    CurPlateSamples.AddRange(importDB.SelectedPlateSamples);
+                                    CurValidPlates.Add(selectSamples.CurPlate);
+                                    //CurValidPlates.Add(importDB.SelectedDBPlate);
+
+                                    //CurPlateSamples.AddRange(importDB.SelectedPlateSamples);
 
                                     //senderGrid.CurrentRow.Cells["WorkList"].Value = destPlate + ".CSV";
                                     senderGrid.CurrentRow.Cells["PlateDesc"].Value = "Source Plate is ready to go.";
-                                    senderGrid.CurrentRow.Cells["SourcePlate"].Value = importDB.SelectedDBPlate.PlateId;
+                                    senderGrid.CurrentRow.Cells["SourcePlate"].Value = selectSamples.CurPlate.PlateId;
+                                    //senderGrid.CurrentRow.Cells["SourcePlate"].Value = importDB.SelectedDBPlate.PlateId;
                                     //senderGrid.CurrentRow.DefaultCellStyle.BackColor = Color.LightGreen;
                                 }
                             }
@@ -2573,7 +2662,16 @@ namespace winDDIRunBuilder
                 AddNewValidPlate(destPlate);
 
                 //Move to New Destination Plate
-                dtoWorklist = (List<DtoWorklist>)backService.GetWorklist(sourcePlateId, destPlate.Name, "lookup_alias,skip_cancelled,cherry_pick");
+                dtoWorklist = (List<DtoWorklist>)backService.GetWorklist(sourcePlateId, 
+                                                                            destPlate.Name, 
+                                                                            "lookup_alias,skip_cancelled,cherry_pick", 
+                                                                            pIsSchedCompletedSample);
+
+                ////if (debug)
+                ////{
+                ////    dtoWorklist = (List<DtoWorklist>)backService.GetWorklist(sourcePlateId, destPlate.Name, "lookup_alias,skip_cancelled,in_process,approved");
+                ////}
+
                 if (!string.IsNullOrEmpty(backService.ErrMsg))
                 {
                     txbPrompt.ForeColor = Color.DarkRed;
@@ -2618,7 +2716,10 @@ namespace winDDIRunBuilder
                     backService.AddSamples(destPlateId, inSamples);
 
                     //Create worklist
-                    dtoWorklist = (List<DtoWorklist>)backService.GetWorklist(sourcePlateId, destPlate.Name, "lookup_alias,skip_cancelled,cherry_pick");
+                    dtoWorklist = (List<DtoWorklist>)backService.GetWorklist(sourcePlateId, 
+                                                                            destPlate.Name, 
+                                                                            "lookup_alias,skip_cancelled,cherry_pick",
+                                                                            pIsSchedCompletedSample);
                     //dtoWorklist = (List<DtoWorklist>)backService.GetWorklist(sourcePlateId.ToUpper(), destPlate.Name.ToUpper(), "lookup_alias,skip_cancelled,cherry_pick");
                 }
 
@@ -3498,6 +3599,22 @@ namespace winDDIRunBuilder
             ModelTransfer transModel = new ModelTransfer();
             try
             {
+                //Check Initial
+                txbPrompt.Font = new Font("Arial", 11, FontStyle.Bold);
+                txbPrompt.Text = "";
+                txbPrompt.ForeColor = Color.DarkGray;
+                txbPrompt.BackColor = txbPrompt.BackColor;
+                if (string.IsNullOrEmpty(pInitial))
+                {
+                    txbPrompt.Font = new Font("Arial", 16, FontStyle.Bold);
+                    txbPrompt.Text = "Please first enter your initials.";
+                    txbPrompt.ForeColor = Color.DarkRed;
+                    txbPrompt.BackColor = txbPrompt.BackColor;
+                    return;
+                }
+                //
+
+
                 if (ScannedDBPalte != null && !string.IsNullOrEmpty(txbManualPlateId.Text.Trim()))
                 {
                     //Check ManualPlateId
@@ -3527,11 +3644,15 @@ namespace winDDIRunBuilder
 
                         outSamples = transModel.DBSample2Outputs(ScannedDBPlateSamples);
 
-                        resultAddPlate = sqlService.AddPlate(ScannedDBPalte, Environment.UserName);
+                        if (pIsSchedCompletedSample)
+                        {
+                            ScannedDBPalte.SampleType = "Completed";
+                        }
+                        resultAddPlate = sqlService.AddPlate(ScannedDBPalte, pCurUser);
                         if (resultAddPlate == "SUCCESS")
                         {
                             pCurMapPlateId = ScannedDBPalte.PlateId;
-                            resultAddSamples = sqlService.AddSamples(outSamples, Environment.UserName);
+                            resultAddSamples = sqlService.AddSamples(outSamples, pCurUser);
                         }
                         else
                         {
@@ -3678,9 +3799,6 @@ namespace winDDIRunBuilder
                     e.Cancel = true;
                 }
             }
-
-
-
         }
 
         private void btnQC_Click(object sender, EventArgs e)
@@ -3688,6 +3806,36 @@ namespace winDDIRunBuilder
 
             try
             {
+                //Check Initial
+                txbPrompt.Font = new Font("Arial", 11, FontStyle.Bold);
+                txbPrompt.Text = "";
+                txbPrompt.ForeColor = Color.DarkGray;
+                txbPrompt.BackColor = txbPrompt.BackColor;
+                if (string.IsNullOrEmpty(pInitial))
+                {
+                    txbPrompt.Font = new Font("Arial", 16, FontStyle.Bold);
+                    txbPrompt.Text = "Please first enter the initial.";
+                    txbPrompt.ForeColor = Color.DarkRed;
+                    txbPrompt.BackColor = txbPrompt.BackColor;
+                    return;
+                }
+                //
+
+                txbPrompt.Font = new Font("Arial", 11, FontStyle.Bold);
+                txbPrompt.Text = "";
+                txbPrompt.ForeColor = Color.DarkGray;
+                txbPrompt.BackColor = txbPrompt.BackColor;
+                if (string.IsNullOrEmpty(pInitial))
+                {
+                    txbPrompt.Font = new Font("Arial", 16, FontStyle.Bold);
+                    txbPrompt.Text = "Please first enter your initials.";
+                    txbPrompt.ForeColor = Color.DarkRed;
+                    txbPrompt.BackColor = txbPrompt.BackColor;
+                    //MessageBox.Show("Please first enter the initial.", "RunBuilder processing-Issue ", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                    return;
+                }
+
                 frmQC addQC = new frmQC();
                 if (string.IsNullOrEmpty(pCurMapPlateId))
                 {
@@ -3695,6 +3843,7 @@ namespace winDDIRunBuilder
                 }
                 else
                 {
+                    addQC.CurUser = pCurUser;
                     addQC.DeptName = CurRunBuilder.Department;
                     addQC.PlateId = pCurMapPlateId;
                     addQC.CurExportPath = CurRunBuilder.RunBuilderExport;
@@ -3718,8 +3867,24 @@ namespace winDDIRunBuilder
         {
             try
             {
+                //Check Initial
+                txbPrompt.Font = new Font("Arial", 11, FontStyle.Bold);
+                txbPrompt.Text = "";
+                txbPrompt.ForeColor = Color.DarkGray;
+                txbPrompt.BackColor = txbPrompt.BackColor;
+                if (string.IsNullOrEmpty(pInitial))
+                {
+                    txbPrompt.Font = new Font("Arial", 16, FontStyle.Bold);
+                    txbPrompt.Text = "Please first enter your initials.";
+                    txbPrompt.ForeColor = Color.DarkRed;
+                    txbPrompt.BackColor = txbPrompt.BackColor;
+                    return;
+                }
+                //
+
                 frmSampleStatus sampleStatus = new frmSampleStatus();
                 sampleStatus.AllProtocols = pProtocol;
+                sampleStatus.CurUser = pCurUser;
                 sampleStatus.ShowDialog();
 
             }
@@ -3816,6 +3981,47 @@ namespace winDDIRunBuilder
             }
             //put a breakpoint here and check datatable
             return dataTable;
+        }
+
+        private void txbInitial_Click(object sender, EventArgs e)
+        {
+            if (!String.IsNullOrEmpty(txbInitial.Text))
+            {
+                txbInitial.Focus();
+                txbInitial.SelectionStart = 0;
+                txbInitial.SelectionLength = txbInitial.Text.Length;
+            }
+        }
+        private void txbInitial_Leave(object sender, EventArgs e)
+        {
+            if(txbInitial.Text.Trim()== "Initial Here")
+            {
+                pInitial = "";
+            }
+            else if(string.IsNullOrEmpty(txbInitial.Text))
+            {
+                pInitial = "";
+            }
+            else
+            {
+                pInitial = txbInitial.Text.Trim();
+            }
+            
+            pCurUser = pInitial;
+        }
+      
+        private void ckbSchedSamples_CheckedChanged(object sender, EventArgs e)
+        {
+            if (ckbSchedSamples.Checked)
+            {
+                ckbSchedSamples.ForeColor = Color.OrangeRed;
+                pIsSchedCompletedSample = true;
+            }
+            else
+            {
+                ckbSchedSamples.ForeColor = Color.Black;
+                pIsSchedCompletedSample = false;
+            }
         }
     }
 }

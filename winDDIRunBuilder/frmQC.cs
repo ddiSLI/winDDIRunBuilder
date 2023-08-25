@@ -18,7 +18,10 @@ namespace winDDIRunBuilder
 {
     public partial class frmQC : Form
     {
+        public string CurUser { get; set; } = "";
         public string DeptName { get; set; } = "";
+
+        public bool IsSchedCompletedSamples { get; set; } = false;
         public string PlateId { get; set; } = "";
         public DBPlate CurDBPlate { get; set; } = new DBPlate();
         private List<OutputPlateSample> HisQCSamples { get; set; }
@@ -1143,7 +1146,11 @@ namespace winDDIRunBuilder
                 }
 
                 //Process new destination Plate
-                dtoWorklist = (List<DtoWorklist>)backService.GetWorklist(sourcePlate.Name, virtualDestPlate.Name, "lookup_alias,lookup_qc");
+                dtoWorklist = (List<DtoWorklist>)backService.GetWorklist(sourcePlate.Name, 
+                                                                         virtualDestPlate.Name, 
+                                                                         "lookup_alias,lookup_qc",
+                                                                         IsSchedCompletedSamples
+                                                                         );
                 if (dtoWorklist == null && dtoWorklist.Count == 0)
                 {
                     lblMsg.ForeColor = Color.DarkRed;

@@ -91,34 +91,34 @@ namespace winDDIRunBuilder
 
         private void dgvPlates_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            var senderGrid = (DataGridView)sender;
+            //var senderGrid = (DataGridView)sender;
 
-            try
-            {
-                if (e.RowIndex >= 0)
-                {
-                    CurPlateId = (string)senderGrid.CurrentRow.Cells["Plate"].Value;
-                    CurPlateVersion = (string)senderGrid.CurrentRow.Cells["version"].Value;
+            //try
+            //{
+            //    if (e.RowIndex >= 0)
+            //    {
+            //        CurPlateId = (string)senderGrid.CurrentRow.Cells["Plate"].Value;
+            //        CurPlateVersion = (string)senderGrid.CurrentRow.Cells["version"].Value;
 
-                    txbPlateId.Text = CurPlateId;
+            //        txbPlateId.Text = CurPlateId;
 
-                    btnGo.Enabled = true;
-                }
-                else
-                {
-                    btnGo.Enabled = false;
-                }
+            //        btnGo.Enabled = true;
+            //    }
+            //    else
+            //    {
+            //        btnGo.Enabled = false;
+            //    }
 
-                txbPlateId.Focus();
-            }
-            catch (Exception ex)
-            {
-                txbPlateId.Text = "";
-                txbPlateId.Focus();
+            //    txbPlateId.Focus();
+            //}
+            //catch (Exception ex)
+            //{
+            //    txbPlateId.Text = "";
+            //    txbPlateId.Focus();
 
-                string errMsg = "dgvPlateSet_CellContentClick() met some issues:";
-                errMsg = Environment.NewLine + ex.Message;
-            }
+            //    string errMsg = "dgvPlateSet_CellContentClick() met some issues:";
+            //    errMsg = Environment.NewLine + ex.Message;
+            //}
         }
 
         private void txbPlateId_KeyDown(object sender, KeyEventArgs e)

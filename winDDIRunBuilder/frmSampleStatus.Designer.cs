@@ -29,9 +29,9 @@ namespace winDDIRunBuilder
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.cklDbTests = new System.Windows.Forms.CheckedListBox();
             this.cbDept = new System.Windows.Forms.ComboBox();
             this.lblDept = new System.Windows.Forms.Label();
@@ -61,7 +61,7 @@ namespace winDDIRunBuilder
             this.cklDbTests.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cklDbTests.FormattingEnabled = true;
             this.cklDbTests.Location = new System.Drawing.Point(301, 37);
-            this.cklDbTests.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.cklDbTests.Margin = new System.Windows.Forms.Padding(2);
             this.cklDbTests.Name = "cklDbTests";
             this.cklDbTests.Size = new System.Drawing.Size(249, 88);
             this.cklDbTests.TabIndex = 1;
@@ -74,7 +74,7 @@ namespace winDDIRunBuilder
             this.cbDept.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cbDept.FormattingEnabled = true;
             this.cbDept.Location = new System.Drawing.Point(10, 37);
-            this.cbDept.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.cbDept.Margin = new System.Windows.Forms.Padding(2);
             this.cbDept.Name = "cbDept";
             this.cbDept.Size = new System.Drawing.Size(196, 28);
             this.cbDept.TabIndex = 4;
@@ -105,7 +105,7 @@ namespace winDDIRunBuilder
             this.numericUpDownMonths.BackColor = System.Drawing.SystemColors.Info;
             this.numericUpDownMonths.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.numericUpDownMonths.Location = new System.Drawing.Point(10, 113);
-            this.numericUpDownMonths.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.numericUpDownMonths.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownMonths.Minimum = new decimal(new int[] {
             1,
             0,
@@ -159,14 +159,14 @@ namespace winDDIRunBuilder
             this.dgvSamples.AllowUserToDeleteRows = false;
             this.dgvSamples.BackgroundColor = System.Drawing.SystemColors.Control;
             this.dgvSamples.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgvSamples.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgvSamples.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.dgvSamples.ColumnHeadersHeight = 40;
             this.dgvSamples.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.UnReject,
@@ -179,12 +179,12 @@ namespace winDDIRunBuilder
             this.dgvSamples.EnableHeadersVisualStyles = false;
             this.dgvSamples.GridColor = System.Drawing.SystemColors.Control;
             this.dgvSamples.Location = new System.Drawing.Point(9, 212);
-            this.dgvSamples.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.dgvSamples.Margin = new System.Windows.Forms.Padding(2);
             this.dgvSamples.Name = "dgvSamples";
             this.dgvSamples.RowHeadersVisible = false;
             this.dgvSamples.RowHeadersWidth = 51;
-            dataGridViewCellStyle6.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.dgvSamples.RowsDefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.dgvSamples.RowsDefaultCellStyle = dataGridViewCellStyle3;
             this.dgvSamples.RowTemplate.Height = 42;
             this.dgvSamples.Size = new System.Drawing.Size(765, 321);
             this.dgvSamples.TabIndex = 44;
@@ -222,9 +222,9 @@ namespace winDDIRunBuilder
             // 
             // PlateId
             // 
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle5.ForeColor = System.Drawing.Color.Black;
-            this.PlateId.DefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.Black;
+            this.PlateId.DefaultCellStyle = dataGridViewCellStyle2;
             this.PlateId.HeaderText = "PlateId";
             this.PlateId.MinimumWidth = 6;
             this.PlateId.Name = "PlateId";
@@ -317,9 +317,10 @@ namespace winDDIRunBuilder
             this.Controls.Add(this.lblDept);
             this.Controls.Add(this.cklDbTests);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "frmSampleStatus";
             this.Text = "Sample Status Report - DDI RunBuilder";
+            this.TopMost = true;
             this.Load += new System.EventHandler(this.frmSampleStatus_Load);
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMonths)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvSamples)).EndInit();

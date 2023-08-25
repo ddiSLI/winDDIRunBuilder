@@ -153,6 +153,16 @@ namespace winDDIRunBuilder.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap clean24 {
+            get {
+                object obj = ResourceManager.GetObject("clean24", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Clear48 {
             get {
                 object obj = ResourceManager.GetObject("Clear48", resourceCulture);
@@ -383,6 +393,16 @@ namespace winDDIRunBuilder.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap rejected32 {
+            get {
+                object obj = ResourceManager.GetObject("rejected32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Report32 {
             get {
                 object obj = ResourceManager.GetObject("Report32", resourceCulture);
@@ -426,6 +446,16 @@ namespace winDDIRunBuilder.Properties {
         internal static System.Drawing.Bitmap searchLocation32 {
             get {
                 object obj = ResourceManager.GetObject("searchLocation32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap selection24 {
+            get {
+                object obj = ResourceManager.GetObject("selection24", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
