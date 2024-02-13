@@ -110,6 +110,12 @@ namespace winDDIRunBuilder
                         //Get Plate Samples
                        
                         OriginalPlateSamples = sqlService.GetPlateSamples(plateId);
+
+                        //remove X2
+                        OriginalPlateSamples.Where(s => s.SampleId.IndexOf("X") > 0)
+                                            .ToList()
+                                            .ForEach(s => s.SampleId = s.SampleId.Substring(0, s.SampleId.IndexOf("X")));
+                        
                         CurPlate = tranService.DBPlate2ValidPlate(origialPlate, "SOURCE");
                         
                         txbBarcode.Text = CurPlate.PlateId;

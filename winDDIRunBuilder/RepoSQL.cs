@@ -8,6 +8,7 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using winDDIRunBuilder.Models;
+using Newtonsoft.Json;
 
 namespace winDDIRunBuilder
 {
@@ -58,6 +59,7 @@ namespace winDDIRunBuilder
                             curJanus = new Janus();
                             curJanus.Department = rdr["Department"].ToString();
                             curJanus.JanusName = rdr["JanusName"].ToString();
+                            curJanus.BCRArchive = rdr["BCRArchive"].ToString();
                             curJanus.BCROutput = rdr["BCROutput"].ToString();
                             curJanus.RunBuilderOutput = rdr["RunBuilderOutput"].ToString();
                             curJanus.RunBuilderOutputArchive = rdr["RunBuilderOutputArchive"].ToString();
@@ -137,6 +139,10 @@ namespace winDDIRunBuilder
                             prot.Opt3 = rdr["Opt3"].ToString();
                             prot.Opt4 = rdr["Opt4"].ToString();
                             prot.Opt5 = rdr["Opt5"].ToString();
+                            prot.GroupKey = rdr["GroupKey"] == null ? "" : rdr["GroupKey"].ToString();
+                            prot.OrderKey = rdr["OrderKey"] == null ? "" : rdr["OrderKey"].ToString();
+                            prot.Include = rdr["Include"] == null ? "" : rdr["Include"].ToString();
+                            prot.WorklistFormat = rdr["WorklistFormat"] == null ? "" : rdr["WorklistFormat"].ToString();
 
                             protocols.Add(prot);
                         }
@@ -267,6 +273,9 @@ namespace winDDIRunBuilder
                                     Opt3 = rdr["Opt3"].ToString() == null ? "" : rdr["Opt3"].ToString(),
                                     Opt4 = rdr["Opt4"].ToString() == null ? "" : rdr["Opt5"].ToString(),
                                     Opt5 = rdr["Opt5"].ToString() == null ? "" : rdr["Opt5"].ToString(),
+                                    GroupKey = rdr["GroupKey"] == null ? "" : rdr["GroupKey"].ToString(),
+
+                                    WorklistFormat= rdr["WorklistFormat"].ToString(),
                                     ModifiedDate = rdr["ModifiedDate"].ToString(),
                                     PlateVersion = rdr["PlateTimeVersion"].ToString()
                                 }
@@ -301,6 +310,8 @@ namespace winDDIRunBuilder
             List<PlateSample> samples = new List<PlateSample>();
             PlateSample sample = new PlateSample();
 
+            bool hasPool = false;
+
             using (SqlConnection conn = new SqlConnection(CnsSQL))
             {
                 SqlCommand cmd = conn.CreateCommand();
@@ -333,6 +344,14 @@ namespace winDDIRunBuilder
                             sample.PlateVersion = rdr["PlateTimeVersion"].ToString();
                             sample.SampleType = rdr["SampleType"].ToString();
                             sample.Status = rdr["Status"].ToString();
+                            sample.SourcePlateId = rdr["SourcePlateId"] is null?  "": rdr["SourcePlateId"].ToString();
+                            sample.SourceWell = rdr["SourceWell"] is null? "" : rdr["SourceWell"].ToString();
+                            //Json to Attributes
+                            //if((rdr["JsonBlob"] != null) && !string.IsNullOrEmpty(rdr["JsonBlob"].ToString()))
+                            //{
+                            //    sample.Attributes = JsonConvert.DeserializeObject<Dictionary<string, string>>(rdr["JsonBlob"].ToString());
+                            //}
+
                             samples.Add(sample);
                         }
                     }
@@ -358,10 +377,11 @@ namespace winDDIRunBuilder
             return samples;
         }
 
+
         public string AddSamples(List<OutputPlateSample> plateSamples, string user = "")
         {
             string actionResults = "SUCCESS";
-
+                        
             using (SqlConnection conn = new SqlConnection(CnsSQL))
             {
                 SqlCommand cmd = conn.CreateCommand();
@@ -381,12 +401,13 @@ namespace winDDIRunBuilder
                     cmd.Parameters.Add("@pSourePlateVersion", SqlDbType.VarChar);
                     cmd.Parameters.Add("@pSoureWell", SqlDbType.VarChar);
                     cmd.Parameters.Add("@pUser", SqlDbType.VarChar);
+
                     conn.Open();
 
                     foreach (var smp in plateSamples)
                     {
                         cmd.Parameters["@pPlateId"].Value = smp.DestNewPlateId == null ? smp.DestPlateId : smp.DestNewPlateId;
-                        
+
                         //if(smp.Alias !=null && smp.Alias.ToUpper().IndexOf("X") > 0)
                         //{
                         //    cmd.Parameters["@pSampleId"].Value = smp.Alias;
@@ -458,6 +479,34 @@ namespace winDDIRunBuilder
                     cmd.Parameters.Add("@pPlateRotated", SqlDbType.Bit).Value = dbPlate.PlateRotated == false ? 0 : 1;
                     cmd.Parameters.Add("@pSourcePlateId", SqlDbType.VarChar).Value = dbPlate.SourcePlateId;
                     cmd.Parameters.Add("@pSourcePlateVersion", SqlDbType.VarChar).Value = dbPlate.SourcePlateVersion;
+
+                    if (!string.IsNullOrEmpty(dbPlate.Opt1))
+                        cmd.Parameters.Add("@pOpt1", SqlDbType.VarChar).Value = dbPlate.Opt1;
+
+                    if (!string.IsNullOrEmpty(dbPlate.Opt2))
+                        cmd.Parameters.Add("@pOpt2", SqlDbType.VarChar).Value = dbPlate.Opt2;
+
+                    if (!string.IsNullOrEmpty(dbPlate.Opt3))
+                        cmd.Parameters.Add("@pOpt3", SqlDbType.VarChar).Value = dbPlate.Opt3;
+
+                    if (!string.IsNullOrEmpty(dbPlate.Opt4))
+                        cmd.Parameters.Add("@pOpt4", SqlDbType.VarChar).Value = dbPlate.Opt4;
+
+                    if (!string.IsNullOrEmpty(dbPlate.Opt5))
+                        cmd.Parameters.Add("@pOpt5", SqlDbType.VarChar).Value = dbPlate.Opt5;
+
+                    if (!string.IsNullOrEmpty(dbPlate.GroupKey))
+                        cmd.Parameters.Add("@pGroupKey", SqlDbType.VarChar).Value = dbPlate.GroupKey;
+
+                    if (!string.IsNullOrEmpty(dbPlate.OrderKey))
+                        cmd.Parameters.Add("@pOrderKey", SqlDbType.VarChar).Value = dbPlate.OrderKey;
+
+                    if (!string.IsNullOrEmpty(dbPlate.Include))
+                        cmd.Parameters.Add("@pInclude", SqlDbType.VarChar).Value = dbPlate.Include;
+
+                    if (!string.IsNullOrEmpty(dbPlate.WorklistFormat))
+                        cmd.Parameters.Add("@pWlistFormat", SqlDbType.VarChar).Value = dbPlate.WorklistFormat;
+
                     cmd.Parameters.Add("@pPlateTimeVersion", SqlDbType.VarChar).Value = dbPlate.PlateVersion;
                     cmd.Parameters.Add("@pUser", SqlDbType.VarChar).Value = user;
                     cmd.Parameters.Add("@pSampleType", SqlDbType.VarChar).Value = string.IsNullOrEmpty(dbPlate.SampleType) ? "" : dbPlate.SampleType;
@@ -487,7 +536,7 @@ namespace winDDIRunBuilder
             return resultSaveDB;
         }
 
-        public List<QCSample> GetQCSamples(string plateName, string dept="", string qcType="PLATE")
+        public List<QCSample> GetQCSamples(string plateName, string dept = "", string qcType = "PLATE")
         {
             List<QCSample> qcSamples = new List<QCSample>();
             QCSample qcSmp = new QCSample();
@@ -759,7 +808,7 @@ namespace winDDIRunBuilder
             return samples;
         }
 
-        public List<ExportFile> GetExportFiles(string range="ACTIVE")
+        public List<ExportFile> GetExportFiles(string range = "ACTIVE")
         {
             List<ExportFile> exports = new List<ExportFile>();
             ExportFile exp = new ExportFile();
@@ -786,8 +835,8 @@ namespace winDDIRunBuilder
                         {
                             exp = new ExportFile();
                             exp.Id = rdr["Id"].ToString();
-                            exp.Name = rdr["SysName"]==null? "": rdr["SysName"].ToString();
-                            exp.WithHeader=(Boolean)rdr["WithHeader"];
+                            exp.Name = rdr["SysName"] == null ? "" : rdr["SysName"].ToString();
+                            exp.WithHeader = (Boolean)rdr["WithHeader"];
                             exp.Field0 = rdr["Field0"] == null ? "" : rdr["Field0"].ToString();
                             exp.Field1 = rdr["Field1"] == null ? "" : rdr["Field1"].ToString();
                             exp.Field2 = rdr["Field2"] == null ? "" : rdr["Field2"].ToString();
@@ -827,6 +876,151 @@ namespace winDDIRunBuilder
 
             return exports;
         }
+
+        public string AddSamples_his(List<OutputPlateSample> outSamples, string user = "")
+        {
+            string actionResults = "SUCCESS";
+
+            ///
+            List<OutputPlateSample> plateSamples = new List<OutputPlateSample>();
+            OutputPlateSample poolSample = new OutputPlateSample();
+
+
+            if (outSamples.FirstOrDefault().Attributes["POOL"] == null)
+            {
+                plateSamples = outSamples;
+
+            }
+            else
+            {
+                //var samples = outSamples.GroupBy(c => new { c.DestWellId, 
+                //                                            c.Attributes["POOL"]
+                //                                           }).ToList();
+
+                // outSamples.SelectMany(x => x.Attributes.Keys).Distinct().Where(x => !sampleColumns.ContainsKey(x)))
+
+                outSamples.ForEach(s => s.SampleId = s.Attributes["POOL"]);
+                var poolList = outSamples.GroupBy(g => g.DestWellId).Where(w => w.Key != null).OrderBy(ob => ob.Key).ToList();
+
+
+
+                //var ourSamples = outSamples.Select(x => x.SampleId).Distinct().ToList();
+                //.GroupBy(g => g.DestWellId).Where(w => w.Key != null).OrderBy(ob => ob.Key).ToList();
+                ////var poolList = outSamples.GroupBy(g => g.DestWellId).Where(w => w.Key != null).OrderBy(ob=>ob.Key).ToList();
+                if (poolList.Count > 0)
+                {
+                    foreach (var pool in poolList)
+                    {
+                        poolSample = new OutputPlateSample();
+
+                        //poolSample = outSamples.Where(w => w.DestWellId == pool.Key).First();
+
+                        //poolSample.SampleId = pool.ElementAt(0).Attributes["POOL"].ToString();
+                        poolSample.DestPlateId = pool.FirstOrDefault().DestPlateId;
+                        poolSample.SampleType = pool.FirstOrDefault().SampleType;
+                        poolSample.SampleId = pool.FirstOrDefault().SampleId;
+                        poolSample.DestWellId = pool.Key.ToString();
+                        poolSample.Sequence = pool.FirstOrDefault().Sequence;
+                        poolSample.DestPlateVersion = pool.FirstOrDefault().DestPlateVersion;
+                        poolSample.SourcePlateId = pool.FirstOrDefault().SourcePlateId;
+                        poolSample.SourcePlateVersion = pool.FirstOrDefault().SourcePlateVersion;
+                        poolSample.SourceWellId = pool.FirstOrDefault().SourceWellId;
+
+                        plateSamples.Add(poolSample);
+                    }
+
+                    plateSamples = plateSamples.OrderBy(p => p.DestWellId).ToList();
+                }
+            }
+
+            //
+            //var newdtoWorklist = dtoWorklist.GroupBy(g => g.DestWellId).Where(w => w.Key != null).ToList();
+            //
+
+            using (SqlConnection conn = new SqlConnection(CnsSQL))
+            {
+                SqlCommand cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = "uspRunBld_InsSample";
+
+                try
+                {
+                    cmd.Parameters.Add("@pPlateId", SqlDbType.VarChar);
+                    cmd.Parameters.Add("@pSampleId", SqlDbType.VarChar);
+                    cmd.Parameters.Add("@pSampleType", SqlDbType.VarChar);
+
+                    cmd.Parameters.Add("@pWell", SqlDbType.VarChar);
+                    cmd.Parameters.Add("@pPosition", SqlDbType.Int);
+                    cmd.Parameters.Add("@pPlateTimeVersion", SqlDbType.VarChar);
+                    cmd.Parameters.Add("@pSourePlateId", SqlDbType.VarChar);
+                    cmd.Parameters.Add("@pSourePlateVersion", SqlDbType.VarChar);
+                    cmd.Parameters.Add("@pSoureWell", SqlDbType.VarChar);
+                    cmd.Parameters.Add("@pUser", SqlDbType.VarChar);
+
+                    //cmd.Parameters.Add("@pJsonBlob", SqlDbType.VarChar);
+
+                    conn.Open();
+
+                    foreach (var smp in plateSamples)
+                    {
+                        cmd.Parameters["@pPlateId"].Value = smp.DestNewPlateId == null ? smp.DestPlateId : smp.DestNewPlateId;
+
+                        //if(smp.Alias !=null && smp.Alias.ToUpper().IndexOf("X") > 0)
+                        //{
+                        //    cmd.Parameters["@pSampleId"].Value = smp.Alias;
+                        //}
+                        //else
+                        //{
+                        //    cmd.Parameters["@pSampleId"].Value = smp.SampleId;
+                        //}
+
+                        cmd.Parameters["@pSampleId"].Value = smp.SampleId;
+
+                        cmd.Parameters["@pSampleType"].Value = string.IsNullOrEmpty(smp.SampleType) ? "" : smp.SampleType;
+                        cmd.Parameters["@pWell"].Value = smp.DestWellId;
+                        cmd.Parameters["@pPosition"].Value = smp.Sequence;
+                        cmd.Parameters["@pPlateTimeVersion"].Value = smp.DestPlateVersion;
+
+                        cmd.Parameters["@pSourePlateId"].Value = smp.SourcePlateId == null ? "" : smp.SourcePlateId;
+                        cmd.Parameters["@pSourePlateVersion"].Value = smp.SourcePlateVersion == null ? "" : smp.SourcePlateVersion;
+                        cmd.Parameters["@pSoureWell"].Value = smp.SourceWellId == null ? "" : smp.SourceWellId;
+                        cmd.Parameters["@pUser"].Value = user;
+
+                        ////Attribute to JosnBlob
+                        //if (smp.Attributes != null)
+                        //{
+                        //    jsonAttributes = JsonConvert.SerializeObject(smp.Attributes, Formatting.Indented);
+                        //}
+                        //else
+                        //{
+                        //    jsonAttributes = "";
+                        //}
+                        //cmd.Parameters["@pJsonBlob"].Value = jsonAttributes;
+                        ////
+
+                        cmd.ExecuteNonQuery();
+                    }
+
+                }
+
+                catch (Exception ex)
+                {
+                    string msgEx = "SQL: AddSamples(List<PlateSample> plateSamples) met issue: ";
+                    msgEx += Environment.NewLine;
+                    //msgEx += "shortId: " + shortId.ToString() + " ;";
+                    msgEx += Environment.NewLine;
+                    msgEx += ex.Message;
+                    actionResults = "ERROR:" + ex.Message;
+                }
+                finally
+                {
+                    conn.Close();
+                }
+            }
+
+            return actionResults;
+        }
+
     }
 }
 

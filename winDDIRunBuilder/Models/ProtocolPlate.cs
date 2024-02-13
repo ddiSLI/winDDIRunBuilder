@@ -28,6 +28,11 @@ namespace winDDIRunBuilder.Models
         public string Sample { set; get; }
         public string Diluent { set; get; }
         public string Accept { set; get; }
+        public string GroupKey { set; get; }
+        public string WorklistFormat { get; set; }
+        public string OrderKey { set; get; }
+        public string Include { get; set; }
+
         public Dictionary<string, string> Attributes { get; set; } = new Dictionary<string, string>();
     }
 }

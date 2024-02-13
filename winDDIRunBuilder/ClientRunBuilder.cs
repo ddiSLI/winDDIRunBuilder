@@ -16,13 +16,15 @@ namespace winDDIRunBuilder
         public string CnsOracle { get; set; }
         public string Department { get; set; }
         public string JanusName { get; set; }
+        public string BCRArchive { get; set; }
         public string BCROutput { get; set; }
         public string RunBuilderOutput { get; set; }
         public string RunBuilderOutputArchive { get; set; }
         public string RunBuilderExport { get; set; }
         public string PlateSettingFile { get; set; }
         public string PlatePrinterName { get; set; }
-
+        public string BuilReportPlace { get; set; }
+        public string BuilReportTemplate { get; set; }
         public ClientRunBuilder(string processCategory =null)
         {
             RunCondition = ConfigurationManager.AppSettings["RunCondition"];
@@ -34,6 +36,9 @@ namespace winDDIRunBuilder
                 //RunBuilderOutput = ConfigurationManager.AppSettings["RunBuilderOutput_PROD"];
                 PlateSettingFile= ConfigurationManager.AppSettings["PlateSettingFile_Prod"];
                 PlatePrinterName = ConfigurationManager.AppSettings["PlatePrinterName_Prod"];
+
+                BuilReportPlace= ConfigurationManager.AppSettings["BuildReport_Prod"];
+                BuilReportTemplate = ConfigurationManager.AppSettings["BuildReport_Template_Prod"];
             }
             else
             {
@@ -41,6 +46,8 @@ namespace winDDIRunBuilder
                 //RunBuilderOutput = ConfigurationManager.AppSettings["RunBuilderOutput_DEV"];
                 PlateSettingFile = ConfigurationManager.AppSettings["PlateSettingFile_Dev"];
                 PlatePrinterName = ConfigurationManager.AppSettings["PlatePrinterName_Dev"];
+                BuilReportPlace = ConfigurationManager.AppSettings["BuildReport_Dev"];
+                BuilReportTemplate = ConfigurationManager.AppSettings["BuildReport_Template_Dev"];
             }
 
             List<Janus> curJanus = new List<Janus>();
@@ -51,6 +58,7 @@ namespace winDDIRunBuilder
             {
                 Department = "";
                 JanusName = "";
+                BCRArchive = "";
                 BCROutput = "";
                 RunBuilderOutput = "";
                 RunBuilderOutputArchive = "";
@@ -59,6 +67,7 @@ namespace winDDIRunBuilder
             {
                 Department = curJanus.FirstOrDefault().Department;
                 JanusName =curJanus.FirstOrDefault().JanusName;
+                BCRArchive= curJanus.FirstOrDefault().BCRArchive;
                 BCROutput = curJanus.FirstOrDefault().BCROutput;
                 RunBuilderOutput = curJanus.FirstOrDefault().RunBuilderOutput;
                 RunBuilderOutputArchive = curJanus.FirstOrDefault().RunBuilderOutputArchive;

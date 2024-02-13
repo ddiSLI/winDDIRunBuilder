@@ -33,7 +33,12 @@ namespace winDDIRunBuilder.Models
         public string ModifiedDate { set; get; }
         public string ModifiedBy { set; get; }
         public string SampleType { set; get; }
+        public string GroupKey { set; get; }
 
+        public string WorklistFormat { get; set; }
+
+        public string OrderKey { set; get; }
+        public string Include { get; set; }
 
     }
 }

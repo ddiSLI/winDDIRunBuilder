@@ -14,7 +14,7 @@ namespace winDDIRunBuilder
         public string PromoMsg { get; set; } = "";
         public string PromoMsgType { get; set; } = "";
         private DBPlate ScannedDBPalte { get; set; } = new DBPlate();
-        private List<PlateSample> ScannedDBPlateSamples { get; set; } = new List<PlateSample>();
+        public List<PlateSample> ScannedDBPlateSamples { get; set; } = new List<PlateSample>();
 
         public string FirstSampleWell { get; set; } = "";
         public string LastSampleWell { get; set; } = "";

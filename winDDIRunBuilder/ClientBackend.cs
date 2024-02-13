@@ -37,6 +37,7 @@ namespace winDDIRunBuilder
             public string Accept { set; get; }
             public string SampleId { set; get; }
             public string Alias { set; get; }
+
         }
 
 
@@ -194,6 +195,8 @@ namespace winDDIRunBuilder
             {
                 endPointResource = _endpointResourceDDIBatch;
 
+                //inputPlate.Attributes.Add("GroupKey", inputPlate.GroupKey);
+
                 if (inputPlate != null && !string.IsNullOrEmpty(inputPlate.Name))
                 {
                     var request = new RestRequest(endPointResource);
@@ -249,17 +252,17 @@ namespace winDDIRunBuilder
                 foreach (var sam in plateSamples)
                 {
                     var inSample = new Dictionary<string, string>();
-                    string inSampleId = sam.ShortId.ToUpper();
+                    string inSampleId = sam.ShortId;//.ToUpper();
                     string indexSample = "";
 
                     if (string.IsNullOrWhiteSpace(inSampleId) != true)
                     {
-                        if (inSampleId.IndexOf("X") > 0)
+                        if (inSampleId.IndexOf("X", StringComparison.OrdinalIgnoreCase) > 0)
                         {
-                            inSampleId = inSampleId.Substring(0, inSampleId.IndexOf("X"));
+                            inSampleId = inSampleId.Substring(0, inSampleId.IndexOf("X", StringComparison.OrdinalIgnoreCase));
                         }
 
-                        var match = Regex.Match(inSampleId, "([0-9]{6}-[0-9]{4}-[0-9]{1,2}).*", RegexOptions.None);
+                        var match = Regex.Match(inSampleId, ".?([0-9]{6}-[0-9]{4}-[0-9]{1,2}).*", RegexOptions.None);
                         if (match.Success)
                         {
                             inSampleId = match.Value;
@@ -273,7 +276,7 @@ namespace winDDIRunBuilder
                             }
                             else
                             {
-                                inSample.Add(inSampleId, "a");
+                                inSample.Add(inSampleId, "i");
                             }
                         }
                     }
@@ -411,9 +414,6 @@ namespace winDDIRunBuilder
                         inSample.Add("QCId", sam.ShortId);
                     }
 
-
-
-
                     string jsonSample = JsonConvert.SerializeObject(new
                     {
                         Attributes = inSample
@@ -458,15 +458,100 @@ namespace winDDIRunBuilder
             return actionResult;
         }
 
-        public IEnumerable<DtoWorklist> GetWorklist(string sourcePlate, string destPlate, string options, bool isSchedCompletedSamples)
+        public IEnumerable<DtoWorklist> GetWorklist(string sourcePlate, string destPlate, string scheduleOptions, string groupKey="")
         {
+            List<DtoWorklist> dtoWorklist = new List<DtoWorklist>();
+            string endPointResource = "";
 
+            try
+            {
+                //v1/worklist/BCR/transfer/SigA1?options=lookup_alias,skip_cancelled
+                //endPointResource = $"{_endpointResourceDDIBatch}/{sourcePlate}/transfer/{destPlate}?options=lookup_alias,{scheduleOptions}cherry_pick";
+                
+                //endPointResource = $"{_endpointResourceDDIBatch}/{sourcePlate}/transfer/{destPlate}?{scheduleOptions}";
+
+                if (string.IsNullOrEmpty(groupKey))
+                {
+                    endPointResource = $"{_endpointResourceDDIBatch}/{sourcePlate}/transfer/{destPlate}?{scheduleOptions}";
+                }
+                else
+                {
+                    endPointResource = $"{_endpointResourceDDIBatch}/{sourcePlate}/transfer/{destPlate}?{scheduleOptions}";
+                }
+
+
+                var request = new RestRequest(endPointResource, Method.GET);
+
+                var response = _DDIBatchClient.Execute(request);
+                if (!response.IsSuccessful)
+                {
+                    ErrMsg = "APIService.GetWorklist() error: " + response.Content;
+                    throw new Exception(response.Content);
+                }
+
+                return JsonConvert.DeserializeObject<List<DtoWorklist>>(response.Content);
+            }
+            catch (Exception ex)
+            {
+                //  GenMessaging errProcess = new GenMessaging(DateTime.Now.ToLongTimeString(), "Sapphire sync to SalesForce");
+                string errMsg = "ClientBackend.GetSamples() met an issue:";
+                errMsg += Environment.NewLine;
+                errMsg += Environment.NewLine;
+                errMsg += ex.Message;
+                //errProcess.MsgHandler(msgType: "SYS-ERROR", errMsg);
+                ErrMsg = "APIService.GetWorklist() Exception: " + ex.Message;
+            }
+
+            return dtoWorklist;
+        }
+
+        public IEnumerable<SampleDTO> GetProductSamples(string plateId)
+        {
+            string endPointResource = "";
+
+            try
+            {
+                endPointResource = $"{_endpointResourceDDIBatch}/{plateId}";
+
+                var request = new RestRequest(endPointResource, Method.GET);
+
+                var response = _DDIBatchClient.Execute(request);
+                if (!response.IsSuccessful)
+                {
+                    ErrMsg = "APIService. GetProductSamples() error: " + response.Content;
+                    throw new Exception(response.Content);
+                }
+
+                var plate = JsonConvert.DeserializeObject<PlateDTO>(response.Content);
+
+                return plate.Samples;
+            }
+            catch (Exception ex)
+            {
+                //  GenMessaging errProcess = new GenMessaging(DateTime.Now.ToLongTimeString(), "Sapphire sync to SalesForce");
+                string errMsg = "ClientBackend.GetProductSamples() met an issue:";
+                errMsg += Environment.NewLine;
+                errMsg += Environment.NewLine;
+                errMsg += ex.Message;
+                //errProcess.MsgHandler(msgType: "SYS-ERROR", errMsg);
+                ErrMsg = "APIService.GetProductSamples() Exception: " + ex.Message;
+                return null;
+            }
+        }
+
+        public IEnumerable<DtoWorklist> GetWorklist_his(string sourcePlate, string destPlate, string options, bool isSchedCompletedSamples)
+        {
             List<DtoWorklist> dtoWorklist = new List<DtoWorklist>();
             string endPointResource = "";
 
             try
             {
                 options = "lookup_alias,in_process,cherry_pick";
+
+                // for each checkbox
+                // add the status to the options string
+                // ie. options += "in_process,", options += "approved,", options += "cancelled,"
+
                 if (isSchedCompletedSamples)
                 {
                     //"lookup_alias,skip_cancelled,cherry_pick", 

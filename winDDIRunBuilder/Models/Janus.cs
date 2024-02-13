@@ -13,6 +13,7 @@ namespace winDDIRunBuilder.Models
         public string JanusName { set; get; }
         public string HostName { set; get; }
         public string BCROutput { set; get; }
+        public string BCRArchive { set; get; }
         public string RunBuilderOutput { set; get; }
         public string RunBuilderOutputArchive { set; get; }
         public string RunBuilderExport { set; get; }

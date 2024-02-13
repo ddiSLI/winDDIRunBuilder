@@ -21,5 +21,6 @@ namespace winDDIRunBuilder.Models
         public string Status { set; get; } = "";
         public string DBTest { set; get; } = "";
         public string ModifiedDate { set; get; } = "";
+        public Dictionary<string, string> Attributes { get; set; }
     }
 }

@@ -56,6 +56,7 @@ namespace winDDIRunBuilder
             this.lblMsg = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.cmbAssay = new System.Windows.Forms.ComboBox();
+            this.btnBuildReports = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvSamplePlate)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvQCSamples)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -78,13 +79,13 @@ namespace winDDIRunBuilder
             dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dgvSamplePlate.DefaultCellStyle = dataGridViewCellStyle1;
-            this.dgvSamplePlate.Location = new System.Drawing.Point(17, 273);
+            this.dgvSamplePlate.Location = new System.Drawing.Point(17, 298);
             this.dgvSamplePlate.Margin = new System.Windows.Forms.Padding(2);
             this.dgvSamplePlate.Name = "dgvSamplePlate";
             this.dgvSamplePlate.RowHeadersVisible = false;
             this.dgvSamplePlate.RowHeadersWidth = 51;
             this.dgvSamplePlate.RowTemplate.Height = 24;
-            this.dgvSamplePlate.Size = new System.Drawing.Size(890, 444);
+            this.dgvSamplePlate.Size = new System.Drawing.Size(861, 444);
             this.dgvSamplePlate.TabIndex = 1;
             this.dgvSamplePlate.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvSamplePlate_CellContentClick);
             // 
@@ -118,7 +119,7 @@ namespace winDDIRunBuilder
             dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.dgvQCSamples.RowsDefaultCellStyle = dataGridViewCellStyle3;
             this.dgvQCSamples.RowTemplate.Height = 24;
-            this.dgvQCSamples.Size = new System.Drawing.Size(498, 172);
+            this.dgvQCSamples.Size = new System.Drawing.Size(727, 197);
             this.dgvQCSamples.TabIndex = 2;
             // 
             // Include
@@ -168,8 +169,10 @@ namespace winDDIRunBuilder
             // QCType
             // 
             this.QCType.HeaderText = "QCType";
+            this.QCType.MinimumWidth = 8;
             this.QCType.Name = "QCType";
             this.QCType.Visible = false;
+            this.QCType.Width = 150;
             // 
             // label1
             // 
@@ -178,7 +181,7 @@ namespace winDDIRunBuilder
             this.label1.Location = new System.Drawing.Point(17, 10);
             this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(140, 18);
+            this.label1.Size = new System.Drawing.Size(213, 18);
             this.label1.TabIndex = 52;
             this.label1.Text = "PlateId:";
             // 
@@ -189,17 +192,17 @@ namespace winDDIRunBuilder
             this.txbPlateId.Location = new System.Drawing.Point(17, 30);
             this.txbPlateId.Margin = new System.Windows.Forms.Padding(2);
             this.txbPlateId.Name = "txbPlateId";
-            this.txbPlateId.Size = new System.Drawing.Size(141, 23);
+            this.txbPlateId.Size = new System.Drawing.Size(214, 31);
             this.txbPlateId.TabIndex = 53;
             // 
             // label2
             // 
             this.label2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(184, 10);
+            this.label2.Location = new System.Drawing.Point(260, 10);
             this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(142, 18);
+            this.label2.Size = new System.Drawing.Size(200, 18);
             this.label2.TabIndex = 54;
             this.label2.Text = "Assay:";
             // 
@@ -223,7 +226,7 @@ namespace winDDIRunBuilder
             this.cbExportFormat.Location = new System.Drawing.Point(10, 32);
             this.cbExportFormat.Margin = new System.Windows.Forms.Padding(2);
             this.cbExportFormat.Name = "cbExportFormat";
-            this.cbExportFormat.Size = new System.Drawing.Size(229, 25);
+            this.cbExportFormat.Size = new System.Drawing.Size(229, 33);
             this.cbExportFormat.TabIndex = 58;
             this.cbExportFormat.SelectedIndexChanged += new System.EventHandler(this.cbExportFormat_SelectedIndexChanged);
             // 
@@ -257,7 +260,7 @@ namespace winDDIRunBuilder
             this.btnGetQC.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnGetQC.Image = global::winDDIRunBuilder.Properties.Resources.qc;
             this.btnGetQC.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnGetQC.Location = new System.Drawing.Point(387, 12);
+            this.btnGetQC.Location = new System.Drawing.Point(606, 11);
             this.btnGetQC.Margin = new System.Windows.Forms.Padding(2);
             this.btnGetQC.Name = "btnGetQC";
             this.btnGetQC.Size = new System.Drawing.Size(128, 39);
@@ -274,7 +277,7 @@ namespace winDDIRunBuilder
             this.btnGoBack.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnGoBack.Image = global::winDDIRunBuilder.Properties.Resources.Back32;
             this.btnGoBack.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnGoBack.Location = new System.Drawing.Point(533, 184);
+            this.btnGoBack.Location = new System.Drawing.Point(762, 209);
             this.btnGoBack.Margin = new System.Windows.Forms.Padding(2);
             this.btnGoBack.Name = "btnGoBack";
             this.btnGoBack.Size = new System.Drawing.Size(116, 45);
@@ -292,7 +295,7 @@ namespace winDDIRunBuilder
             this.btnSent.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnSent.Image = global::winDDIRunBuilder.Properties.Resources.export32;
             this.btnSent.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnSent.Location = new System.Drawing.Point(9, 184);
+            this.btnSent.Location = new System.Drawing.Point(9, 125);
             this.btnSent.Margin = new System.Windows.Forms.Padding(2);
             this.btnSent.Name = "btnSent";
             this.btnSent.Size = new System.Drawing.Size(116, 41);
@@ -310,7 +313,7 @@ namespace winDDIRunBuilder
             this.btnAddQC.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnAddQC.Image = global::winDDIRunBuilder.Properties.Resources.Add32;
             this.btnAddQC.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnAddQC.Location = new System.Drawing.Point(533, 10);
+            this.btnAddQC.Location = new System.Drawing.Point(762, 6);
             this.btnAddQC.Margin = new System.Windows.Forms.Padding(2);
             this.btnAddQC.Name = "btnAddQC";
             this.btnAddQC.Size = new System.Drawing.Size(116, 45);
@@ -327,7 +330,7 @@ namespace winDDIRunBuilder
             this.btnAdd.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnAdd.Image = global::winDDIRunBuilder.Properties.Resources.Append30;
             this.btnAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnAdd.Location = new System.Drawing.Point(533, 73);
+            this.btnAdd.Location = new System.Drawing.Point(762, 68);
             this.btnAdd.Margin = new System.Windows.Forms.Padding(2);
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Size = new System.Drawing.Size(116, 45);
@@ -341,10 +344,10 @@ namespace winDDIRunBuilder
             // 
             this.lblMsg.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.lblMsg.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblMsg.Location = new System.Drawing.Point(17, 242);
+            this.lblMsg.Location = new System.Drawing.Point(17, 267);
             this.lblMsg.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblMsg.Name = "lblMsg";
-            this.lblMsg.Size = new System.Drawing.Size(890, 29);
+            this.lblMsg.Size = new System.Drawing.Size(861, 29);
             this.lblMsg.TabIndex = 61;
             this.lblMsg.Text = "[Status Msg]";
             this.lblMsg.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -356,11 +359,12 @@ namespace winDDIRunBuilder
             this.groupBox1.Controls.Add(this.cbExportFormat);
             this.groupBox1.Controls.Add(this.txbExportPath);
             this.groupBox1.Controls.Add(this.btnSent);
-            this.groupBox1.Location = new System.Drawing.Point(664, 0);
+            this.groupBox1.Enabled = false;
+            this.groupBox1.Location = new System.Drawing.Point(917, 534);
             this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox1.Size = new System.Drawing.Size(252, 235);
+            this.groupBox1.Size = new System.Drawing.Size(127, 177);
             this.groupBox1.TabIndex = 62;
             this.groupBox1.TabStop = false;
             // 
@@ -369,17 +373,35 @@ namespace winDDIRunBuilder
             this.cmbAssay.BackColor = System.Drawing.SystemColors.Info;
             this.cmbAssay.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cmbAssay.FormattingEnabled = true;
-            this.cmbAssay.Location = new System.Drawing.Point(184, 30);
+            this.cmbAssay.Location = new System.Drawing.Point(260, 30);
             this.cmbAssay.Margin = new System.Windows.Forms.Padding(2);
             this.cmbAssay.Name = "cmbAssay";
-            this.cmbAssay.Size = new System.Drawing.Size(144, 25);
+            this.cmbAssay.Size = new System.Drawing.Size(202, 33);
             this.cmbAssay.TabIndex = 63;
+            // 
+            // btnBuildReports
+            // 
+            this.btnBuildReports.FlatAppearance.BorderColor = System.Drawing.SystemColors.Highlight;
+            this.btnBuildReports.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnBuildReports.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnBuildReports.Image = global::winDDIRunBuilder.Properties.Resources.export32;
+            this.btnBuildReports.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnBuildReports.Location = new System.Drawing.Point(762, 133);
+            this.btnBuildReports.Margin = new System.Windows.Forms.Padding(2);
+            this.btnBuildReports.Name = "btnBuildReports";
+            this.btnBuildReports.Size = new System.Drawing.Size(116, 41);
+            this.btnBuildReports.TabIndex = 64;
+            this.btnBuildReports.Text = "Build Reports";
+            this.btnBuildReports.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnBuildReports.UseVisualStyleBackColor = true;
+            this.btnBuildReports.Click += new System.EventHandler(this.btnBuildReports_Click);
             // 
             // frmQC
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(919, 722);
+            this.ClientSize = new System.Drawing.Size(892, 750);
+            this.Controls.Add(this.btnBuildReports);
             this.Controls.Add(this.cmbAssay);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.lblMsg);
@@ -433,5 +455,6 @@ namespace winDDIRunBuilder
         private System.Windows.Forms.DataGridViewTextBoxColumn Prefix;
         private System.Windows.Forms.DataGridViewTextBoxColumn HarvestId;
         private System.Windows.Forms.DataGridViewTextBoxColumn QCType;
+        private System.Windows.Forms.Button btnBuildReports;
     }
 }

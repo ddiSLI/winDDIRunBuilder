@@ -31,5 +31,10 @@ namespace winDDIRunBuilder.Models
         public string Opt3 { set; get; }
         public string Opt4 { set; get; }
         public string Opt5 { set; get; }
+        public string GroupKey { set; get; }
+        public string WorklistFormat { get; set; }
+        public string OrderKey { set; get; }
+        public string Include { get; set; }
+
     }
 }

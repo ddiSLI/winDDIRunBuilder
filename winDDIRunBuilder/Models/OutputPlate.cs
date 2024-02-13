@@ -19,7 +19,14 @@ namespace winDDIRunBuilder.Models
         public string Direction { set; get; }
         public string SourcePlateId { set; get; }
         public string WorkList { set; get; }
+        public string GroupKey { set; get; }
         public Dictionary<string, string> Attributes { get; set; } = new Dictionary<string, string>();
+
+        public string WorklistFormat { get; set; }
+
+        public string OrderKey { set; get; }
+        public string Include { get; set; }
+
 
     }
 }

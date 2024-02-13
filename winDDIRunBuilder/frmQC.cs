@@ -13,6 +13,8 @@ using System.Windows.Forms;
 using winDDIRunBuilder.Models;
 using static winDDIRunBuilder.ClientBackend;
 using static winDDIRunBuilder.Models.InputPlate;
+using OfficeOpenXml;
+
 
 namespace winDDIRunBuilder
 {
@@ -20,10 +22,11 @@ namespace winDDIRunBuilder
     {
         public string CurUser { get; set; } = "";
         public string DeptName { get; set; } = "";
-
+        public ClientRunBuilder CurRunBuilder { get; set; }
         public bool IsSchedCompletedSamples { get; set; } = false;
         public string PlateId { get; set; } = "";
         public DBPlate CurDBPlate { get; set; } = new DBPlate();
+        private List<PlateSample> PlateSamples = new List<PlateSample>();
         private List<OutputPlateSample> HisQCSamples { get; set; }
         public string CurExportPath { get; set; }
         private List<ExportFile> Exports { get; set; }
@@ -99,7 +102,7 @@ namespace winDDIRunBuilder
 
                 //Get DBTests
                 DeptQCPlates = sqlService.GetQCSamples(plateName: "", dept: DeptName, qcType: "DEPT");
-                if(DeptQCPlates !=null && DeptQCPlates.Count > 0)
+                if (DeptQCPlates != null && DeptQCPlates.Count > 0)
                 {
                     assays = DeptQCPlates.Select(p => p.Plate).Distinct().ToList();
                 }
@@ -138,6 +141,8 @@ namespace winDDIRunBuilder
                 {
                     mapPlateSamples.GetMapAnyPlateSamples(PlateId);
                     dtPlateSamples = mapPlateSamples.PlateSampleMapTable;
+                    PlateSamples = mapPlateSamples.ScannedDBPlateSamples;
+
                     MapSamples(dtPlateSamples);
                     lastSampleWell = mapPlateSamples.LastSampleWell;
 
@@ -376,7 +381,7 @@ namespace winDDIRunBuilder
                         {
                             if (IsRotated)
                             {
-                                iRw = Convert.ToInt32(wellY)-1;
+                                iRw = Convert.ToInt32(wellY) - 1;
                                 dgvSamplePlate.Rows[iRw].Cells[wellX].Value = sample;
                                 //iRw = pAlpha.IndexOf(wellX);
                                 //dgvSamplePlate.Rows[iRw].Cells[wellY].Value = sample;
@@ -1009,6 +1014,15 @@ namespace winDDIRunBuilder
 
             try
             {
+                var inSample = new Dictionary<string, string>();
+                inSample.Add("Sample", CurDBPlate.Sample);
+                inSample.Add("Diluent", CurDBPlate.Diluent);
+                inSample.Add("Opt1", CurDBPlate.Opt1);
+                inSample.Add("Opt2", CurDBPlate.Opt2);
+                inSample.Add("Opt3", CurDBPlate.Opt3);
+                inSample.Add("Opt4", CurDBPlate.Opt4);
+                inSample.Add("Opt5", CurDBPlate.Opt5);
+
                 if (dgvSamplePlate != null && dgvSamplePlate.Rows.Count > 0)
                 {
                     rows = dgvSamplePlate.Rows.Count;
@@ -1045,6 +1059,16 @@ namespace winDDIRunBuilder
                                     }
                                     pltSmp.Well = well;
 
+                                    pltSmp.SourcePlateId = "";
+                                    pltSmp.SourceWell = "";
+                                    var sourceSmp = PlateSamples.Where(s => s.SampleId == sample).FirstOrDefault();
+                                    if (sourceSmp != null)
+                                    {
+                                        pltSmp.SourcePlateId = sourceSmp.SourcePlateId;
+                                        pltSmp.SourceWell = sourceSmp.SourceWell;
+                                    }
+
+                                    pltSmp.Attributes = inSample;
                                     plateQCSamples.Add(pltSmp);
                                 }
                             }
@@ -1080,11 +1104,25 @@ namespace winDDIRunBuilder
                                     }
                                     pltSmp.Well = well;
 
+                                    pltSmp.SourcePlateId = "";
+                                    pltSmp.SourceWell = "";
+                                    var sourceSmp = PlateSamples.Where(s => s.SampleId == sample).FirstOrDefault();
+                                    if (sourceSmp != null)
+                                    {
+                                        pltSmp.SourcePlateId = sourceSmp.SourcePlateId;
+                                        pltSmp.SourceWell = sourceSmp.SourceWell;
+                                    }
+
+                                    pltSmp.Attributes = inSample;
                                     plateQCSamples.Add(pltSmp);
                                 }
                             }
                         }
                     }
+
+
+
+
                 }
             }
             catch (Exception ex)
@@ -1100,158 +1138,6 @@ namespace winDDIRunBuilder
 
         }
 
-
-        private List<DtoWorklist> ProcessQCSamples(List<PlateSample> rawQCSamples)
-        {
-            List<DtoWorklist> dtoWorklist = new List<DtoWorklist>();
-            ClientBackend backService = new ClientBackend();
-            InputPlate sourcePlate = new InputPlate();
-            InputPlate virtualDestPlate = new InputPlate();
-            ValidPlate findSourcePlate = new ValidPlate();
-            List<InputFile> plateSamples = new List<InputFile>();
-            string hasSourcePlate = "";
-            string hasVirtualPlate = "";
-            string hasSamples = "";
-
-            try
-            {
-                findSourcePlate.PlateId = CurDBPlate.PlateId;
-                findSourcePlate.PlateName = CurDBPlate.PlateName;
-                findSourcePlate.ExcludeWells = CurDBPlate.ExcludeWells;
-                findSourcePlate.SizeStartWell = CurDBPlate.SizeStartWell;
-                findSourcePlate.SizeEndWell = CurDBPlate.SizeEndWell;
-
-                //Get History Source Plate
-                sourcePlate = GetHisDestPlate(findSourcePlate);
-
-                //Create Source Plate
-                hasSourcePlate = backService.CreatePlate(sourcePlate);
-
-                //Create Virtual DestPlate
-                virtualDestPlate = (InputPlate)sourcePlate.Clone();
-                virtualDestPlate.Name = sourcePlate.Name + "VT";
-                hasVirtualPlate = backService.CreatePlate(virtualDestPlate);
-
-                //Add Plate QC samples
-                if (hasSourcePlate == "YES" && hasVirtualPlate == "YES")
-                {
-                    plateSamples = GetSourcePlateSamples(rawQCSamples);
-
-                    hasSamples = backService.AddSamples(CurDBPlate.PlateId, plateSamples, isQC: true);
-                    if (!string.IsNullOrEmpty(backService.ErrMsg))
-                    {
-                        lblMsg.ForeColor = Color.DarkRed;
-                        lblMsg.Text = backService.ErrMsg;
-                    }
-                }
-
-                //Process new destination Plate
-                dtoWorklist = (List<DtoWorklist>)backService.GetWorklist(sourcePlate.Name, 
-                                                                         virtualDestPlate.Name, 
-                                                                         "lookup_alias,lookup_qc",
-                                                                         IsSchedCompletedSamples
-                                                                         );
-                if (dtoWorklist == null && dtoWorklist.Count == 0)
-                {
-                    lblMsg.ForeColor = Color.DarkRed;
-                    lblMsg.Text = "There is no available QC samples.";
-                }
-
-            }
-            catch (Exception ex)
-            {
-                string errMsg = "ProcessQCSamples() met the following error: ";
-                errMsg += Environment.NewLine;
-                errMsg += ex.Message;
-
-                lblMsg.ForeColor = Color.DarkRed;
-                lblMsg.Text = errMsg;
-            }
-
-            return dtoWorklist;
-        }
-
-        private List<InputFile> GetSourcePlateSamples(List<PlateSample> qcPlateSampls)
-        {
-            List<InputFile> inputSamples = new List<InputFile>();
-            InputFile sample = new InputFile();
-            try
-            {
-                //Get samples from the history plate
-                if (qcPlateSampls != null && qcPlateSampls.Count > 0)
-                {
-                    foreach (var hSmp in qcPlateSampls)
-                    {
-                        sample = new InputFile();
-                        sample.ShortId = hSmp.SampleId;    // scanner read sample label
-                        sample.RackName = hSmp.PlateId;
-                        sample.SampleType = hSmp.SampleType;
-                        sample.Position = hSmp.Well;
-                        sample.Well = hSmp.Well;
-                        if (CurDBPlate.PlateRotated)
-                        {
-                            sample.WellX = pAlpha.IndexOf(hSmp.Well.Substring(0, 1)).ToString();
-                            sample.WellY = hSmp.Well.Substring(1);
-                        }
-                        else
-                        {
-                            sample.WellX = hSmp.Well.Substring(1);
-                            sample.WellY = pAlpha.IndexOf(hSmp.Well.Substring(0, 1)).ToString();
-                        }
-
-
-
-                        inputSamples.Add(sample);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                string errMsg = ex.Message;
-            }
-
-            return inputSamples;
-        }
-        private InputPlate GetHisDestPlate(ValidPlate alidPlate)
-        {
-            //Get the history plates as destination, and modify it
-            InputPlate newDestPlate = new InputPlate();
-            string sizeStart = "";
-            string sizeEnd = "";
-            string startPos = "";
-            string endPos = "";
-
-            if (CurDBPlate != null)
-            {
-                sizeStart = CurDBPlate.SizeStartWell;
-                sizeEnd = CurDBPlate.SizeEndWell;
-                startPos = CurDBPlate.SizeStartWell;
-                endPos = CurDBPlate.SizeEndWell;
-
-                int startY = pAlpha.IndexOf(startPos.Substring(0, 1));
-                int startX = Convert.ToInt32(startPos.Substring(1));
-
-                int endY = pAlpha.IndexOf(endPos.Substring(0, 1));
-                int endX = Convert.ToInt32(endPos.Substring(1));
-
-                Pos sPos = new Pos();
-                Pos ePos = new Pos();
-
-                sPos.X = startX.ToString();
-                sPos.Y = startY.ToString();
-                ePos.X = endX.ToString();
-                ePos.Y = endY.ToString();
-
-                newDestPlate.Start = sPos;
-                newDestPlate.End = ePos;
-                newDestPlate.Name = CurDBPlate.PlateId;
-                newDestPlate.Exclude = CurDBPlate.ExcludeWells.Split('|').Distinct().Select(WellToPosition).ToList();
-
-                newDestPlate.Direction = "0";
-            }
-
-            return newDestPlate;
-        }
 
         private Pos WellToPosition(string input)
         {
@@ -1498,5 +1384,217 @@ namespace winDDIRunBuilder
             this.Close();
         }
 
+        private void btnBuildReports_Click(object sender, EventArgs e)
+        {
+            string resultSaveSample = "";
+            string resultUpdPlate = "";
+
+            List<PlateSample> rawQCSamples = new List<PlateSample>();
+            List<OutputPlateSample> qcSamples = new List<OutputPlateSample>();
+            RepoSQL sqlService = new RepoSQL();
+
+            try
+            {
+                if(txbPlateId.Text.Trim().Length <5 || cmbAssay.SelectedItem.ToString().Length < 2)
+                {
+                    lblMsg.ForeColor = Color.Red;
+                    lblMsg.Text = "There is no plate or Assay.";
+                    
+                    return;
+                }
+
+                if (dgvSamplePlate ==null || dgvSamplePlate.Rows.Count <= 2)
+                {
+                    lblMsg.ForeColor = Color.Red;
+                    lblMsg.Text = "There is no sample.";
+
+                    return;
+                }
+
+
+                //Collect plateSamples for export
+                //rawQCSamples = MakePlateQCSamples();
+
+                //Collect QCSamples for upinsert
+                qcSamples = MakeQCSamples();
+
+                if (HisQCSamples != null && HisQCSamples.Count > 0)
+                {
+                    foreach (var hisQC in HisQCSamples)
+                    {
+                        qcSamples.RemoveAll(qc => qc.SampleId == hisQC.SampleId);
+                    }
+                }
+
+
+                //Add QC samples
+                if (qcSamples != null && qcSamples.Count > 0)
+                    resultSaveSample = sqlService.AddSamples(qcSamples, Environment.UserName);
+                //resultSaveSample = sqlService.AddPlateQCSamples(rawQCSamples, Environment.UserName);
+
+
+                if (pHasQC == false)
+                {
+                    //Update Plate Status
+                    if (resultSaveSample == "SUCCESS")
+                    {
+                        resultUpdPlate = sqlService.UpdatePlateQC(CurDBPlate.PlateId, CurDBPlate.PlateVersion, hasQC: true, Environment.UserName);
+                    }
+                }
+
+                //Build report
+                if (BuildReport() == "SUCCESS")
+                {
+                    lblMsg.Text = "The Following samples report created.";
+                    lblMsg.ForeColor = Color.DarkBlue;
+                }
+
+            }
+            catch (IOException ioEx)
+            {
+                string errMsg = "btnSent_Click() met some issues:";
+                errMsg += ioEx.Message;
+
+                lblMsg.ForeColor = Color.Red;
+                lblMsg.Text = errMsg;
+            }
+        }
+
+        private string BuildReport()
+        {
+            string resutlt = "NA";
+
+            List<PlateSample> rawQCSamples = new List<PlateSample>();
+            int sheetRow = 1;
+            int smpModels = 0;
+            var sourceFilePath = string.Empty;
+            var destFilePath = string.Empty;
+
+            List<string[]> headerRow = new List<string[]>();
+            List<string[]> sampleRow = new List<string[]>();
+
+            try
+            {
+                smpModels = typeof(PlateSample).GetProperties().Count();
+
+                //Collect plateSamples for export
+                rawQCSamples = MakePlateQCSamples();
+                if (CurDBPlate is null || rawQCSamples is null || rawQCSamples.Count <= 0)
+                {
+                    lblMsg.ForeColor = Color.Red;
+                    lblMsg.Text = "Cannot get samples.";
+                    return "No Sample";
+                }
+
+                var worklistformat = CurDBPlate.WorklistFormat
+                                         .Replace("DestPlateId", "PlateId").Replace("DestWellId", "Well").Replace("SourceWellId", "SourceWell")
+                                         .Split(',').Select(x => x.Split(':')).ToDictionary(x => x[0], y => y.Length > 1 ? y[1] : y[0]);
+ 
+                headerRow.Add(worklistformat.Keys.ToArray());
+
+                //Get dest file
+                destFilePath = CurRunBuilder.BuilReportPlace;
+                if (Environment.UserName.ToUpper() == "SLI")
+                {
+                    destFilePath = "C:/Users/sli/Documents/DDIRunBuilder/HisFile/";
+                }
+
+                destFilePath += CurDBPlate.PlateName + "_" + CurDBPlate.PlateId + ".xlsm";
+               
+
+                var fileContent = string.Empty;
+
+                //Get source file
+                using (OpenFileDialog openFileDialog = new OpenFileDialog())
+                {
+                    openFileDialog.InitialDirectory = CurRunBuilder.BuilReportTemplate;
+                    openFileDialog.Filter = "xlsm files (*.xlsm)|*.xlsm|All files (*.*)|*.*";
+                    openFileDialog.FilterIndex = 2;
+                    openFileDialog.RestoreDirectory = true;
+
+                    if (openFileDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        //Get the path of specified file
+                        sourceFilePath = openFileDialog.FileName;
+                        File.Copy(sourceFilePath, destFilePath, true);
+                    }
+                }
+
+                ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
+                using (ExcelPackage package = new ExcelPackage(new FileInfo(destFilePath)))
+                {
+                    ExcelWorksheet worksheet = package.Workbook.Worksheets["Dump"];
+
+                    worksheet.Cells[sheetRow, 1].LoadFromArrays(headerRow);
+
+                    sheetRow += 1;
+                    foreach (var smp in rawQCSamples)
+                    {
+                        sampleRow = new List<string[]>();
+
+                        var sampleAttrs = worklistformat.Select(x =>
+                        {
+                            var sampleAttributes = new Dictionary<string, string>(smp.Attributes, StringComparer.OrdinalIgnoreCase);
+
+                            var prop = smp.GetType().GetProperty(x.Value, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+
+                            if (prop != null)
+                            {
+                                return prop.GetValue(smp).ToString();
+                            }
+                            else if (sampleAttributes.TryGetValue(x.Key, out var attr2))
+                            {
+                                return attr2;
+                            }
+                            else
+                            {
+                                return "";
+                            }
+                        }).ToArray();
+
+                        sampleRow.Add(sampleAttrs);
+
+                        worksheet.Cells[sheetRow, 1].LoadFromArrays(sampleRow);
+                        sheetRow += 1;
+                    }
+
+                    package.Save();
+
+                    //open the file
+                    FileInfo fi = new FileInfo(destFilePath);
+                    if (fi.Exists)
+                    {
+                        System.Diagnostics.Process.Start(destFilePath);
+                    }
+                    else
+                    {
+                        lblMsg.ForeColor = Color.Red;
+                        lblMsg.Text = "There is not this file: "+ destFilePath;
+                        
+                        return "Cannot find the file." ;
+                    }
+
+
+                    resutlt = "SUCCESS";
+                }
+            }
+            catch (Exception ex)
+            {
+                string errMsg = "{BuildReports()} met the following error: ";
+                errMsg += Environment.NewLine;
+                errMsg += ex.Message;
+                lblMsg.ForeColor = Color.Red;
+                lblMsg.Text = errMsg;
+
+                resutlt = "ERROR";
+            }
+
+            return resutlt;
+        }
+
+
     }
+
+
 }
+

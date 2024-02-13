@@ -24,7 +24,7 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <InstallUrl>\\dd386\sys\freearea\DDIRunBuilder\Setup\</InstallUrl>
-    <ApplicationRevision>57</ApplicationRevision>
+    <ApplicationRevision>66</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -53,10 +53,11 @@
     <StartupObject>winDDIRunBuilder.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>23AC4EF2E103BA1376248FEE285738A2930CE96D</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>38E62D349F5786AD08DFB4AD4786BF170A72A064</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>winDDIRunBuilder_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>
+    </ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>
@@ -65,9 +66,20 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EPPlus, Version=6.2.16.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPPlus.6.2.16\lib\net35\EPPlus.dll</HintPath>
+    </Reference>
+    <Reference Include="EPPlus.Interfaces, Version=6.1.1.0, Culture=neutral, PublicKeyToken=a694d7f3b0907a61, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPPlus.Interfaces.6.1.1\lib\net35\EPPlus.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="EPPlus.System.Drawing, Version=6.1.1.0, Culture=neutral, PublicKeyToken=2308d35469c9bac0, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPPlus.System.Drawing.6.1.1\lib\net35\EPPlus.System.Drawing.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="RestSharp, Version=106.5.4.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
       <HintPath>..\packages\RestSharp.106.5.4\lib\net452\RestSharp.dll</HintPath>
     </Reference>
@@ -78,6 +90,7 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.OracleClient" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml.Linq" />
@@ -89,6 +102,7 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
     <Reference Include="Zen.Barcode.Core, Version=3.1.0.0, Culture=neutral, PublicKeyToken=b5ae55aa76d2d9de, processorArchitecture=MSIL">
       <HintPath>..\packages\Zen.Barcode.Rendering.Framework.3.1.10729.1\lib\Zen.Barcode.Core.dll</HintPath>
     </Reference>
@@ -120,6 +134,12 @@
     </Compile>
     <Compile Include="frmMsg.Designer.cs">
       <DependentUpon>frmMsg.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmPlateSample.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmPlateSample.Designer.cs">
+      <DependentUpon>frmPlateSample.cs</DependentUpon>
     </Compile>
     <Compile Include="frmQC.cs">
       <SubType>Form</SubType>
@@ -154,6 +174,7 @@
     <Compile Include="Models\OutputPlateSample.cs" />
     <Compile Include="Models\PathFile.cs" />
     <Compile Include="Models\PlateSample.cs" />
+    <Compile Include="Models\PlateDTO.cs" />
     <Compile Include="Models\Protocol.cs" />
     <Compile Include="Models\ProtocolPlate.cs" />
     <Compile Include="Models\QCSample.cs" />
@@ -163,6 +184,7 @@
     <Compile Include="ModelTransfer.cs" />
     <Compile Include="PrinBarCodeZXing.cs" />
     <Compile Include="PrintBarCode.cs" />
+    <Compile Include="ProductPlate.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -180,6 +202,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="frmMsg.resx">
       <DependentUpon>frmMsg.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmPlateSample.resx">
+      <DependentUpon>frmPlateSample.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="frmQC.resx">
       <DependentUpon>frmQC.cs</DependentUpon>
@@ -374,6 +399,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\selection.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\csv-file-format-extension.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\check.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cancel.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

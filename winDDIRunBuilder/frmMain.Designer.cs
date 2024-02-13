@@ -54,12 +54,15 @@ namespace winDDIRunBuilder
             this.label4 = new System.Windows.Forms.Label();
             this.txbBarcode = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.ckbSchedSamples = new System.Windows.Forms.CheckBox();
+            this.dgvLogs = new System.Windows.Forms.DataGridView();
+            this.log = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.cb_InProcess = new System.Windows.Forms.CheckBox();
+            this.chkCompleted = new System.Windows.Forms.CheckBox();
             this.txbInitial = new System.Windows.Forms.TextBox();
             this.lblCurPlateId = new System.Windows.Forms.Label();
             this.lblJanusName = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.txbPrompt = new System.Windows.Forms.TextBox();
             this.btnGo = new System.Windows.Forms.Button();
             this.dgvPlateSet = new System.Windows.Forms.DataGridView();
             this.Included = new System.Windows.Forms.DataGridViewCheckBoxColumn();
@@ -79,6 +82,8 @@ namespace winDDIRunBuilder
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.btnPrintPlateBarcode = new System.Windows.Forms.Button();
             this.fileWatcherBCR = new System.IO.FileSystemWatcher();
+            this.btnPlateSample = new System.Windows.Forms.Button();
+            this.btnExportEventLog = new System.Windows.Forms.Button();
             this.btnSampleStatus = new System.Windows.Forms.Button();
             this.btnQC = new System.Windows.Forms.Button();
             this.btnExit = new System.Windows.Forms.Button();
@@ -86,6 +91,8 @@ namespace winDDIRunBuilder
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvSamplePlate)).BeginInit();
             this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvLogs)).BeginInit();
+            this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvPlateSet)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.fileWatcherBCR)).BeginInit();
@@ -94,9 +101,9 @@ namespace winDDIRunBuilder
             // label1
             // 
             this.label1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.label1.Location = new System.Drawing.Point(291, 15);
+            this.label1.Location = new System.Drawing.Point(280, 15);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(156, 24);
+            this.label1.Size = new System.Drawing.Size(138, 24);
             this.label1.TabIndex = 3;
             this.label1.Text = "Janus Protocol:";
             // 
@@ -106,9 +113,9 @@ namespace winDDIRunBuilder
             this.cbProtocolCd.DropDownWidth = 300;
             this.cbProtocolCd.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cbProtocolCd.FormattingEnabled = true;
-            this.cbProtocolCd.Location = new System.Drawing.Point(290, 40);
+            this.cbProtocolCd.Location = new System.Drawing.Point(279, 40);
             this.cbProtocolCd.Name = "cbProtocolCd";
-            this.cbProtocolCd.Size = new System.Drawing.Size(156, 28);
+            this.cbProtocolCd.Size = new System.Drawing.Size(139, 28);
             this.cbProtocolCd.TabIndex = 2;
             this.cbProtocolCd.SelectedIndexChanged += new System.EventHandler(this.cbProtocolCd_SelectedIndexChanged);
             // 
@@ -265,12 +272,12 @@ namespace winDDIRunBuilder
             dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dgvSamplePlate.DefaultCellStyle = dataGridViewCellStyle1;
-            this.dgvSamplePlate.Location = new System.Drawing.Point(177, 80);
+            this.dgvSamplePlate.Location = new System.Drawing.Point(168, 80);
             this.dgvSamplePlate.Name = "dgvSamplePlate";
             this.dgvSamplePlate.RowHeadersVisible = false;
             this.dgvSamplePlate.RowHeadersWidth = 51;
             this.dgvSamplePlate.RowTemplate.Height = 24;
-            this.dgvSamplePlate.Size = new System.Drawing.Size(902, 441);
+            this.dgvSamplePlate.Size = new System.Drawing.Size(911, 441);
             this.dgvSamplePlate.TabIndex = 0;
             this.dgvSamplePlate.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvSamplePlate_CellContentClick);
             this.dgvSamplePlate.CellContentDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvSamplePlate_CellContentDoubleClick);
@@ -330,9 +337,9 @@ namespace winDDIRunBuilder
             // 
             this.lblMsg.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.lblMsg.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblMsg.Location = new System.Drawing.Point(177, 19);
+            this.lblMsg.Location = new System.Drawing.Point(168, 19);
             this.lblMsg.Name = "lblMsg";
-            this.lblMsg.Size = new System.Drawing.Size(901, 55);
+            this.lblMsg.Size = new System.Drawing.Size(911, 55);
             this.lblMsg.TabIndex = 12;
             this.lblMsg.Text = "[Status Msg]";
             this.lblMsg.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -360,12 +367,12 @@ namespace winDDIRunBuilder
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.ckbSchedSamples);
+            this.groupBox1.Controls.Add(this.dgvLogs);
+            this.groupBox1.Controls.Add(this.groupBox3);
             this.groupBox1.Controls.Add(this.txbInitial);
             this.groupBox1.Controls.Add(this.lblCurPlateId);
             this.groupBox1.Controls.Add(this.lblJanusName);
             this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Controls.Add(this.txbPrompt);
             this.groupBox1.Controls.Add(this.btnGo);
             this.groupBox1.Controls.Add(this.dgvPlateSet);
             this.groupBox1.Controls.Add(this.cbProtocolCd);
@@ -380,19 +387,74 @@ namespace winDDIRunBuilder
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Input Source";
             // 
-            // ckbSchedSamples
+            // dgvLogs
             // 
-            this.ckbSchedSamples.AutoSize = true;
-            this.ckbSchedSamples.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.ckbSchedSamples.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ckbSchedSamples.Location = new System.Drawing.Point(461, 16);
-            this.ckbSchedSamples.Name = "ckbSchedSamples";
-            this.ckbSchedSamples.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.ckbSchedSamples.Size = new System.Drawing.Size(93, 49);
-            this.ckbSchedSamples.TabIndex = 48;
-            this.ckbSchedSamples.Text = "Schedule\r\nCompleted\r\nSamples";
-            this.ckbSchedSamples.UseVisualStyleBackColor = true;
-            this.ckbSchedSamples.CheckedChanged += new System.EventHandler(this.ckbSchedSamples_CheckedChanged);
+            this.dgvLogs.AllowDrop = true;
+            this.dgvLogs.AllowUserToAddRows = false;
+            this.dgvLogs.AllowUserToDeleteRows = false;
+            this.dgvLogs.BackgroundColor = System.Drawing.SystemColors.Control;
+            this.dgvLogs.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.dgvLogs.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvLogs.ColumnHeadersVisible = false;
+            this.dgvLogs.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.log});
+            this.dgvLogs.Location = new System.Drawing.Point(548, 11);
+            this.dgvLogs.Name = "dgvLogs";
+            this.dgvLogs.RowHeadersVisible = false;
+            this.dgvLogs.RowHeadersWidth = 8;
+            this.dgvLogs.Size = new System.Drawing.Size(531, 59);
+            this.dgvLogs.TabIndex = 51;
+            // 
+            // log
+            // 
+            this.log.HeaderText = "log";
+            this.log.MinimumWidth = 8;
+            this.log.Name = "log";
+            this.log.ReadOnly = true;
+            this.log.Width = 500;
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.cb_InProcess);
+            this.groupBox3.Controls.Add(this.chkCompleted);
+            this.groupBox3.Location = new System.Drawing.Point(426, 9);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(116, 61);
+            this.groupBox3.TabIndex = 50;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Schedule";
+            // 
+            // cb_InProcess
+            // 
+            this.cb_InProcess.AutoSize = true;
+            this.cb_InProcess.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.cb_InProcess.Checked = true;
+            this.cb_InProcess.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_InProcess.Enabled = false;
+            this.cb_InProcess.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.cb_InProcess.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cb_InProcess.Location = new System.Drawing.Point(15, 15);
+            this.cb_InProcess.Name = "cb_InProcess";
+            this.cb_InProcess.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.cb_InProcess.Size = new System.Drawing.Size(98, 20);
+            this.cb_InProcess.TabIndex = 48;
+            this.cb_InProcess.Text = "In Process";
+            this.cb_InProcess.UseVisualStyleBackColor = true;
+            // 
+            // chkCompleted
+            // 
+            this.chkCompleted.AutoSize = true;
+            this.chkCompleted.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.chkCompleted.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.chkCompleted.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chkCompleted.Location = new System.Drawing.Point(15, 38);
+            this.chkCompleted.Name = "chkCompleted";
+            this.chkCompleted.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.chkCompleted.Size = new System.Drawing.Size(100, 20);
+            this.chkCompleted.TabIndex = 49;
+            this.chkCompleted.Text = "Completed";
+            this.chkCompleted.UseVisualStyleBackColor = true;
+            this.chkCompleted.CheckedChanged += new System.EventHandler(this.chkCompleted_CheckedChanged);
             // 
             // txbInitial
             // 
@@ -421,32 +483,20 @@ namespace winDDIRunBuilder
             // 
             this.lblJanusName.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.lblJanusName.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblJanusName.Location = new System.Drawing.Point(177, 40);
+            this.lblJanusName.Location = new System.Drawing.Point(170, 40);
             this.lblJanusName.Name = "lblJanusName";
-            this.lblJanusName.Size = new System.Drawing.Size(105, 33);
+            this.lblJanusName.Size = new System.Drawing.Size(104, 33);
             this.lblJanusName.TabIndex = 31;
             this.lblJanusName.Text = "Janus";
             // 
             // label2
             // 
             this.label2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.label2.Location = new System.Drawing.Point(177, 15);
+            this.label2.Location = new System.Drawing.Point(170, 15);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(105, 24);
+            this.label2.Size = new System.Drawing.Size(104, 24);
             this.label2.TabIndex = 30;
             this.label2.Text = "Janus Name";
-            // 
-            // txbPrompt
-            // 
-            this.txbPrompt.ForeColor = System.Drawing.Color.Black;
-            this.txbPrompt.Location = new System.Drawing.Point(577, 16);
-            this.txbPrompt.Multiline = true;
-            this.txbPrompt.Name = "txbPrompt";
-            this.txbPrompt.ReadOnly = true;
-            this.txbPrompt.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txbPrompt.Size = new System.Drawing.Size(501, 59);
-            this.txbPrompt.TabIndex = 29;
-            this.txbPrompt.Text = "Source File is ready to load. Or to get a existing batch to Modify.";
             // 
             // btnGo
             // 
@@ -497,14 +547,14 @@ namespace winDDIRunBuilder
             this.ProcessType});
             this.dgvPlateSet.EnableHeadersVisualStyles = false;
             this.dgvPlateSet.GridColor = System.Drawing.SystemColors.Control;
-            this.dgvPlateSet.Location = new System.Drawing.Point(177, 73);
+            this.dgvPlateSet.Location = new System.Drawing.Point(168, 73);
             this.dgvPlateSet.Name = "dgvPlateSet";
             this.dgvPlateSet.RowHeadersVisible = false;
             this.dgvPlateSet.RowHeadersWidth = 51;
             dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.dgvPlateSet.RowsDefaultCellStyle = dataGridViewCellStyle4;
             this.dgvPlateSet.RowTemplate.Height = 42;
-            this.dgvPlateSet.Size = new System.Drawing.Size(901, 177);
+            this.dgvPlateSet.Size = new System.Drawing.Size(911, 177);
             this.dgvPlateSet.TabIndex = 27;
             this.dgvPlateSet.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvPlateSet_CellContentClick);
             // 
@@ -656,6 +706,38 @@ namespace winDDIRunBuilder
             this.fileWatcherBCR.Changed += new System.IO.FileSystemEventHandler(this.fileWatcherBCR_Changed);
             this.fileWatcherBCR.Created += new System.IO.FileSystemEventHandler(this.fileWatcherBCR_Created);
             // 
+            // btnPlateSample
+            // 
+            this.btnPlateSample.FlatAppearance.BorderColor = System.Drawing.SystemColors.Highlight;
+            this.btnPlateSample.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnPlateSample.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnPlateSample.Image = global::winDDIRunBuilder.Properties.Resources.Process32;
+            this.btnPlateSample.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnPlateSample.Location = new System.Drawing.Point(1098, 138);
+            this.btnPlateSample.Name = "btnPlateSample";
+            this.btnPlateSample.Size = new System.Drawing.Size(154, 48);
+            this.btnPlateSample.TabIndex = 48;
+            this.btnPlateSample.Text = "Plate  Samples";
+            this.btnPlateSample.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnPlateSample.UseVisualStyleBackColor = true;
+            this.btnPlateSample.Click += new System.EventHandler(this.btnPlateSample_Click);
+            // 
+            // btnExportEventLog
+            // 
+            this.btnExportEventLog.FlatAppearance.BorderColor = System.Drawing.SystemColors.Highlight;
+            this.btnExportEventLog.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnExportEventLog.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnExportEventLog.Image = global::winDDIRunBuilder.Properties.Resources.csv24;
+            this.btnExportEventLog.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnExportEventLog.Location = new System.Drawing.Point(1098, 77);
+            this.btnExportEventLog.Name = "btnExportEventLog";
+            this.btnExportEventLog.Size = new System.Drawing.Size(154, 48);
+            this.btnExportEventLog.TabIndex = 47;
+            this.btnExportEventLog.Text = "Export Event log";
+            this.btnExportEventLog.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnExportEventLog.UseVisualStyleBackColor = true;
+            this.btnExportEventLog.Click += new System.EventHandler(this.btnExportEventLog_Click);
+            // 
             // btnSampleStatus
             // 
             this.btnSampleStatus.FlatAppearance.BorderColor = System.Drawing.SystemColors.Highlight;
@@ -695,7 +777,7 @@ namespace winDDIRunBuilder
             this.btnExit.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnExit.Image = global::winDDIRunBuilder.Properties.Resources.UserExit32;
             this.btnExit.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnExit.Location = new System.Drawing.Point(1098, 17);
+            this.btnExit.Location = new System.Drawing.Point(1098, 11);
             this.btnExit.Name = "btnExit";
             this.btnExit.Size = new System.Drawing.Size(152, 51);
             this.btnExit.TabIndex = 20;
@@ -707,7 +789,9 @@ namespace winDDIRunBuilder
             // frmMain
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.ClientSize = new System.Drawing.Size(1262, 352);
+            this.ClientSize = new System.Drawing.Size(1262, 350);
+            this.Controls.Add(this.btnPlateSample);
+            this.Controls.Add(this.btnExportEventLog);
             this.Controls.Add(this.btnSampleStatus);
             this.Controls.Add(this.btnQC);
             this.Controls.Add(this.groupBox1);
@@ -728,6 +812,9 @@ namespace winDDIRunBuilder
             ((System.ComponentModel.ISupportInitialize)(this.dgvSamplePlate)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvLogs)).EndInit();
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvPlateSet)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.fileWatcherBCR)).EndInit();
@@ -754,7 +841,6 @@ namespace winDDIRunBuilder
         private System.Windows.Forms.DataGridView dgvSamplePlate;
         private System.Windows.Forms.TextBox txbBarcode;
         private System.Windows.Forms.Button btnGo;
-        private System.Windows.Forms.TextBox txbPrompt;
         private System.Windows.Forms.Label lblJanusName;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label4;
@@ -785,6 +871,12 @@ namespace winDDIRunBuilder
         private System.Windows.Forms.Button btnSampleStatus;
         private System.Windows.Forms.Label lblManualPlateId;
         private System.Windows.Forms.TextBox txbInitial;
-        private System.Windows.Forms.CheckBox ckbSchedSamples;
+        private System.Windows.Forms.CheckBox cb_InProcess;
+        private System.Windows.Forms.CheckBox chkCompleted;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.DataGridView dgvLogs;
+        private System.Windows.Forms.DataGridViewTextBoxColumn log;
+        private System.Windows.Forms.Button btnExportEventLog;
+        private System.Windows.Forms.Button btnPlateSample;
     }
 }

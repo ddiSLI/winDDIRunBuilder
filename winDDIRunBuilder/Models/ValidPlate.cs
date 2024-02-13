@@ -34,6 +34,10 @@ namespace winDDIRunBuilder.Models
         public string SourcePlateId { set; get; }
         public string SourcePlateVersion { set; get; }
         public string WorkList { set; get; }
+        public string GroupKey { set; get; }
+        public string WorklistFormat { get; set; }
+        public string OrderKey { set; get; }
+        public string Include { get; set; }
         public Dictionary<string, string> Attributes { get; set; } = new Dictionary<string, string>();
     }
 }

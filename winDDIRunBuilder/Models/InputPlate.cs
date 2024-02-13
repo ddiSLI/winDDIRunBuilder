@@ -13,8 +13,17 @@ namespace winDDIRunBuilder.Models
         public Pos Start { set; get; }
         public Pos End { set; get; }
         public List<Pos> Exclude { get; set; }
-        public int[] Offset { get; set; } = new int[0];
+        public int Offset { get; set; } 
         public string Direction { set; get; }
+
+        public string SourcePlateId { set; get; }
+
+        public string GroupKey { set; get; }
+
+        public string WorklistFormat { get; set; }
+
+        public string OrderKey { set; get; }
+        public string Include { get; set; }
         public Dictionary<string, string> Attributes = new Dictionary<string, string>();
 
         public class Pos
