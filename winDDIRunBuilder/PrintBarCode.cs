@@ -56,6 +56,10 @@ namespace winDDIRunBuilder
 
             //Point loc = new Point(100, 100);
             Point loc = new Point(60, 20);
+            
+            //testing
+            //Point loc = new Point(0, 20);
+
             e.Graphics.DrawImage(img, loc);
 
             //Show PlateId
@@ -64,6 +68,10 @@ namespace winDDIRunBuilder
             if (pShowReadable)
             {
                 g.DrawString(pBarcode, pPrintFont, br,60, 65);
+
+                //testing
+                //g.DrawString(pBarcode, pPrintFont, br, 0, 65);
+
             }
             //
         }

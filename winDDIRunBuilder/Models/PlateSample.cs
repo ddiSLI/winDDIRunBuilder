@@ -12,6 +12,7 @@ namespace winDDIRunBuilder.Models
         public string PlateId { set; get; }
         public int Sequence { set; get; }
         public string SampleId { set; get; }
+        public string CopiaSampleId { set; get; }
         public string Well { set; get; }
         public string PlateVersion { set; get; }
         public string SourcePlateId { set; get; }
@@ -21,6 +22,7 @@ namespace winDDIRunBuilder.Models
         public string Status { set; get; } = "";
         public string DBTest { set; get; } = "";
         public string ModifiedDate { set; get; } = "";
+        public string ModifiedBy { set; get; } = "";
         public Dictionary<string, string> Attributes { get; set; }
     }
 }

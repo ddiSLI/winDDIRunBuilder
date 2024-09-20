@@ -13,6 +13,9 @@ namespace winDDIRunBuilder
 {
     public class PrinBarCodeZXing
     {
+        public Int16 PrtLblLocLeft { get; set; } = 50;
+        public Int16 PrtLblLocTop { get; set; } = 20;
+
         private string pBarcode;
         private bool pShowReadable;
         public void Print(string barCode, string barPrinterName, bool showReadable = false)
@@ -51,9 +54,14 @@ namespace winDDIRunBuilder
                 Margin=20
             };
 
-            Image img = writer.Write(pBarcode); 
+            Image img = writer.Write(pBarcode);
 
-            Point loc = new Point(50, 20);
+            /////Point loc = new Point(50, 20);
+            Point loc = new Point(PrtLblLocLeft, PrtLblLocTop);
+
+            //Testing 
+            //Point loc = new Point(-20, 20);
+
             e.Graphics.DrawImage(img, loc);
             
         }

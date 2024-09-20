@@ -23,6 +23,8 @@ namespace winDDIRunBuilder.Models
         public bool PlateRotated { set; get; } = false;
         public string StartPos { set; get; }
         public string EndPos { set; get; }
+        public string SeqStart { set; get; }
+        public string SeqEnd { set; get; }
         public string ExcludeWells { set; get; }
         public string Sample { set; get; }
         public string Diluent { set; get; }

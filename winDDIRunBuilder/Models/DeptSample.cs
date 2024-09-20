@@ -16,6 +16,7 @@ namespace winDDIRunBuilder.Models
         public string SampleId { set; get; }
         public string Status { set; get; }
         public int DateRangeMonths { set; get; } = 1;
+        public DateTime StartDate { set; get; }
         public string User { set; get; }
     }
 }

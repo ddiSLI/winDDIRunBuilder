@@ -513,7 +513,7 @@ namespace winDDIRunBuilder
             this.btnGo.Text = "    Go";
             this.btnGo.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnGo.UseVisualStyleBackColor = true;
-            this.btnGo.Click += new System.EventHandler(this.btnGo_Click);
+            this.btnGo.Click += new System.EventHandler(this.BtnGo_Click);
             // 
             // dgvPlateSet
             // 

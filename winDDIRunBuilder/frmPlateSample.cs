@@ -16,6 +16,9 @@ namespace winDDIRunBuilder
     {
         private string CurPlateId { get; set; }
 
+        public Int16 PrtLblLocLeft { get; set; }
+        public Int16 PrtLblLocTop { get; set; }
+
         public frmPlateSample()
         {
             InitializeComponent();
@@ -187,11 +190,12 @@ namespace winDDIRunBuilder
                             barcode = smpRw.Cells["SampleId"].Value.ToString();
 
                             printSampleBarcode = new PrinBarCodeZXing();
+                            printSampleBarcode.PrtLblLocLeft = PrtLblLocLeft;
+                            printSampleBarcode.PrtLblLocTop = PrtLblLocTop;
                             printSampleBarcode.Print(barcode, GetPrinterName());
                         }
                     }
                 }
-
 
             }
             catch (Exception ex)
@@ -241,8 +245,9 @@ namespace winDDIRunBuilder
             this.Close();
         }
 
+        private void btnAddQC_Click(object sender, EventArgs e)
+        {
 
-
-
+        }
     }
 }

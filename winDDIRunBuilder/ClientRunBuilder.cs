@@ -25,6 +25,9 @@ namespace winDDIRunBuilder
         public string PlatePrinterName { get; set; }
         public string BuilReportPlace { get; set; }
         public string BuilReportTemplate { get; set; }
+        public Int16 PrtLblLocLeft { get; set; }
+        public Int16 PrtLblLocTop { get; set; }
+
         public ClientRunBuilder(string processCategory =null)
         {
             RunCondition = ConfigurationManager.AppSettings["RunCondition"];
@@ -62,6 +65,8 @@ namespace winDDIRunBuilder
                 BCROutput = "";
                 RunBuilderOutput = "";
                 RunBuilderOutputArchive = "";
+                PrtLblLocLeft = 1;
+                PrtLblLocTop = 1;
              }
             else
             {
@@ -72,6 +77,8 @@ namespace winDDIRunBuilder
                 RunBuilderOutput = curJanus.FirstOrDefault().RunBuilderOutput;
                 RunBuilderOutputArchive = curJanus.FirstOrDefault().RunBuilderOutputArchive;
                 RunBuilderExport = curJanus.FirstOrDefault().RunBuilderExport;
+                PrtLblLocLeft = curJanus.FirstOrDefault().PrtLocLeft;
+                PrtLblLocTop = curJanus.FirstOrDefault().PrtLocTop;
             }
                         
         }

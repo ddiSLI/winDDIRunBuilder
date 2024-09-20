@@ -66,6 +66,8 @@ namespace winDDIRunBuilder
                             curJanus.RunBuilderExport = rdr["RunBuilderExport"].ToString();
                             curJanus.JanusOutPut = rdr["JanusOutput"].ToString();
                             curJanus.Description = rdr["Description"].ToString();
+                            curJanus.PrtLocLeft = (Int16)rdr["PrtLocLeft"];
+                            curJanus.PrtLocTop = (Int16)rdr["PrtLocTop"];
 
                             allJanus.Add(curJanus);
                         }
@@ -143,6 +145,14 @@ namespace winDDIRunBuilder
                             prot.OrderKey = rdr["OrderKey"] == null ? "" : rdr["OrderKey"].ToString();
                             prot.Include = rdr["Include"] == null ? "" : rdr["Include"].ToString();
                             prot.WorklistFormat = rdr["WorklistFormat"] == null ? "" : rdr["WorklistFormat"].ToString();
+
+                            //testing SCFA-A150
+                            //if (Environment.UserName.ToUpper() == "SLI" && prot.ProtocolName == "SCFA")
+                            //{
+                            //    prot.PlateRotated = true;
+                            //    prot.EndPos = "A150";
+                            //}
+                            //End--testing SCFA-A150
 
                             protocols.Add(prot);
                         }
@@ -808,6 +818,68 @@ namespace winDDIRunBuilder
             return samples;
         }
 
+        public List<PlateSample> GetHistorySamples(string copiaSampleIds, string status="ANY")
+        {
+            List<PlateSample> samples = new List<PlateSample>();
+            PlateSample sample = new PlateSample();
+
+            using (SqlConnection conn = new SqlConnection(CnsSQL))
+            {
+                SqlCommand cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = "uspRunBld_SelHisSamples";
+
+                try
+                {
+                    //copiaSampleIds max has 101 sampleIds
+                    cmd.Parameters.Add("@pSampleIds", SqlDbType.VarChar).Value = copiaSampleIds;
+                    cmd.Parameters.Add("@pStatus", SqlDbType.VarChar).Value = status;
+
+                    conn.Open();
+                    SqlDataReader rdr = cmd.ExecuteReader();
+
+                    // DataTable ss = new DataTable();
+                    //ss.Load(rdr);
+
+
+                    if (rdr.HasRows)
+                    {
+                        while (rdr.Read())
+                        {
+                            sample = new PlateSample();
+                            sample.Id = rdr["Id"].ToString();
+                            sample.PlateId = rdr["PlateId"].ToString();
+                            sample.Well = rdr["Well"].ToString();
+                            sample.SampleId = rdr["SampleId"].ToString();
+                            sample.CopiaSampleId = rdr["CopiaSampleId"].ToString();
+                            sample.PlateVersion = rdr["PlateTimeVersion"].ToString();
+                            sample.SampleType = rdr["SampleType"].ToString();
+                            sample.Status = rdr["Status"].ToString();
+                            sample.DBTest = rdr["Accept"].ToString();
+                            sample.ModifiedDate = rdr["ModifiedDate"].ToString();
+                            sample.ModifiedBy = rdr["ModifiedBy"].ToString();
+                            samples.Add(sample);
+                        }
+                    }
+
+                    rdr.Close();
+                }
+                catch (Exception ex)
+                {
+                    string msgEx = "SQLService.GetHistorySamples() Exception: ";
+                    msgEx += Environment.NewLine;
+                    msgEx += ex.Message;
+                }
+                finally
+                {
+                    conn.Close();
+                }
+            }
+
+            return samples;
+        }
+
+
         public List<ExportFile> GetExportFiles(string range = "ACTIVE")
         {
             List<ExportFile> exports = new List<ExportFile>();
@@ -877,6 +949,11 @@ namespace winDDIRunBuilder
             return exports;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="deptSample"></param>
+        /// <returns></returns>
         public string AddSamples_his(List<OutputPlateSample> outSamples, string user = "")
         {
             string actionResults = "SUCCESS";
@@ -1020,6 +1097,68 @@ namespace winDDIRunBuilder
 
             return actionResults;
         }
+        
+        public List<PlateSample> GetHistorySamples_His(DeptSample deptSample)
+        {
+            List<PlateSample> samples = new List<PlateSample>();
+            PlateSample sample = new PlateSample();
+
+            using (SqlConnection conn = new SqlConnection(CnsSQL))
+            {
+                SqlCommand cmd = conn.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = "uspRunBld_SelHistroySamples";
+
+                try
+                {
+                    cmd.Parameters.Add("@pDept", SqlDbType.VarChar).Value = deptSample.Dept;
+                    cmd.Parameters.Add("@pDBTest", SqlDbType.VarChar).Value = deptSample.DBTest;
+                    cmd.Parameters.Add("@pStatus", SqlDbType.VarChar).Value = deptSample.Status;
+                    cmd.Parameters.Add("@pStartDate", SqlDbType.DateTime).Value = deptSample.StartDate;
+
+                    conn.Open();
+                    SqlDataReader rdr = cmd.ExecuteReader();
+
+                    // DataTable ss = new DataTable();
+                    //ss.Load(rdr);
+
+
+                    if (rdr.HasRows)
+                    {
+                        while (rdr.Read())
+                        {
+                            sample = new PlateSample();
+                            sample.Id = rdr["Id"].ToString();
+                            sample.PlateId = rdr["PlateId"].ToString();
+                            sample.Well = rdr["Well"].ToString();
+                            sample.SampleId = rdr["SampleId"].ToString();
+                            sample.PlateVersion = rdr["PlateTimeVersion"].ToString();
+                            sample.SampleType = rdr["SampleType"].ToString();
+                            sample.Status = rdr["Status"].ToString();
+                            sample.DBTest = rdr["Accept"].ToString();
+                            sample.ModifiedDate = rdr["ModifiedDate"].ToString();
+                            sample.ModifiedBy = rdr["ModifiedBy"].ToString();
+                            samples.Add(sample);
+                        }
+                    }
+
+                    rdr.Close();
+                }
+                catch (Exception ex)
+                {
+                    string msgEx = "SQLService.GetHistorySamples() Exception: ";
+                    msgEx += Environment.NewLine;
+                    msgEx += ex.Message;
+                }
+                finally
+                {
+                    conn.Close();
+                }
+            }
+
+            return samples;
+        }
+
 
     }
 }

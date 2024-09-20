@@ -84,7 +84,7 @@ namespace winDDIRunBuilder
 
                 //"Spillover run in queue".
 
-                string runBuilderVersion = "1.0.0.65";
+                string runBuilderVersion = "1.0.0.68";
                 //var ver = Assembly.GetExecutingAssembly().GetName().Version;
                 //string runBuilderVersion = System.Windows.Forms.Application.pu;
                 //string runBuilderVersion = System.Windows.Forms.Application.ProductVersion;
@@ -361,8 +361,8 @@ namespace winDDIRunBuilder
                                 Sample = pp.Sample,
                                 Diluent = pp.Diluent,
                                 GroupKey = pp.GroupKey,
-                                OrderKey=pp.OrderKey,
-                                Include=pp.Include,
+                                OrderKey = pp.OrderKey,
+                                Include = pp.Include,
                                 WorklistFormat = pp.WorklistFormat
                             };
 
@@ -609,7 +609,7 @@ namespace winDDIRunBuilder
         }
 
 
-        private void btnGo_Click(object sender, EventArgs e)
+        private void BtnGo_Click(object sender, EventArgs e)
         {
             string barcode = "";
             string worklistName = "";
@@ -659,6 +659,8 @@ namespace winDDIRunBuilder
                         if (isNewDestPlate)
                         {
                             printPlateBarcode = new PrinBarCodeZXing();
+                            printPlateBarcode.PrtLblLocLeft = CurRunBuilder.PrtLblLocLeft;
+                            printPlateBarcode.PrtLblLocTop = CurRunBuilder.PrtLblLocTop;
                             printPlateBarcode.Print(barcode, GetPrinterName());
                         }
                         //
@@ -832,7 +834,7 @@ namespace winDDIRunBuilder
                 }
                 else
                 {
-                    var findPlate = ProtocolPlates.Where(pp => pp.DestPlateId.ToUpper()==inputPlate.Name.ToUpper() &&
+                    var findPlate = ProtocolPlates.Where(pp => pp.DestPlateId.ToUpper() == inputPlate.Name.ToUpper() &&
                                                     pp.SourcePlateId.ToUpper() == inputPlate.SourcePlateId.ToUpper()).FirstOrDefault();
                     //var findPlate = ProtocolPlates.Where(pp => string.Compare(pp.DestPlateId.ToUpper(), inputPlate.Name.ToUpper(), true) == 0).FirstOrDefault();
                     plate = new ValidPlate()
@@ -871,7 +873,7 @@ namespace winDDIRunBuilder
                     }
 
                     //If it is new valid Plate, to add it
-                    if (IsNewVaildPlate(plate.PlateId,plate.SourcePlateId))
+                    if (IsNewVaildPlate(plate.PlateId, plate.SourcePlateId))
                     {
                         CurValidPlates.Add(plate);
                     }
@@ -996,7 +998,7 @@ namespace winDDIRunBuilder
 
                             //testing
                             DataTable dtCurVaidPlates = new DataTable();
-                         //   dtCurVaidPlates = ToDataTable(CurValidPlates);
+                            //   dtCurVaidPlates = ToDataTable(CurValidPlates);
 
                             if (validPlate != null)
                             {
@@ -1123,6 +1125,8 @@ namespace winDDIRunBuilder
 
                                             //Print the Plate bar code
                                             printPlateBarcode = new PrinBarCodeZXing();
+                                            printPlateBarcode.PrtLblLocLeft = CurRunBuilder.PrtLblLocLeft;
+                                            printPlateBarcode.PrtLblLocTop = CurRunBuilder.PrtLblLocTop;
                                             printPlateBarcode.Print(dbPlate.PlateId, GetPrinterName());
                                             //
                                         }
@@ -1310,7 +1314,7 @@ namespace winDDIRunBuilder
                             {
 
                                 DataTable dtVaidPlates = new DataTable();
-                              //  dtCurVaidPlates = ToDataTable(CurValidPlates);
+                                //  dtCurVaidPlates = ToDataTable(CurValidPlates);
 
                                 CurValidPlates.Where(p => p.PlateId.ToUpper() == dbPlate.PlateId.ToUpper()).ToList().ForEach(v => v.PlateVersion = dbPlate.PlateVersion);
 
@@ -1374,13 +1378,13 @@ namespace winDDIRunBuilder
                     foreach (var dtoSmp in dtoPrdSamples)
                     {
                         prdSample = new OutputPlateSample();
-                        
+
                         prdSample.SampleId = dtoSmp.SampleId;
 
-                        if(dtoSmp.Attributes.TryGetValue("Alias", out var alias))
+                        if (dtoSmp.Attributes.TryGetValue("Alias", out var alias))
                         {
                             var offset = ((string)alias).IndexOf("X");
-                            if(offset > 0)
+                            if (offset > 0)
                             {
                                 prdSample.SampleId += ((string)alias).Substring(offset);
                             }
@@ -1427,7 +1431,7 @@ namespace winDDIRunBuilder
 
             outPlate.Direction = dbPlate.PlateRotated ? "1" : "0";
 
-            if (dbPlate.Sample !=null && !string.IsNullOrWhiteSpace(dbPlate.Sample))
+            if (dbPlate.Sample != null && !string.IsNullOrWhiteSpace(dbPlate.Sample))
             {
                 outPlate.Attributes.Add("Sample", dbPlate.Sample.ToString());
             }
@@ -1435,7 +1439,7 @@ namespace winDDIRunBuilder
             {
                 outPlate.Attributes.Add("Sample", "");
             }
-            if (dbPlate.Diluent !=null && !string.IsNullOrWhiteSpace(dbPlate.Diluent.ToString()))
+            if (dbPlate.Diluent != null && !string.IsNullOrWhiteSpace(dbPlate.Diluent.ToString()))
             {
                 outPlate.Attributes.Add("Diluent", dbPlate.Diluent.ToString());
             }
@@ -1444,7 +1448,7 @@ namespace winDDIRunBuilder
                 outPlate.Attributes.Add("Diluent", "");
             }
 
-            if (dbPlate.Accept !=null && !string.IsNullOrWhiteSpace(dbPlate.Accept))
+            if (dbPlate.Accept != null && !string.IsNullOrWhiteSpace(dbPlate.Accept))
             {
                 outPlate.Attributes.Add("Accept", dbPlate.Accept.ToString());
             }
@@ -1722,7 +1726,7 @@ namespace winDDIRunBuilder
                 {
                     outSamples = outSamples.OrderBy(ob => int.Parse(ob.SourceWellId)).ToList();
                 }
-                else if(outPlate.Direction=="0")
+                else if (outPlate.Direction == "0")
                 {
                     //outSamples = outSamples.OrderBy(ob => ob.SourceWellId).ToList();
                     outSamples = outSamples.OrderBy(ob => int.Parse(ob.SourceWellId.Substring(1))).ThenBy(ob => ob.SourceWellId.Substring(0, 1)).ToList();
@@ -2294,6 +2298,7 @@ namespace winDDIRunBuilder
             }
         }
 
+
         private void MapSamples(DataTable dtPlateSamples)
         {
             string curWell = "";
@@ -2442,6 +2447,8 @@ namespace winDDIRunBuilder
             if (lblCurPlateId.Text.Trim().Length > 0)
             {
                 PrinBarCodeZXing printPlateBarcode = new PrinBarCodeZXing();
+                printPlateBarcode.PrtLblLocLeft = CurRunBuilder.PrtLblLocLeft;
+                printPlateBarcode.PrtLblLocTop = CurRunBuilder.PrtLblLocTop;
                 printPlateBarcode.Print(lblCurPlateId.Text.Trim(), GetPrinterName());
             }
 
@@ -2531,14 +2538,14 @@ namespace winDDIRunBuilder
             try
             {
 
-                validPlate = GetProductPlate(plateId, plateIdVersion:"");
+                validPlate = GetProductPlate(plateId, plateIdVersion: "");
                 if (validPlate != null)
                 {
                     outSamples = GetProductPlateSamples(validPlate.PlateId, validPlate.PlateVersion);
                     if (outSamples != null && outSamples.Count > 0)
                     {
                         this.Size = new Size(1280, 848);
-                                                
+
                         lblMsg.ForeColor = Color.Navy;
                         lblMsg.Text = "The history plate, " + plateId + " , has following sample(s).";
 
@@ -2579,12 +2586,12 @@ namespace winDDIRunBuilder
             return mapResult;
         }
 
-        private ValidPlate GetProductPlate(string plateId, string plateIdVersion="")
+        private ValidPlate GetProductPlate(string plateId, string plateIdVersion = "")
         {
             ValidPlate validPlate = new ValidPlate();
             RepoSQL sqlService = new RepoSQL();
             List<DBPlate> anyDBPlates = new List<DBPlate>();
-            
+
             ModelTransfer tranService = new ModelTransfer();
             ScannedDBPalte = new DBPlate();
 
@@ -2609,7 +2616,7 @@ namespace winDDIRunBuilder
         }
 
 
-        private List<OutputPlateSample> GetProductPlateSamples(string plateId, string plateIdVersion="")
+        private List<OutputPlateSample> GetProductPlateSamples(string plateId, string plateIdVersion = "")
         {
             List<OutputPlateSample> outSamples = new List<OutputPlateSample>();
             RepoSQL sqlService = new RepoSQL();
@@ -2896,14 +2903,14 @@ namespace winDDIRunBuilder
             {
                 //var vaildPlates = CurValidPlates.Where(p => p.SourcePlateId.ToUpper() == sourcePlateId.ToUpper() &&
                 //                                        (p.PlateId.ToUpper() == destPlateId.ToUpper()));
-                
+
                 var vaildPlateSource = CurValidPlates.Where(p => (p.SourcePlateId.ToUpper() == sourcePlateId.ToUpper()) ||
                                                         (p.PlateId.ToUpper() == sourcePlateId.ToUpper())
-                                                       
+
                                                       );
 
                 var vaildPlateDest = CurValidPlates.Where(p => (p.SourcePlateId.ToUpper() == destPlateId.ToUpper()) ||
-                                                        (p.PlateId.ToUpper() == destPlateId.ToUpper()) 
+                                                        (p.PlateId.ToUpper() == destPlateId.ToUpper())
                                                       );
 
 
@@ -2945,7 +2952,7 @@ namespace winDDIRunBuilder
                     csvName = Path.GetFileNameWithoutExtension(csvFiles.FirstOrDefault()).ToUpper();
 
                     //archive the source BCR
-                    File.Copy(CurRunBuilder.BCROutput+ csvFullName, CurRunBuilder.BCRArchive+ csvName +"_"+ DateTime.Now.ToString("yyMMddHHmm") + ".CSV", true);
+                    File.Copy(CurRunBuilder.BCROutput + csvFullName, CurRunBuilder.BCRArchive + csvName + "_" + DateTime.Now.ToString("yyMMddHHmm") + ".CSV", true);
 
                     foreach (DataGridViewRow rwPlate in dgvPlateSet.Rows)
                     {
@@ -3055,11 +3062,15 @@ namespace winDDIRunBuilder
                                     rwPlate.Cells["CurWorkList"].Value = "";
                                     rwPlate.Cells["PlateDesc"].Value = "There is no Worklist-samples";
                                     rwPlate.Cells["wlReady"].Value = false;
+                                    rwPlate.Cells["Included"].Value = false;
                                 }
 
-                                //process BCR plates
-                                DataTable dtWorklistSamples = new DataTable();
-                            //    dtWorklistSamples = ToDataTable(OutPlateSamples);
+                                //testing using process BCR plates
+                                if (Environment.UserName.ToUpper() == "SLI")
+                                {
+                                    DataTable dtWorklistSamples = new DataTable();
+                                    dtWorklistSamples = ToDataTable(OutPlateSamples);
+                                }
 
                             }
                         }
@@ -3119,8 +3130,23 @@ namespace winDDIRunBuilder
                 //var newdtoWorklist = dtoWorklist.GroupBy(g => g.DestWellId).Where(w=>w.Key !=null).ToList();
                 //
 
+                //testing using process BCR plates
+                if (Environment.UserName.ToUpper() == "SLI")
+                {
+                    DataTable dtWorklistSamples = new DataTable();
+                    dtWorklistSamples = ToDataTable(dtoWorklist);
+                }
+
                 //Check returned worklist
                 dtoWorklist = ValidateWorklist(dtoWorklist).ToList();
+
+                //testing using process BCR plates
+                if (Environment.UserName.ToUpper() == "SLI")
+                {
+                    DataTable dtWorklistSamples = new DataTable();
+                    dtWorklistSamples = ToDataTable(dtoWorklist);
+                }
+
 
                 if (!string.IsNullOrEmpty(backService.ErrMsg))
                 {
@@ -3157,7 +3183,7 @@ namespace winDDIRunBuilder
                 if (IsNewVaildPlate(destPlate.Name, destPlate.SourcePlateId))
                 {
                     hasDestPlate = backService.CreatePlate(destPlate);
-                    CurValidPlates.Where(pl => pl.PlateId.ToUpper() == destPlateId.ToUpper()).ToList().ForEach(s=>s.SourcePlateId= sourcePlateId);
+                    CurValidPlates.Where(pl => pl.PlateId.ToUpper() == destPlateId.ToUpper()).ToList().ForEach(s => s.SourcePlateId = sourcePlateId);
                 }
                 else
                 {
@@ -3179,8 +3205,23 @@ namespace winDDIRunBuilder
                     //Create worklist
                     dtoWorklist = (List<DtoWorklist>)backService.GetWorklist(sourcePlateId, destPlate.Name, GetScheduleOptions(desPlate));
 
+                    //testing using process BCR plates
+                    if (Environment.UserName.ToUpper() == "SLI")
+                    {
+                        DataTable dtWorklistSamples = new DataTable();
+                        dtWorklistSamples = ToDataTable(dtoWorklist);
+                    }
+
                     //check returned worklist
                     dtoWorklist = ValidateWorklist(dtoWorklist).ToList();
+
+                    //testing using process BCR plates
+                    if (Environment.UserName.ToUpper() == "SLI")
+                    {
+                        DataTable dtWorklistSamples = new DataTable();
+                        dtWorklistSamples = ToDataTable(dtoWorklist);
+                    }
+
                 }
 
                 if (!string.IsNullOrEmpty(backService.ErrMsg))
@@ -3224,7 +3265,7 @@ namespace winDDIRunBuilder
                     }
 
                     DataTable dtCurPlates = new DataTable();
-                 //   dtCurPlates = ToDataTable(CurValidPlates);
+                    //   dtCurPlates = ToDataTable(CurValidPlates);
 
                     if (included && sourcePlateId != "BCR" + CurUniqueId)
                     {
@@ -3259,7 +3300,7 @@ namespace winDDIRunBuilder
 
                         if (plateProcessResult == "SUCCESS")
                         {
-                           // rwPlate.Cells["CurWorkList"].Value = destPlateId.Substring(0, destPlateId.Length - CurUniqueId.Length) + ".csv";
+                            // rwPlate.Cells["CurWorkList"].Value = destPlateId.Substring(0, destPlateId.Length - CurUniqueId.Length) + ".csv";
                             rwPlate.Cells["PlateDesc"].Value = "Worklist is ready to create";
                             rwPlate.Cells["wlReady"].Value = true;
                             rwPlate.DefaultCellStyle.BackColor = Color.LightGreen;
@@ -3270,11 +3311,12 @@ namespace winDDIRunBuilder
                             rwPlate.Cells["CurWorkList"].Value = "";
                             rwPlate.Cells["PlateDesc"].Value = "There is no Worklist-samples";
                             rwPlate.Cells["wlReady"].Value = false;
+                            rwPlate.Cells["Included"].Value = false;
                         }
 
                         //process non-BCR plates
                         DataTable dtWorklistSamples = new DataTable();
-                    //    dtWorklistSamples = ToDataTable(OutPlateSamples);
+                        //    dtWorklistSamples = ToDataTable(OutPlateSamples);
 
                     }
                 }
@@ -3309,9 +3351,17 @@ namespace winDDIRunBuilder
             //Process New Dest Plate
             if (findPlate.IsNewCreatedPlate)
             {
-                
+
 
                 dtoWorklist = ProcessNewDestPlate(sourcePlateId, destPlateId);
+
+                //testing using process BCR plates
+                if (Environment.UserName.ToUpper() == "SLI")
+                {
+                    DataTable dtWorklistSamples = new DataTable();
+                    dtWorklistSamples = ToDataTable(dtoWorklist);
+                }
+
                 if (dtoWorklist != null && dtoWorklist.Count > 0)
                 {
                     if (AddPlateNewSamples(dtoWorklist, destPlateId) == "SUCCESS")
@@ -3572,8 +3622,8 @@ namespace winDDIRunBuilder
 
             try
             {
-                wlSourcePlateId = outWorklist.Where(p=> p.SourcePlateId != null).FirstOrDefault().SourcePlateId;
-                OutPlateSamples.RemoveAll(osp => osp.DestPlateId == destPlateId && osp.SourcePlateId== wlSourcePlateId);
+                wlSourcePlateId = outWorklist.Where(p => p.SourcePlateId != null).FirstOrDefault().SourcePlateId;
+                OutPlateSamples.RemoveAll(osp => osp.DestPlateId == destPlateId && osp.SourcePlateId == wlSourcePlateId);
 
                 foreach (var smp in outWorklist)
                 {
@@ -3947,12 +3997,14 @@ namespace winDDIRunBuilder
 
                 if (dgvPlateSet != null && dgvPlateSet.Rows.Count > 0)
                 {
-                    foreach (DataGridViewRow grw in dgvPlateSet.Rows)
-                    {
 
-                        if (Convert.ToBoolean(grw.Cells["Included"].Value) && string.IsNullOrEmpty(grw.Cells["CurWorkList"].Value.ToString()))
-                            ready2Go = false;
-                    }
+                    //09/12/2024 stopped this rule
+                    //foreach (DataGridViewRow grw in dgvPlateSet.Rows)
+                    //{
+                    //    if (Convert.ToBoolean(grw.Cells["Included"].Value) && string.IsNullOrEmpty(grw.Cells["CurWorkList"].Value.ToString()))
+                    //        ready2Go = false;
+                    //}
+
 
                     if (ready2Go)
                     {
@@ -4232,6 +4284,8 @@ namespace winDDIRunBuilder
             {
                 barCode = txbManualPlateId.Text.Trim();
                 PrinBarCodeZXing printPlateBarcode = new PrinBarCodeZXing();
+                printPlateBarcode.PrtLblLocLeft = CurRunBuilder.PrtLblLocLeft;
+                printPlateBarcode.PrtLblLocTop = CurRunBuilder.PrtLblLocTop;
                 printPlateBarcode.Print(barCode, GetPrinterName());
             }
 
@@ -4339,6 +4393,8 @@ namespace winDDIRunBuilder
         {
             try
             {
+                btnSampleStatus.Enabled = false;
+
                 //Check Initial
                 if (string.IsNullOrEmpty(pInitial))
                 {
@@ -4351,6 +4407,8 @@ namespace winDDIRunBuilder
                 sampleStatus.AllProtocols = pProtocol;
                 sampleStatus.CurUser = pCurUser;
                 sampleStatus.ShowDialog();
+
+                btnSampleStatus.Enabled = true;
 
             }
             catch (Exception ex)
@@ -4650,7 +4708,192 @@ namespace winDDIRunBuilder
             }
         }
 
+        private void btnPlateSample_Click(object sender, EventArgs e)
+        {
+            frmPlateSample plateSamples = new frmPlateSample();
+            plateSamples.PrtLblLocLeft = CurRunBuilder.PrtLblLocLeft;
+            plateSamples.PrtLblLocTop = CurRunBuilder.PrtLblLocTop;
+            plateSamples.ShowDialog();
+        }
 
+        private void SequenceRevisePlateSamples(ValidPlate outPlate, List<OutputPlateSample> plateSamples)
+        {
+            string issues = "";
+            string[] wellIds;
+
+            try
+            {
+                int sizeX = 1;
+                int sizeY;
+
+                int sizeEndX = 4;
+                int sizeEndY = 100;
+
+                Char sizeStartY = char.Parse(outPlate.SizeStartWell[0].ToString());
+                int sizeStartX = Convert.ToInt32(outPlate.SizeStartWell.Substring(1));
+                //Char sizeEndY = char.Parse(outPlate.SizeEndWell[0].ToString());
+                //int sizeEndX = Convert.ToInt32(outPlate.SizeEndWell.Substring(1));
+
+                Char posStartY = char.Parse(outPlate.StartWell[0].ToString());
+                int posStartX = Convert.ToInt32(outPlate.StartWell.Substring(1));
+                char posEndY = char.Parse(outPlate.EndWell[0].ToString());
+                int posEndX = Convert.ToInt32(outPlate.EndWell.Substring(1));
+
+                DataTable dtPlateSamples = new DataTable();
+                string destWellId = "";
+                int wellX = 0;
+                int wellY = 0;
+
+                //adding columns, plateSizeX  
+                dtPlateSamples.Columns.Add("Order");
+                dtPlateSamples.Columns.Add("Well");
+                dtPlateSamples.Columns.Add("SampleId");
+                dtPlateSamples.Columns.Add("Action");
+
+                //adding rows, plateSizeY
+                DataRow drPlate = dtPlateSamples.NewRow();
+                for (int py = 0; py <= sizeEndY; py++)
+                {
+                    drPlate = dtPlateSamples.NewRow();
+                    drPlate[0] = py.ToString().Trim(); ;
+                    dtPlateSamples.Rows.Add(drPlate);
+                }
+
+                foreach (var smp in plateSamples)
+                {
+                    //(99,0) or (99)
+                    wellIds = smp.DestWellId.Split(',');
+                    destWellId = wellIds[0];
+
+                    wellX = 0;
+                    wellY = Convert.ToInt16(destWellId);
+
+                    if (wellY < sizeEndY)
+                    {
+                        if (string.IsNullOrEmpty(smp.Status) && string.IsNullOrEmpty(smp.SampleType))
+                        {
+                            dtPlateSamples.Rows[wellY]["Well"] = wellY.ToString().Trim();
+                            dtPlateSamples.Rows[wellY]["SampleId"] = smp.SampleId;
+                        }
+                        else if (!string.IsNullOrEmpty(smp.Status) && smp.Status == "REJECT")
+                        {
+                            dtPlateSamples.Rows[wellY]["SampleId"] = "REJ_" + smp.SampleId;
+                        }
+                        else if (smp.SampleType.IndexOf("QC") >= 0)
+                        {
+                            dtPlateSamples.Rows[wellY]["SampleId"] = "QC_" + smp.SampleId;
+                        }
+                    }
+                    else
+                    {
+                        issues += "Well is Over PlateSize";
+                        issues += Environment.NewLine;
+                    }
+
+                }
+
+                //SequenceMapSamples(dtPlateSamples);
+
+            }
+            catch (Exception ex)
+            {
+                string errMsg = ex.Message;
+            }
+        }
+
+        private void SequenceMapSamples(DataTable dtPlateSamples)
+        {
+            string curWell = "";
+            string smpItem = "";
+
+            try
+            {
+                dgvSamplePlate.Rows.Clear();
+                dgvSamplePlate.Columns.Clear();
+                dgvSamplePlate.Refresh();
+
+                dgvSamplePlate.RowsDefaultCellStyle.Font = new Font("Microsoft Sans Serif", 7);
+
+                if (dtPlateSamples != null && dtPlateSamples.Rows.Count > 0)
+                {
+                    foreach (DataColumn col in dtPlateSamples.Columns)
+                    {
+                        if (col.ColumnName == "0")
+                        {
+                            DataGridViewTextBoxColumn dgvCol = new DataGridViewTextBoxColumn();
+                            dgvCol.Name = col.ColumnName;
+                            dgvCol.Width = 28;
+                            dgvSamplePlate.Columns.Add(dgvCol);
+                        }
+                        else
+                        {
+                            DataGridViewButtonColumn dgvBtn = new DataGridViewButtonColumn();
+                            dgvBtn.Name = col.ColumnName;
+                            dgvBtn.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+                            dgvBtn.Width = 128;     //70
+                            dgvSamplePlate.Columns.Add(dgvBtn);
+                        }
+                    }
+
+                    dgvSamplePlate.RowTemplate.Height = 50;
+                    foreach (DataRow tRw in dtPlateSamples.Rows)
+                    {
+                        dgvSamplePlate.Rows.Add();
+                        for (int tCol = 0; tCol < dtPlateSamples.Columns.Count; tCol++)
+                        {
+                            smpItem = tRw[tCol].ToString().Trim();
+
+                            if (tCol == 0)
+                            {
+                                dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Value = smpItem;
+                            }
+                            else
+                            {
+                                dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Value = smpItem;
+
+                                //Put info to Tag
+                                if (tRw[tCol] == null)
+                                {
+                                    dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Tag = "Empty Sample";
+                                }
+                                else
+                                {
+                                    curWell = dgvSamplePlate[0, dgvSamplePlate.RowCount - 1].Value.ToString();
+                                    curWell += dgvSamplePlate.Columns[tCol].Name;
+                                    dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Tag = "Well is " + curWell;
+                                }
+                            }
+
+                            //Set sample color
+                            if (dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Value.ToString().Length > 2)
+                            {
+                                if (dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Value.ToString().IndexOf("QC") >= 0)
+                                {
+                                    dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Style.BackColor = Color.Yellow;
+                                }
+                                else if (dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Value.ToString().IndexOf("REJ") >= 0)
+                                {
+                                    dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Style.BackColor = Color.HotPink;
+                                }
+                                else
+                                {
+                                    dgvSamplePlate[tCol, dgvSamplePlate.RowCount - 1].Style.BackColor = Color.LightGray;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                string errMsg = "SequenceMapSamples() met errors: ";
+                errMsg += ex.Message;
+                lblMsg.Text = errMsg;
+
+            }
+        }
+
+        //History--------------------------------- 
         public string WriteWorklist2_his(List<OutputPlateSample> outSamples, OutputPlate outPlate)
         {
             string actionResult = "NA";
@@ -4757,7 +5000,6 @@ namespace winDDIRunBuilder
 
             return actionResult;
         }
-
         private string GetMapAnyPlateSamples_His(string plateId)
         {
             string mapResult = "NO-SAMPLES";
@@ -4852,12 +5094,6 @@ namespace winDDIRunBuilder
             }
 
             return mapResult;
-        }
-
-        private void btnPlateSample_Click(object sender, EventArgs e)
-        {
-            frmPlateSample plateSamples = new frmPlateSample();
-            plateSamples.ShowDialog();
         }
     }
 }

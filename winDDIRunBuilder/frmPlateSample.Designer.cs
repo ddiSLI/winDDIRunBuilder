@@ -299,6 +299,7 @@ namespace winDDIRunBuilder
             this.btnAddQC.Text = "Get Samples From File";
             this.btnAddQC.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnAddQC.UseVisualStyleBackColor = true;
+            this.btnAddQC.Click += new System.EventHandler(this.btnAddQC_Click);
             // 
             // btnCheckAll
             // 

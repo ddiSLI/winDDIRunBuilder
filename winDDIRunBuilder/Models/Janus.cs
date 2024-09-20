@@ -19,5 +19,8 @@ namespace winDDIRunBuilder.Models
         public string RunBuilderExport { set; get; }
         public string JanusOutPut { set; get; }
         public string Description { set; get; }
+        public Int16 PrtLocLeft { set; get; }
+        public Int16 PrtLocTop { set; get; }
+
     }
 }

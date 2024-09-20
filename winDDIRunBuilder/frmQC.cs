@@ -41,6 +41,8 @@ namespace winDDIRunBuilder
 
         private bool pHasQC = false;
 
+        private bool pFrmLoaded = false;
+
         public frmQC()
         {
             InitializeComponent();
@@ -115,11 +117,12 @@ namespace winDDIRunBuilder
                 cmbAssay.SelectedItem = CurDBPlate.PlateName;
 
                 cbExportFormat.SelectedIndex = 0;
+
+                pFrmLoaded = true;
             }
             catch (Exception ex)
             {
                 string msgErr = ex.Message;
-
 
             }
 
@@ -132,12 +135,27 @@ namespace winDDIRunBuilder
 
             try
             {
-                string qcPlate = cmbAssay.SelectedItem.ToString();
+                string qcPlate = "";
                 List<QCSample> qcSamples = new List<QCSample>();
                 MapPlateSamples mapPlateSamples = new MapPlateSamples();
                 DataTable dtPlateSamples = new DataTable();
 
-                if (!string.IsNullOrEmpty(PlateId) && !string.IsNullOrEmpty(qcPlate))
+                if(string.IsNullOrEmpty(txbPlateId.Text.Trim()))
+                {
+                    PlateId = "";
+                }
+                else if (txbPlateId.Text.Trim() != PlateId)
+                {
+                    PlateId = txbPlateId.Text.Trim();
+                }
+
+                if(cmbAssay.SelectedItem != null)
+                {
+                    qcPlate = cmbAssay.SelectedItem.ToString();
+                }
+
+                // (07/05/2024)-directly buid report
+                if (!string.IsNullOrEmpty(PlateId) )
                 {
                     mapPlateSamples.GetMapAnyPlateSamples(PlateId);
                     dtPlateSamples = mapPlateSamples.PlateSampleMapTable;
@@ -145,11 +163,28 @@ namespace winDDIRunBuilder
 
                     MapSamples(dtPlateSamples);
                     lastSampleWell = mapPlateSamples.LastSampleWell;
+                }
 
+                // (07/05/2024)-directly buid report
+                if (!string.IsNullOrEmpty(PlateId) && !string.IsNullOrEmpty(qcPlate))
+                {
                     qcSamples = sqlService.GetQCSamples(qcPlate);
                     LoadQCSamples(qcSamples, lastSampleWell);
-
                 }
+
+                // (07/05/2024)
+                ////if (!string.IsNullOrEmpty(PlateId) && !string.IsNullOrEmpty(qcPlate))
+                ////{
+                ////    mapPlateSamples.GetMapAnyPlateSamples(PlateId);
+                ////    dtPlateSamples = mapPlateSamples.PlateSampleMapTable;
+                ////    PlateSamples = mapPlateSamples.ScannedDBPlateSamples;
+
+                ////    MapSamples(dtPlateSamples);
+                ////    lastSampleWell = mapPlateSamples.LastSampleWell;
+
+                ////    qcSamples = sqlService.GetQCSamples(qcPlate);
+                ////    LoadQCSamples(qcSamples, lastSampleWell);
+                ////}
 
                 if (pHasQC)
                 {
@@ -174,7 +209,6 @@ namespace winDDIRunBuilder
 
                 lblMsg.ForeColor = Color.Red;
                 lblMsg.Text = errMsg;
-
             }
 
         }
@@ -1393,17 +1427,26 @@ namespace winDDIRunBuilder
             List<OutputPlateSample> qcSamples = new List<OutputPlateSample>();
             RepoSQL sqlService = new RepoSQL();
 
+            bool isDirectReport = false;
+
             try
             {
-                if(txbPlateId.Text.Trim().Length <5 || cmbAssay.SelectedItem.ToString().Length < 2)
+                //(07/05/2024) dirctly biuld report
+                if (dgvSamplePlate !=null && dgvSamplePlate.Rows.Count > 2)
                 {
-                    lblMsg.ForeColor = Color.Red;
-                    lblMsg.Text = "There is no plate or Assay.";
-                    
-                    return;
-                }
+                    //Collect QCSamples for upinsert
+                    qcSamples = MakeQCSamples();
 
-                if (dgvSamplePlate ==null || dgvSamplePlate.Rows.Count <= 2)
+                    if (qcSamples == null || qcSamples.Count == 0)
+                    {
+                        isDirectReport = true;
+                    }
+                    else
+                    {
+                        isDirectReport = false;
+                    }
+                }
+                else
                 {
                     lblMsg.ForeColor = Color.Red;
                     lblMsg.Text = "There is no sample.";
@@ -1412,35 +1455,57 @@ namespace winDDIRunBuilder
                 }
 
 
-                //Collect plateSamples for export
-                //rawQCSamples = MakePlateQCSamples();
+                //(07/05/2024) dirctly biuld report
+                //if(txbPlateId.Text.Trim().Length <5 || cmbAssay.SelectedItem.ToString().Length < 2)
+                //{
+                //    lblMsg.ForeColor = Color.Red;
+                //    lblMsg.Text = "There is no plate or Assay.";
 
-                //Collect QCSamples for upinsert
-                qcSamples = MakeQCSamples();
+                //    return;
+                //}
+                //if (dgvSamplePlate ==null || dgvSamplePlate.Rows.Count <= 2)
+                //{
+                //    lblMsg.ForeColor = Color.Red;
+                //    lblMsg.Text = "There is no sample.";
 
-                if (HisQCSamples != null && HisQCSamples.Count > 0)
+                //    return;
+                //}
+
+
+                //Collect plateSamples for export       //
+                //rawQCSamples = MakePlateQCSamples();  //
+
+
+                //(07/05/2024) dirctly biuld report
+                ////Collect QCSamples for upinsert
+                //qcSamples = MakeQCSamples();
+
+                if (!isDirectReport)
                 {
-                    foreach (var hisQC in HisQCSamples)
+                    if (HisQCSamples != null && HisQCSamples.Count > 0)
                     {
-                        qcSamples.RemoveAll(qc => qc.SampleId == hisQC.SampleId);
+                        foreach (var hisQC in HisQCSamples)
+                        {
+                            qcSamples.RemoveAll(qc => qc.SampleId == hisQC.SampleId);
+                        }
                     }
-                }
+
+                    //Add QC samples
+                    if (qcSamples != null && qcSamples.Count > 0)
+                        resultSaveSample = sqlService.AddSamples(qcSamples, Environment.UserName);
+                    //resultSaveSample = sqlService.AddPlateQCSamples(rawQCSamples, Environment.UserName);
 
 
-                //Add QC samples
-                if (qcSamples != null && qcSamples.Count > 0)
-                    resultSaveSample = sqlService.AddSamples(qcSamples, Environment.UserName);
-                //resultSaveSample = sqlService.AddPlateQCSamples(rawQCSamples, Environment.UserName);
-
-
-                if (pHasQC == false)
-                {
-                    //Update Plate Status
-                    if (resultSaveSample == "SUCCESS")
+                    if (pHasQC == false)
                     {
-                        resultUpdPlate = sqlService.UpdatePlateQC(CurDBPlate.PlateId, CurDBPlate.PlateVersion, hasQC: true, Environment.UserName);
+                        //Update Plate Status
+                        if (resultSaveSample == "SUCCESS")
+                        {
+                            resultUpdPlate = sqlService.UpdatePlateQC(CurDBPlate.PlateId, CurDBPlate.PlateVersion, hasQC: true, Environment.UserName);
+                        }
                     }
-                }
+                }   //End-if(!isDirectReport)
+
 
                 //Build report
                 if (BuildReport() == "SUCCESS")
@@ -1472,6 +1537,8 @@ namespace winDDIRunBuilder
 
             List<string[]> headerRow = new List<string[]>();
             List<string[]> sampleRow = new List<string[]>();
+
+            bool gotoBuildRpt = false;
 
             try
             {
@@ -1517,66 +1584,69 @@ namespace winDDIRunBuilder
                         //Get the path of specified file
                         sourceFilePath = openFileDialog.FileName;
                         File.Copy(sourceFilePath, destFilePath, true);
+                        gotoBuildRpt = true;
                     }
                 }
 
-                ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
-                using (ExcelPackage package = new ExcelPackage(new FileInfo(destFilePath)))
+                if (gotoBuildRpt)
                 {
-                    ExcelWorksheet worksheet = package.Workbook.Worksheets["Dump"];
-
-                    worksheet.Cells[sheetRow, 1].LoadFromArrays(headerRow);
-
-                    sheetRow += 1;
-                    foreach (var smp in rawQCSamples)
+                    ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
+                    using (ExcelPackage package = new ExcelPackage(new FileInfo(destFilePath)))
                     {
-                        sampleRow = new List<string[]>();
+                        ExcelWorksheet worksheet = package.Workbook.Worksheets["Dump"];
 
-                        var sampleAttrs = worklistformat.Select(x =>
-                        {
-                            var sampleAttributes = new Dictionary<string, string>(smp.Attributes, StringComparer.OrdinalIgnoreCase);
+                        worksheet.Cells[sheetRow, 1].LoadFromArrays(headerRow);
 
-                            var prop = smp.GetType().GetProperty(x.Value, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
-
-                            if (prop != null)
-                            {
-                                return prop.GetValue(smp).ToString();
-                            }
-                            else if (sampleAttributes.TryGetValue(x.Key, out var attr2))
-                            {
-                                return attr2;
-                            }
-                            else
-                            {
-                                return "";
-                            }
-                        }).ToArray();
-
-                        sampleRow.Add(sampleAttrs);
-
-                        worksheet.Cells[sheetRow, 1].LoadFromArrays(sampleRow);
                         sheetRow += 1;
+                        foreach (var smp in rawQCSamples)
+                        {
+                            sampleRow = new List<string[]>();
+
+                            var sampleAttrs = worklistformat.Select(x =>
+                            {
+                                var sampleAttributes = new Dictionary<string, string>(smp.Attributes, StringComparer.OrdinalIgnoreCase);
+
+                                var prop = smp.GetType().GetProperty(x.Value, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+
+                                if (prop != null)
+                                {
+                                    return prop.GetValue(smp).ToString();
+                                }
+                                else if (sampleAttributes.TryGetValue(x.Key, out var attr2))
+                                {
+                                    return attr2;
+                                }
+                                else
+                                {
+                                    return "";
+                                }
+                            }).ToArray();
+
+                            sampleRow.Add(sampleAttrs);
+
+                            worksheet.Cells[sheetRow, 1].LoadFromArrays(sampleRow);
+                            sheetRow += 1;
+                        }
+
+                        package.Save();
+
+                        //open the file
+                        FileInfo fi = new FileInfo(destFilePath);
+                        if (fi.Exists)
+                        {
+                            System.Diagnostics.Process.Start(destFilePath);
+                        }
+                        else
+                        {
+                            lblMsg.ForeColor = Color.Red;
+                            lblMsg.Text = "There is not this file: " + destFilePath;
+
+                            return "Cannot find the file.";
+                        }
+
+                        resutlt = "SUCCESS";
                     }
-
-                    package.Save();
-
-                    //open the file
-                    FileInfo fi = new FileInfo(destFilePath);
-                    if (fi.Exists)
-                    {
-                        System.Diagnostics.Process.Start(destFilePath);
-                    }
-                    else
-                    {
-                        lblMsg.ForeColor = Color.Red;
-                        lblMsg.Text = "There is not this file: "+ destFilePath;
-                        
-                        return "Cannot find the file." ;
-                    }
-
-
-                    resutlt = "SUCCESS";
-                }
+                }   //End-if(gotoBuildRpt)
             }
             catch (Exception ex)
             {
@@ -1591,8 +1661,7 @@ namespace winDDIRunBuilder
 
             return resutlt;
         }
-
-
+        
     }
 
 

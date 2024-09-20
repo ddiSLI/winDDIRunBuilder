@@ -40,8 +40,6 @@ namespace winDDIRunBuilder
 
         }
 
-
-
         public class DtoSample
         {
             public string ShortId { get; set; }
@@ -105,9 +103,42 @@ namespace winDDIRunBuilder
             public string Opt4 { set; get; }
             public string Opt5 { set; get; }
         }
+
+        public class DtoCopiaDBTest
+        {
+            public int count { get; set; }
+            public List<DBtestItem> items { get; set; }
+        }
+        public class DBtestItem
+        {
+            public string abbreviation { get; set; }
+            public string name { get; set; }
+        }
+
+        public class DtoCopiaSampleCount
+        {
+            public int count { get; set; }
+            public List<object> items { get; set; }
+        }
+
+        public class DtoCopiaBase
+        {
+            public int count { get; set; }
+            public List<Item> items { get; set; }
+        }
+
+        public class Item
+        {
+            public DateTime createStamp { get; set; }
+            public string labFillerOrderNumber { get; set; }
+            public string labPanelCode { get; set; }
+            public int status { get; set; }
+        }
+
         private readonly RestClient _DDIBatchClient;
         private readonly string _endpointResourceDDIBatch;
-
+        private readonly string _copiaSamplesResource;
+        private readonly string _copiaDBTestsResource;
 
         public ClientBackend(string processType = null)
         {
@@ -118,8 +149,10 @@ namespace winDDIRunBuilder
 
             if (runCondition == "PROD")
             {
-                endpointUrlDDIBatch = ConfigurationManager.AppSettings["DDIBatchClient_endpointUrl_Dev"];
-                endpointPortDDIBatch = ConfigurationManager.AppSettings["DDIBatchClient_endpointPort_Dev"];
+                endpointUrlDDIBatch = ConfigurationManager.AppSettings["DDIBatchClient_endpointUrl_Prod"];
+                endpointPortDDIBatch = ConfigurationManager.AppSettings["DDIBatchClient_endpointPort_Prod"];
+                _copiaSamplesResource = ConfigurationManager.AppSettings["CopiaSamples_endpointResource_Prod"];
+                _copiaDBTestsResource = ConfigurationManager.AppSettings["CopiaDBTests_endpointResource_Prod"];
 
                 if (string.IsNullOrEmpty(processType))
                 {
@@ -130,6 +163,8 @@ namespace winDDIRunBuilder
             {
                 endpointUrlDDIBatch = ConfigurationManager.AppSettings["DDIBatchClient_endpointUrl_Dev"];
                 endpointPortDDIBatch = ConfigurationManager.AppSettings["DDIBatchClient_endpointPort_Dev"];
+                _copiaSamplesResource = ConfigurationManager.AppSettings["CopiaSamples_endpointResource_Dev"];
+                _copiaDBTestsResource = ConfigurationManager.AppSettings["CopiaDBTests_endpointResource_Dev"];
 
                 if (string.IsNullOrEmpty(processType))
                 {
@@ -257,26 +292,40 @@ namespace winDDIRunBuilder
 
                     if (string.IsNullOrWhiteSpace(inSampleId) != true)
                     {
-                        if (inSampleId.IndexOf("X", StringComparison.OrdinalIgnoreCase) > 0)
+                        if (!char.IsDigit(inSampleId[0]) &&
+                            inSampleId.Substring(inSampleId.Length - 2).ToUpper() == "SA" &&
+                            inSampleId.IndexOf("-") < 0)
                         {
-                            inSampleId = inSampleId.Substring(0, inSampleId.IndexOf("X", StringComparison.OrdinalIgnoreCase));
-                        }
-
-                        var match = Regex.Match(inSampleId, ".?([0-9]{6}-[0-9]{4}-[0-9]{1,2}).*", RegexOptions.None);
-                        if (match.Success)
-                        {
-                            inSampleId = match.Value;
+                            //Sapphire samples
+                            inSampleId = $"{inSampleId.Substring(0, 7)}" +
+                                $"-{inSampleId.Substring(7, 4)}" +
+                                $"-{inSampleId.Substring(11, 1)}" +
+                                $"-{inSampleId.Substring(12, 2)}" +
+                                $"-{inSampleId.Substring(14)}";
                         }
                         else
                         {
-                            match = Regex.Match(inSampleId, "([0-9]{6})([0-9]{4})([0-9]{1,2})", RegexOptions.None);
+                            if (inSampleId.IndexOf("X", StringComparison.OrdinalIgnoreCase) > 0)
+                            {
+                                inSampleId = inSampleId.Substring(0, inSampleId.IndexOf("X", StringComparison.OrdinalIgnoreCase));
+                            }
+
+                            var match = Regex.Match(inSampleId, ".?([0-9]{6}-[0-9]{4}-[0-9]{1,2}).*", RegexOptions.None);
                             if (match.Success)
                             {
-                                inSampleId = $"{match.Groups[1].Value}-{match.Groups[2].Value}-{match.Groups[3].Value}";
+                                inSampleId = match.Value;
                             }
                             else
                             {
-                                inSample.Add(inSampleId, "i");
+                                match = Regex.Match(inSampleId, "([0-9]{6})([0-9]{4})([0-9]{1,2})", RegexOptions.None);
+                                if (match.Success)
+                                {
+                                    inSampleId = $"{match.Groups[1].Value}-{match.Groups[2].Value}-{match.Groups[3].Value}";
+                                }
+                                else
+                                {
+                                    inSample.Add(inSampleId, "i");
+                                }
                             }
                         }
                     }
@@ -347,6 +396,319 @@ namespace winDDIRunBuilder
 
             return actionResult;
         }
+
+        public IEnumerable<DtoWorklist> GetWorklist(string sourcePlate, string destPlate, string scheduleOptions, string groupKey = "")
+        {
+            List<DtoWorklist> dtoWorklist = new List<DtoWorklist>();
+            string endPointResource = "";
+
+            try
+            {
+                //v1/worklist/BCR/transfer/SigA1?options=lookup_alias,skip_cancelled
+                //endPointResource = $"{_endpointResourceDDIBatch}/{sourcePlate}/transfer/{destPlate}?options=lookup_alias,{scheduleOptions}cherry_pick";
+
+                //endPointResource = $"{_endpointResourceDDIBatch}/{sourcePlate}/transfer/{destPlate}?{scheduleOptions}";
+
+                if (string.IsNullOrEmpty(groupKey))
+                {
+                    endPointResource = $"{_endpointResourceDDIBatch}/{sourcePlate}/transfer/{destPlate}?{scheduleOptions}";
+                }
+                else
+                {
+                    endPointResource = $"{_endpointResourceDDIBatch}/{sourcePlate}/transfer/{destPlate}?{scheduleOptions}";
+                }
+
+
+                var request = new RestRequest(endPointResource, Method.GET);
+
+                var response = _DDIBatchClient.Execute(request);
+                if (!response.IsSuccessful)
+                {
+                    ErrMsg = "APIService.GetWorklist() error: " + response.Content;
+                    throw new Exception(response.Content);
+                }
+
+                return JsonConvert.DeserializeObject<List<DtoWorklist>>(response.Content);
+            }
+            catch (Exception ex)
+            {
+                //  GenMessaging errProcess = new GenMessaging(DateTime.Now.ToLongTimeString(), "Sapphire sync to SalesForce");
+                string errMsg = "ClientBackend.GetSamples() met an issue:";
+                errMsg += Environment.NewLine;
+                errMsg += Environment.NewLine;
+                errMsg += ex.Message;
+                //errProcess.MsgHandler(msgType: "SYS-ERROR", errMsg);
+                ErrMsg = "APIService.GetWorklist() Exception: " + ex.Message;
+            }
+
+            return dtoWorklist;
+        }
+
+        public IEnumerable<SampleDTO> GetProductSamples(string plateId)
+        {
+            string endPointResource = "";
+
+            try
+            {
+                endPointResource = $"{_endpointResourceDDIBatch}/{plateId}";
+
+                var request = new RestRequest(endPointResource, Method.GET);
+
+                var response = _DDIBatchClient.Execute(request);
+                if (!response.IsSuccessful)
+                {
+                    ErrMsg = "APIService. GetProductSamples() error: " + response.Content;
+                    throw new Exception(response.Content);
+                }
+
+                var plate = JsonConvert.DeserializeObject<PlateDTO>(response.Content);
+
+                return plate.Samples;
+            }
+            catch (Exception ex)
+            {
+                //  GenMessaging errProcess = new GenMessaging(DateTime.Now.ToLongTimeString(), "Sapphire sync to SalesForce");
+                string errMsg = "ClientBackend.GetProductSamples() met an issue:";
+                errMsg += Environment.NewLine;
+                errMsg += Environment.NewLine;
+                errMsg += ex.Message;
+                //errProcess.MsgHandler(msgType: "SYS-ERROR", errMsg);
+                ErrMsg = "APIService.GetProductSamples() Exception: " + ex.Message;
+                return null;
+            }
+        }
+
+        public IEnumerable<DeptSample> GetNonApprovedSamples(DeptSample dptSample)
+        {
+            string endPointResource = "";
+
+            List<DeptSample> deptSamples = new List<DeptSample>();
+
+            try
+            {
+                //?
+                //endPointResource = $"{_endpointResourceDDIBatch}/{plateId}";
+                //?
+
+                var request = new RestRequest(endPointResource, Method.GET);
+
+                var response = _DDIBatchClient.Execute(request);
+                if (!response.IsSuccessful)
+                {
+                    ErrMsg = "APIService. GetProductSamples() error: " + response.Content;
+                    throw new Exception(response.Content);
+                }
+
+                var plate = JsonConvert.DeserializeObject<PlateDTO>(response.Content);
+
+                return deptSamples;
+            }
+            catch (Exception ex)
+            {
+                //  GenMessaging errProcess = new GenMessaging(DateTime.Now.ToLongTimeString(), "Sapphire sync to SalesForce");
+                string errMsg = "ClientBackend.GetProductSamples() met an issue:";
+                errMsg += Environment.NewLine;
+                errMsg += Environment.NewLine;
+                errMsg += ex.Message;
+                //errProcess.MsgHandler(msgType: "SYS-ERROR", errMsg);
+                ErrMsg = "APIService.GetProductSamples() Exception: " + ex.Message;
+                return null;
+            }
+        }
+
+        public List<DBtestItem> GetCopiaDBTests()
+        {
+            //status = 1 accept; status = 3 canceled; status = 5 in processing; status = 7 approved
+            List<DBtestItem> dtoDBTestItems = new List<DBtestItem>();
+            string endPointResource = "";
+            string endPointQuery = "";
+
+            try
+            {
+                //endPointResource = $"http://192.168.254.107:4002/Copia/Panel/view?criteria=[isActive:true]&fields=name,abbreviation&take=500";
+                //endPointResource = $"http://192.168.254.107:4002/Copia/Panel/view?";
+                endPointResource = _copiaDBTestsResource;
+                endPointQuery = $"criteria=[isActive:true]&fields=name,abbreviation&take=500";
+
+                //endPointResource = _copiaSamplesResource;
+                endPointResource = endPointResource + endPointQuery;
+
+                var request = new RestRequest(endPointResource, Method.GET);
+
+                var response = _DDIBatchClient.Execute(request);
+                if (!response.IsSuccessful)
+                {
+                    ErrMsg = "APIService.GetCopiaSamples() error: " + response.Content;
+                    throw new Exception(response.Content);
+                }
+
+                var apiResponse = JsonConvert.DeserializeObject<DtoCopiaDBTest>(response.Content);
+                dtoDBTestItems = apiResponse.items;
+            }
+            catch (Exception ex)
+            {
+                //errProcess.MsgHandler(msgType: "SYS-ERROR", errMsg);
+                ErrMsg = "APIService.GetCopiaDBTests() Exception: " + ex.Message;
+            }
+
+            return dtoDBTestItems;
+        }
+
+
+
+        public List<Item> GetCopiaSamples(string dbTestSettings = "")
+        {
+            //status = 1 accept; status = 3 canceled; status = 5 in processing; status = 7 approved
+            List<Item> dtoCopiaSamples = new List<Item>();
+            string endPointResource = "";
+            string endPointQuery = "";
+
+            try
+            {
+                //endPointResource = $"http://192.168.254.107:4002/Copia/OrderedPanel/view?take=100&criteria=[status:1^5,labPanelCode:HPYL-F-AO^CCC,labFillerOrderNumber:!]&fields=status,labFillerOrderNumber,labPanelCode,createStamp";
+                //all(1or5)DBtestsQuery=$"take=100&criteria=[status:1^5]&fields=status,labFillerOrderNumber,labPanelCode,createStamp"
+                //endPointResource = $"http://192.168.254.107:4002/Copia/OrderedPanel/view?";
+                endPointResource = _copiaSamplesResource;
+                //endPointQuery = $"take=100&criteria=[status:1^5,labPanelCode:HPYL-F-AO^CCC,labFillerOrderNumber:!]";
+
+                if (string.IsNullOrEmpty(dbTestSettings))
+                {
+                    endPointQuery = $"take=100&criteria=[status:1^5,labFillerOrderNumber:!]";
+                }
+                else
+                {
+                    endPointQuery = $"take=100&criteria=[status:1^5,labPanelCode:{dbTestSettings},labFillerOrderNumber:!]";
+                }
+                endPointQuery += $"&fields=status,labFillerOrderNumber,labPanelCode,createStamp";
+                endPointResource = endPointResource + endPointQuery;
+
+                var request = new RestRequest(endPointResource, Method.GET);
+
+                var response = _DDIBatchClient.Execute(request);
+                if (!response.IsSuccessful)
+                {
+                    ErrMsg = "APIService.GetCopiaSamples() error: " + response.Content;
+                    throw new Exception(response.Content);
+                }
+
+                var apiResponse = JsonConvert.DeserializeObject<DtoCopiaBase>(response.Content);
+                dtoCopiaSamples = apiResponse.items;
+            }
+            catch (Exception ex)
+            {
+                //errProcess.MsgHandler(msgType: "SYS-ERROR", errMsg);
+                ErrMsg = "APIService.GetCopiaSamples() Exception: " + ex.Message;
+            }
+
+            return dtoCopiaSamples;
+        }
+
+
+        /// <summary>
+        /// The below functions are history functions; 
+        /// </summary>
+        /// 
+        public List<Item> GetCopiaSamples_His(string startDate, string endDate, Int16 pageNo = 0)
+        {
+            //status = 1 accept
+            //status = 3 canceled
+            //status = 5 in processing
+            //status = 7 approved
+
+            List<Item> dtoCopiaSamples = new List<Item>();
+            string endPointResource = "";
+            string endPointQuery = "";
+
+            try
+            {
+                //testing
+                //startDate = "7/1/2024";
+                //endDate = "8/2/2024";
+
+                //endPointResource = $"http://192.168.254.107:4002/Copia/OrderedPanel/view?page=0&pageSize=1000&criteria=[status:!3,createStamp:7/1/2024~8/2/2024]&fields=status,labFillerOrderNumber,labPanelCode,createStamp";
+                endPointResource = $"http://192.168.254.107:4002/Copia/OrderedPanel/view?";
+                endPointQuery = $"page={pageNo}&pageSize=1000&criteria=[status:!3,createStamp:{startDate}~{endDate}]";
+                endPointQuery += $"&fields=status,labFillerOrderNumber,labPanelCode,createStamp";
+                endPointResource = endPointResource + endPointQuery;
+
+                //if (string.IsNullOrEmpty(groupKey))
+                //{
+                //    endPointResource = $"{_endpointResourceDDIBatch}/{sourcePlate}/transfer/{destPlate}?{scheduleOptions}";
+                //}
+                //else
+                //{
+                //    endPointResource = $"{_endpointResourceDDIBatch}/{sourcePlate}/transfer/{destPlate}?{scheduleOptions}";
+                //}
+
+                var request = new RestRequest(endPointResource, Method.GET);
+
+                var response = _DDIBatchClient.Execute(request);
+                if (!response.IsSuccessful)
+                {
+                    ErrMsg = "APIService.GetCopiaSamples() error: " + response.Content;
+                    throw new Exception(response.Content);
+                }
+
+                var apiResponse = JsonConvert.DeserializeObject<DtoCopiaBase>(response.Content);
+                dtoCopiaSamples = apiResponse.items;
+            }
+            catch (Exception ex)
+            {
+                //errProcess.MsgHandler(msgType: "SYS-ERROR", errMsg);
+                ErrMsg = "APIService.GetCopiaSamples() Exception: " + ex.Message;
+            }
+
+            return dtoCopiaSamples;
+        }
+        public Int32 GetCopiaSampleCount(string startDate, string endDate)
+        {
+            //status = 1 accept
+            //status = 3 canceled
+            //status = 5 in processing
+            //status = 7 approved
+            string endPointResource = "";
+            string endPointQuery = "";
+
+            Int32 copiaSampleCount = 0;
+
+            try
+            {
+                //testing
+                //startDate = "7/1/2024";
+                //endDate = "8/2/2024";
+
+                //endPointResource = $"http://192.168.254.107:4002/Copia/OrderedPanel/view?page=0&pageSize=1000&criteria=[status:!3,createStamp:7/1/2024~8/2/2024]&fields=status,labFillerOrderNumber,labPanelCode,createStamp&count=true";
+                //endPointResource = $"http://192.168.254.107:4002/Copia/OrderedPanel/view?";
+                endPointResource = _copiaSamplesResource;
+
+                endPointQuery = $"criteria=[status:!3,createStamp:{startDate}~{endDate}]&count=true";
+                endPointResource = endPointResource + endPointQuery;
+
+                var request = new RestRequest(endPointResource, Method.GET);
+
+                var response = _DDIBatchClient.Execute(request);
+                if (!response.IsSuccessful)
+                {
+                    ErrMsg = "APIService.GetCopiaSamples() error: " + response.Content;
+                    throw new Exception(response.Content);
+                }
+
+                var apiResponse = JsonConvert.DeserializeObject<DtoCopiaSampleCount>(response.Content);
+
+                if (apiResponse != null && apiResponse.count >= 0)
+                {
+                    copiaSampleCount = apiResponse.count;
+                }
+            }
+            catch (Exception ex)
+            {
+                //errProcess.MsgHandler(msgType: "SYS-ERROR", errMsg);
+                ErrMsg = "APIService.GetCopiaSampleCount() Exception: " + ex.Message;
+            }
+
+            return copiaSampleCount;
+        }
+
         public string AddSamples_His(string plateName, List<InputFile> plateSamples, bool isQC = false)
         {
             string actionResult = "YES";
@@ -457,88 +819,6 @@ namespace winDDIRunBuilder
 
             return actionResult;
         }
-
-        public IEnumerable<DtoWorklist> GetWorklist(string sourcePlate, string destPlate, string scheduleOptions, string groupKey="")
-        {
-            List<DtoWorklist> dtoWorklist = new List<DtoWorklist>();
-            string endPointResource = "";
-
-            try
-            {
-                //v1/worklist/BCR/transfer/SigA1?options=lookup_alias,skip_cancelled
-                //endPointResource = $"{_endpointResourceDDIBatch}/{sourcePlate}/transfer/{destPlate}?options=lookup_alias,{scheduleOptions}cherry_pick";
-                
-                //endPointResource = $"{_endpointResourceDDIBatch}/{sourcePlate}/transfer/{destPlate}?{scheduleOptions}";
-
-                if (string.IsNullOrEmpty(groupKey))
-                {
-                    endPointResource = $"{_endpointResourceDDIBatch}/{sourcePlate}/transfer/{destPlate}?{scheduleOptions}";
-                }
-                else
-                {
-                    endPointResource = $"{_endpointResourceDDIBatch}/{sourcePlate}/transfer/{destPlate}?{scheduleOptions}";
-                }
-
-
-                var request = new RestRequest(endPointResource, Method.GET);
-
-                var response = _DDIBatchClient.Execute(request);
-                if (!response.IsSuccessful)
-                {
-                    ErrMsg = "APIService.GetWorklist() error: " + response.Content;
-                    throw new Exception(response.Content);
-                }
-
-                return JsonConvert.DeserializeObject<List<DtoWorklist>>(response.Content);
-            }
-            catch (Exception ex)
-            {
-                //  GenMessaging errProcess = new GenMessaging(DateTime.Now.ToLongTimeString(), "Sapphire sync to SalesForce");
-                string errMsg = "ClientBackend.GetSamples() met an issue:";
-                errMsg += Environment.NewLine;
-                errMsg += Environment.NewLine;
-                errMsg += ex.Message;
-                //errProcess.MsgHandler(msgType: "SYS-ERROR", errMsg);
-                ErrMsg = "APIService.GetWorklist() Exception: " + ex.Message;
-            }
-
-            return dtoWorklist;
-        }
-
-        public IEnumerable<SampleDTO> GetProductSamples(string plateId)
-        {
-            string endPointResource = "";
-
-            try
-            {
-                endPointResource = $"{_endpointResourceDDIBatch}/{plateId}";
-
-                var request = new RestRequest(endPointResource, Method.GET);
-
-                var response = _DDIBatchClient.Execute(request);
-                if (!response.IsSuccessful)
-                {
-                    ErrMsg = "APIService. GetProductSamples() error: " + response.Content;
-                    throw new Exception(response.Content);
-                }
-
-                var plate = JsonConvert.DeserializeObject<PlateDTO>(response.Content);
-
-                return plate.Samples;
-            }
-            catch (Exception ex)
-            {
-                //  GenMessaging errProcess = new GenMessaging(DateTime.Now.ToLongTimeString(), "Sapphire sync to SalesForce");
-                string errMsg = "ClientBackend.GetProductSamples() met an issue:";
-                errMsg += Environment.NewLine;
-                errMsg += Environment.NewLine;
-                errMsg += ex.Message;
-                //errProcess.MsgHandler(msgType: "SYS-ERROR", errMsg);
-                ErrMsg = "APIService.GetProductSamples() Exception: " + ex.Message;
-                return null;
-            }
-        }
-
         public IEnumerable<DtoWorklist> GetWorklist_his(string sourcePlate, string destPlate, string options, bool isSchedCompletedSamples)
         {
             List<DtoWorklist> dtoWorklist = new List<DtoWorklist>();
@@ -591,7 +871,6 @@ namespace winDDIRunBuilder
 
             return dtoWorklist;
         }
-
         public IEnumerable<DtoSample> GetSamples(string shortIds)
         {
 
@@ -683,7 +962,6 @@ namespace winDDIRunBuilder
 
             return dtobatch;
         }
-
         public IEnumerable<DtoBatch> GetBatchLatest(string batchId, string version = null, string plateSuffix = null, string userSequence = null, string sampleIds = null)
         {
             List<DtoBatch> dtobatch = new List<DtoBatch>();
@@ -736,9 +1014,6 @@ namespace winDDIRunBuilder
 
             return dtobatch;
         }
-
-
-
         public string CreateBatch(List<DtoBatch> dtoBatch)
         {
             StringBuilder sbResult = new StringBuilder();
@@ -782,7 +1057,6 @@ namespace winDDIRunBuilder
 
             return sbResult.ToString();
         }
-
         public string DeleteBatch(List<DtoBatch> dtoBatch)
         {
             StringBuilder sbResult = new StringBuilder();
@@ -829,7 +1103,6 @@ namespace winDDIRunBuilder
 
             return sbResult.ToString();
         }
-
         public string CreateBatch_History(List<DtoBatch> dtoBatch)
         {
 
